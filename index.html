@@ -20,7 +20,6 @@
             <div class="space-x-2">
                 <button onclick="switchView('comprador')" id="btn-comprador" class="px-3 py-1 text-xs font-bold rounded bg-gray-800 text-white">Vista Comprador</button>
                 <button onclick="switchView('vendedor')" id="btn-vendedor" class="px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800">Vista Cocina</button>
-                <button onclick="switchView('personas')" id="btn-personas" class="px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800">Información</button>
             </div>
         </nav>
 
@@ -29,11 +28,11 @@
             <div class="md:col-span-2 space-y-4">
                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300">
                     <h2 class="text-xl font-bold">👋 Hola, ¿Qué vas a pedir hoy?</h2>
-                    <p class="text-xs text-red-600 font-semibold mt-1">🕒 Franja de alta congestión: 12:00 m. - 2:00 p.m.[cite: 7]</p>
+                    <p class="text-xs text-red-600 font-semibold mt-1">🕒 Franja de alta congestión: 12:00 m. - 2:00 p.m.</p>
                 </div>
 
                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300">
-                    <h3 class="font-bold mb-4 text-gray-700">🏪 Restaurantes del Campus (Nikkei, Frisby, Subway, etc.)[cite: 7]</h3>
+                    <h3 class="font-bold mb-4 text-gray-700">🏪 Restaurantes del Campus (Nikkei, Frisby, Subway, etc.)</h3>
                     <div id="menu-list" class="space-y-4"></div>
                 </div>
             </div>
@@ -72,7 +71,7 @@
         <!-- VISTA 2: VENDEDOR / COCINA -->
         <div id="view-vendedor" class="hidden bg-white p-6 rounded-lg shadow-sm border border-gray-300 space-y-4">
             <h2 class="text-xl font-bold">👨‍🍳 Dashboard de Cocina (Comandas Digitales)</h2>
-            <p class="text-xs text-gray-600">Panel para organizar pedidos virtuales y presenciales sin saturación[cite: 7].</p>
+            <p class="text-xs text-gray-600">Panel para organizar pedidos virtuales y presenciales sin saturación.</p>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <div class="border p-3 rounded bg-gray-50">
@@ -92,7 +91,6 @@
             </div>
         </div>
 
-
     </div>
 
     <script>
@@ -108,11 +106,9 @@
         function switchView(view) {
             document.getElementById('view-comprador').classList.add('hidden');
             document.getElementById('view-vendedor').classList.add('hidden');
-            document.getElementById('view-personas').classList.add('hidden');
             
             document.getElementById('btn-comprador').className = "px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800";
             document.getElementById('btn-vendedor').className = "px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800";
-            document.getElementById('btn-personas').className = "px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800";
 
             document.getElementById('view-' + view).classList.remove('hidden');
             document.getElementById('btn-' + view).className = "px-3 py-1 text-xs font-bold rounded bg-gray-800 text-white";
