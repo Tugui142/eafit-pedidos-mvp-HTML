@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototipo EAFIT - Gestión de Pedidos</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { background-color: #EFEFEF; color: #222222; font-family: sans-serif; }
+        .grayscale-img { filter: grayscale(100%); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <!-- Menú de Navegación del Prototipo -->
+        <nav class="bg-white p-4 rounded-lg shadow-sm border border-gray-300 flex justify-between items-center">
+            <h1 class="font-bold text-lg">🍔 EAFIT Pedidos (MVP)</h1>
+            <div class="space-x-2">
+                <button onclick="switchView('comprador')" id="btn-comprador" class="px-3 py-1 text-xs font-bold rounded bg-gray-800 text-white">Vista Comprador</button>
+                <button onclick="switchView('vendedor')" id="btn-vendedor" class="px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800">Vista Cocina</button>
+                <button onclick="switchView('personas')" id="btn-personas" class="px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800">Protopersonas</button>
+            </div>
+        </nav>
+
+        <!-- VISTA 1: COMPRADOR -->
+        <div id="view-comprador" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 space-y-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300">
+                    <h2 class="text-xl font-bold">👋 Hola, ¿Qué vas a pedir hoy?</h2>
+                    <p class="text-xs text-red-600 font-semibold mt-1">🕒 Franja de alta congestión: 12:00 m. - 2:00 p.m.[cite: 7]</p>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300">
+                    <h3 class="font-bold mb-4 text-gray-700">🏪 Restaurantes del Campus (Nikkei, Frisby, Subway, etc.)[cite: 7]</h3>
+                    <div id="menu-list" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <!-- Carrito -->
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300 h-fit">
+                <h3 class="font-bold text-lg mb-3">🛒 Tu Canasta</h3>
+                <div id="cart-items" class="space-y-2 text-sm divide-y divide-gray-200">
+                    <p class="text-gray-500 text-xs">Tu canasta está vacía</p>
+                </div>
+                <div id="cart-summary" class="mt-4 pt-4 border-t border-gray-300 hidden">
+                    <div class="flex justify-between text-sm">
+                        <span>Subtotal:</span> <span id="subtotal-val">$0</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>Tarifa servicio (App):</span> <span>$1,500</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-base mt-2 pt-2 border-t">
+                        <span>Total:</span> <span id="total-val">$0</span>
+                    </div>
+                    <div class="mt-4 space-y-3">
+                        <label class="block text-xs font-semibold text-gray-600">Franja de recogida:</label>
+                        <input type="time" class="w-full border border-gray-300 rounded p-1 text-sm bg-gray-50" value="12:15">
+                        <label class="block text-xs font-semibold text-gray-600">Método de Pago</label>
+                        <select class="w-full border border-gray-300 rounded p-1 text-sm bg-gray-50">
+                            <option>Descuento Nómina EAFIT</option>
+                            <option>Saldo Carné</option>
+                            <option>Pasarela (Tarjeta/PSE)</option>
+                        </select>
+                        <button onclick="checkout()" class="w-full bg-gray-800 text-white font-bold py-2 rounded text-sm hover:bg-gray-700">Confirmar Pedido</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 2: VENDEDOR / COCINA -->
+        <div id="view-vendedor" class="hidden bg-white p-6 rounded-lg shadow-sm border border-gray-300 space-y-4">
+            <h2 class="text-xl font-bold">👨‍🍳 Dashboard de Cocina (Comandas Digitales)</h2>
+            <p class="text-xs text-gray-600">Panel para organizar pedidos virtuales y presenciales sin saturación[cite: 7].</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div class="border p-3 rounded bg-gray-50">
+                    <h4 class="font-bold text-sm text-yellow-700">Pendientes</h4>
+                    <div class="bg-white p-2 mt-2 rounded border text-xs shadow-sm">
+                        <p class="font-bold">#001 - Camila R.</p>
+                        <p class="text-gray-500">Sushi Roll 10pz (Recoger: 12:15)</p>
+                        <button class="mt-2 bg-gray-800 text-white px-2 py-1 rounded text-xs">Iniciar Preparación</button>
+                    </div>
+                </div>
+                <div class="border p-3 rounded bg-gray-50">
+                    <h4 class="font-bold text-sm text-blue-700">En Preparación</h4>
+                </div>
+                <div class="border p-3 rounded bg-gray-50">
+                    <h4 class="font-bold text-sm text-green-700">Listos para recoger</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 3: PROTOPERSONAS -->
+        <div id="view-personas" class="hidden bg-white p-6 rounded-lg shadow-sm border border-gray-300 space-y-4">
+            <h2 class="text-xl font-bold">👥 Protopersonas del Proyecto</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 text-sm">
+                <div class="border p-4 rounded bg-gray-50">
+                    <h3 class="font-bold">Camila Restrepo, 20[cite: 7]</h3>
+                    <p class="text-xs text-gray-600 mt-1"><b>Estudiante de Ingeniería[cite: 7]</b></p>
+                    <p class="text-xs mt-2"><b>Necesidad:</b> Odia hacer fila entre clases y necesita comer rápido[cite: 7].</p>
+                    <p class="text-xs mt-1"><b>Solución:</b> Pedido anticipado + notificación[cite: 7].</p>
+                </div>
+                <div class="border p-4 rounded bg-gray-50">
+                    <h3 class="font-bold">Carlos Muñoz, 38[cite: 7]</h3>
+                    <p class="text-xs text-gray-600 mt-1"><b>Profesor / Empleado[cite: 7]</b></p>
+                    <p class="text-xs mt-2"><b>Necesidad:</b> Su pausa de almuerzo es fija y corta[cite: 7].</p>
+                    <p class="text-xs mt-1"><b>Solución:</b> Reserva de disponibilidad y pago por convenio[cite: 7, 5].</p>
+                </div>
+                <div class="border p-4 rounded bg-gray-50">
+                    <h3 class="font-bold">Diana Zapata, 29[cite: 7]</h3>
+                    <p class="text-xs text-gray-600 mt-1"><b>Encargada de cocina[cite: 7]</b></p>
+                    <p class="text-xs mt-2"><b>Necesidad:</b> Se satura con pedidos simultáneos en horas pico[cite: 7].</p>
+                    <p class="text-xs mt-1"><b>Solución:</b> Panel digital + disponibilidad en vivo[cite: 7, 5].</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const menu = [
+            { id: 1, restaurante: "Nikkei Village", plato: "Sushi Roll 10pz", precio: 22000, tiempo: 15, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&q=80" },
+            { id: 2, restaurante: "Frisby", plato: "Combo Frisby", precio: 25000, tiempo: 10, img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=80" },
+            { id: 3, restaurante: "Subway", plato: "Sub del Día", precio: 18000, tiempo: 8, img: "https://images.unsplash.com/photo-1616075677936-391490218731?w=400&q=80" },
+            { id: 4, restaurante: "The Corral", plato: "Hamburguesa Todoterreno", precio: 28000, tiempo: 12, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80" }
+        ];
+
+        let cart = [];
+
+        function switchView(view) {
+            document.getElementById('view-comprador').classList.add('hidden');
+            document.getElementById('view-vendedor').classList.add('hidden');
+            document.getElementById('view-personas').classList.add('hidden');
+            
+            document.getElementById('btn-comprador').className = "px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800";
+            document.getElementById('btn-vendedor').className = "px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800";
+            document.getElementById('btn-personas').className = "px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800";
+
+            document.getElementById('view-' + view).classList.remove('hidden');
+            document.getElementById('btn-' + view).className = "px-3 py-1 text-xs font-bold rounded bg-gray-800 text-white";
+        }
+
+        function renderMenu() {
+            const list = document.getElementById('menu-list');
+            list.innerHTML = menu.map(item => `
+                <div class="flex items-center justify-between border-b pb-3 gap-3">
+                    <img src="${item.img}" class="w-16 h-16 object-cover rounded grayscale-img">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm">${item.plato}</h4>
+                        <p class="text-xs text-gray-500">${item.restaurante} • ⏱️ ${item.tiempo} min</p>
+                        <p class="text-sm font-semibold mt-1">$${item.precio.toLocaleString()}</p>
+                    </div>
+                    <button onclick="addToCart(${item.id})" class="bg-gray-800 text-white text-xs px-3 py-1.5 rounded hover:bg-gray-700 font-semibold">Agregar</button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            cart.push(menu.find(i => i.id === id));
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            const summary = document.getElementById('cart-summary');
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 text-xs">Tu canasta está vacía</p>`;
+                summary.classList.add('hidden');
+                return;
+            }
+            summary.classList.remove('hidden');
+            container.innerHTML = cart.map(item => `<div class="flex justify-between py-1 text-xs"><span>1x ${item.plato}</span><span>$${item.precio.toLocaleString()}</span></div>`).join('');
+            const subtotal = cart.reduce((acc, item) => acc + item.precio, 0);
+            document.getElementById('subtotal-val').innerText = `$${subtotal.toLocaleString()}`;
+            document.getElementById('total-val').innerText = `$${(subtotal + 1500).toLocaleString()}`;
+        }
+
+        function checkout() {
+            alert("🎉 ¡Pedido simulado con éxito!");
+            cart = [];
+            renderCart();
+        }
+
+        renderMenu();
+    </script>
+</body>
+</html>
