@@ -91,7 +91,7 @@
                                 <option>Tarjeta de Crédito / PSE</option>
                             </select>
                         </div>
-                        <button onclick="submitOrder()" class="w-full bg-green-600 text-white font-bold py-3 rounded text-sm hover:bg-green-700 mt-2 transition-colors">PAGAR</button>
+                        <button onclick="submitOrder()" id="btn-pagar" class="w-full bg-green-600 text-white font-bold py-3 rounded text-sm hover:bg-green-700 mt-2 transition-colors">PAGAR</button>
                     </div>
                 </div>
 
@@ -198,7 +198,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }, // Ocultar leyenda
+                        legend: { display: false }, 
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
@@ -210,10 +210,7 @@
                         }
                     },
                     scales: {
-                        y: { 
-                            display: false, // Ocultar el eje Y para diseño más limpio
-                            beginAtZero: true 
-                        }, 
+                        y: { display: false, beginAtZero: true }, 
                         x: { 
                             grid: { display: false },
                             border: { display: false },
@@ -294,23 +291,60 @@
             document.getElementById('total-val').innerText = `$${(subtotal + 1500).toLocaleString()}`;
         }
 
-        function submitOrder() {
+        // --- CONEXIÓN AL BACKEND DE RENDER ---
+        async function submitOrder() {
             if(cart.length === 0) return;
-            const newOrder = {
+            
+            // 1. Empaquetar los datos para enviarlos a Python
+            const orderData = {
                 id: orderCounter++,
-                items: [...cart],
+                items: cart.map(i => i.plato).join(', '), // Python lo recibe como texto
                 time: document.getElementById('pickup-time').value,
+                total: cart.reduce((acc, item) => acc + item.precio, 0) + 1500,
                 status: 'pendiente'
             };
-            orders.push(newOrder);
-            currentBuyerOrderId = newOrder.id;
-            
-            cart = [];
-            renderCart();
-            document.getElementById('cart-section').classList.add('hidden');
-            document.getElementById('tracking-section').classList.remove('hidden');
-            updateTrackingView();
-            renderKitchen();
+
+            const btnPagar = document.getElementById('btn-pagar');
+            const originalText = btnPagar.innerText;
+            btnPagar.innerText = "Procesando...";
+            btnPagar.disabled = true;
+
+            try {
+                // 2. Realizar petición POST al servidor FastAPI
+                const response = await fetch('https://eafit-pedidos-mvp-html.onrender.com/nuevo-pedido', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (response.ok) {
+                    // 3. Crear el formato interno del pedido para que la vista del restaurante siga funcionando localmente
+                    const localOrder = {
+                        id: orderData.id,
+                        items: [...cart], // Array completo para que funcione renderKitchen()
+                        time: orderData.time,
+                        status: 'pendiente'
+                    };
+                    
+                    orders.push(localOrder);
+                    currentBuyerOrderId = localOrder.id;
+                    
+                    cart = [];
+                    renderCart();
+                    document.getElementById('cart-section').classList.add('hidden');
+                    document.getElementById('tracking-section').classList.remove('hidden');
+                    updateTrackingView();
+                    renderKitchen();
+                } else {
+                    alert("Hubo un problema comunicándose con el restaurante.");
+                }
+            } catch (error) {
+                console.error("Error en la petición:", error);
+                alert("Error de conexión. Asegúrate de que el servidor en Render esté desplegado y encendido.");
+            } finally {
+                btnPagar.innerText = originalText;
+                btnPagar.disabled = false;
+            }
         }
 
         function updateTrackingView() {
