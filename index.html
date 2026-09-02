@@ -311,7 +311,7 @@
 
             try {
                 // 2. Realizar petición POST al servidor FastAPI
-                const response = await fetch('https://eafit-pedidos-mvp-html.onrender.com', {
+                const response = await fetch('https://eafit-pedidos-mvp-html.onrender.com/nuevo-pedido', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
