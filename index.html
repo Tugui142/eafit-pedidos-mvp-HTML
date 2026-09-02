@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prototipo EAFIT - Gestión de Pedidos</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importar Chart.js desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background-color: #EFEFEF; color: #222222; font-family: sans-serif; }
         .grayscale-img { filter: grayscale(100%); }
-        /* Animación suave para transiciones de estado */
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -31,13 +32,28 @@
             
             <!-- Catálogo y Flujo Principal -->
             <div id="comprador-main" class="lg:col-span-2 space-y-4">
-                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300">
-                    <h2 class="text-2xl font-bold">¿Qué vas a pedir hoy?</h2>
-                    <p class="text-xs text-red-600 font-semibold mt-1">🕒 Franja de alta congestión: 12:00 m. - 2:00 p.m.</p>
+                
+                <!-- Encabezado con Gráfico de Congestión -->
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-300">
+                    <h2 class="text-2xl font-bold mb-2">¿Qué vas a pedir hoy?</h2>
+                    
+                    <!-- Contenedor del Gráfico -->
+                    <div class="mt-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="text-xs font-bold text-gray-600 uppercase tracking-wider">Demanda actual en el campus</p>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                <span class="text-xs text-gray-500">Alta congestión</span>
+                            </div>
+                        </div>
+                        <div class="h-32 w-full">
+                            <canvas id="congestionChart"></canvas>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300">
-                    <!-- Filtros (Paso 2 Wireframes) -->
+                    <!-- Filtros -->
                     <div class="flex gap-2 overflow-x-auto pb-4 mb-2">
                         <button onclick="filterMenu('Todos')" class="filter-btn bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">Todos</button>
                         <button onclick="filterMenu('Hamburguesas')" class="filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200">Hamburguesas</button>
@@ -79,7 +95,7 @@
                     </div>
                 </div>
 
-                <!-- Modo Seguimiento (Paso 5 Wireframes) -->
+                <!-- Modo Seguimiento -->
                 <div id="tracking-section" class="hidden">
                     <h3 class="font-bold text-lg mb-3">✅ Pedido Confirmado</h3>
                     <div class="bg-gray-50 border p-4 rounded-lg text-center space-y-2">
@@ -113,17 +129,9 @@
                     <h2 class="text-2xl font-bold">👨‍🍳 Dashboard de Restaurante</h2>
                     <p class="text-xs text-gray-500 mt-1">Gestión de comandas digitales</p>
                 </div>
-                <div class="space-x-2">
-                    <button class="text-sm font-bold border-b-2 border-gray-800 pb-1">Comandas</button>
-                    <button class="text-sm font-bold text-gray-400 hover:text-gray-800 pb-1">Inventario</button>
-                    <button class="text-sm font-bold text-gray-400 hover:text-gray-800 pb-1">Mensajes</button>
-                </div>
             </div>
             
-            <!-- Tablero Kanban -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-100 p-4 rounded-lg min-h-[400px]">
-                
-                <!-- Columna Pendientes -->
                 <div class="flex flex-col gap-3">
                     <div class="bg-gray-200 px-3 py-2 rounded font-bold text-sm flex justify-between">
                         <span class="text-yellow-800">Pendientes</span>
@@ -131,8 +139,6 @@
                     </div>
                     <div id="col-pendientes" class="space-y-3"></div>
                 </div>
-
-                <!-- Columna En Preparación -->
                 <div class="flex flex-col gap-3">
                     <div class="bg-gray-200 px-3 py-2 rounded font-bold text-sm flex justify-between">
                         <span class="text-blue-800">En Preparación</span>
@@ -140,8 +146,6 @@
                     </div>
                     <div id="col-prep" class="space-y-3"></div>
                 </div>
-
-                <!-- Columna Listos -->
                 <div class="flex flex-col gap-3">
                     <div class="bg-gray-200 px-3 py-2 rounded font-bold text-sm flex justify-between">
                         <span class="text-green-800">Listos</span>
@@ -149,14 +153,11 @@
                     </div>
                     <div id="col-listos" class="space-y-3"></div>
                 </div>
-
             </div>
         </div>
-
     </div>
 
     <script>
-        // Datos de ejemplo
         const menuDB = [
             { id: 1, categoria: "Sushi", restaurante: "Nikkei Village", plato: "Sushi Roll 10pz", precio: 22000, tiempo: 15, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&q=80" },
             { id: 2, categoria: "Pollo", restaurante: "Frisby", plato: "Combo Frisby", precio: 25000, tiempo: 10, img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=80" },
@@ -166,29 +167,74 @@
 
         let cart = [];
         let activeCategory = 'Todos';
-        
-        // Estado global de pedidos (simulando Base de Datos)
         let orders = []; 
         let orderCounter = 101;
-        let currentBuyerOrderId = null; // Para rastrear el pedido actual del comprador
+        let currentBuyerOrderId = null;
 
-        // --- NAVEGACIÓN ---
+        // --- RENDERIZADO DEL GRÁFICO (CHART.JS) ---
+        function renderCongestionChart() {
+            const ctx = document.getElementById('congestionChart').getContext('2d');
+            
+            // Horas del día en el campus
+            const labels = ['8am', '9am', '10am', '11am', '12m', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm'];
+            // Simulación de volumen de pedidos
+            const data = [10, 15, 25, 40, 95, 100, 85, 40, 25, 15, 10]; 
+            
+            // Si el valor supera 80 (horas pico), la barra se pinta de rojo, de lo contrario gris
+            const bgColors = data.map(value => value > 80 ? 'rgba(239, 68, 68, 0.9)' : 'rgba(156, 163, 175, 0.4)');
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: bgColors,
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }, // Ocultar leyenda
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if(context.parsed.y > 80) return 'Alta congestión';
+                                    if(context.parsed.y > 40) return 'Congestión media';
+                                    return 'Baja demanda';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            display: false, // Ocultar el eje Y para diseño más limpio
+                            beginAtZero: true 
+                        }, 
+                        x: { 
+                            grid: { display: false },
+                            border: { display: false },
+                            ticks: { font: { size: 10, family: 'sans-serif' }, color: '#6B7280' }
+                        }
+                    }
+                }
+            });
+        }
+
         function switchView(view) {
             document.getElementById('view-comprador').classList.add('hidden');
             document.getElementById('view-vendedor').classList.add('hidden');
-            
             document.getElementById('btn-comprador').className = "px-3 py-1.5 text-xs font-bold rounded bg-gray-200 text-gray-800 transition-colors";
             document.getElementById('btn-vendedor').className = "px-3 py-1.5 text-xs font-bold rounded bg-gray-200 text-gray-800 transition-colors";
-
             document.getElementById('view-' + view).classList.remove('hidden');
             document.getElementById('btn-' + view).className = "px-3 py-1.5 text-xs font-bold rounded bg-gray-800 text-white transition-colors";
         }
 
-        // --- LÓGICA COMPRADOR ---
         function filterMenu(categoria) {
             activeCategory = categoria;
-            
-            // Actualizar UI de botones
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if (btn.innerText === categoria) {
                     btn.className = "filter-btn bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors";
@@ -218,8 +264,7 @@
         }
 
         function addToCart(id) {
-            const item = menuDB.find(i => i.id === id);
-            cart.push(item);
+            cart.push(menuDB.find(i => i.id === id));
             renderCart();
         }
 
@@ -234,18 +279,13 @@
             }
             
             summary.classList.remove('hidden');
-            
-            // Agrupar items idénticos
             const counts = {};
             cart.forEach(x => { counts[x.id] = (counts[x.id] || 0) + 1; });
             
             let html = '';
             for (let id in counts) {
                 const item = menuDB.find(i => i.id == id);
-                html += `<div class="flex justify-between py-2 text-sm">
-                            <span class="font-semibold text-gray-700">${counts[id]}x ${item.plato}</span>
-                            <span>$${(item.precio * counts[id]).toLocaleString()}</span>
-                         </div>`;
+                html += `<div class="flex justify-between py-2 text-sm"><span class="font-semibold text-gray-700">${counts[id]}x ${item.plato}</span><span>$${(item.precio * counts[id]).toLocaleString()}</span></div>`;
             }
             container.innerHTML = html;
 
@@ -256,26 +296,21 @@
 
         function submitOrder() {
             if(cart.length === 0) return;
-
             const newOrder = {
                 id: orderCounter++,
                 items: [...cart],
                 time: document.getElementById('pickup-time').value,
-                status: 'pendiente', // Estados: pendiente, prep, listo
-                total: cart.reduce((acc, item) => acc + item.precio, 0) + 1500
+                status: 'pendiente'
             };
-
             orders.push(newOrder);
             currentBuyerOrderId = newOrder.id;
             
-            // Limpiar carrito y cambiar vista a tracking
             cart = [];
             renderCart();
             document.getElementById('cart-section').classList.add('hidden');
             document.getElementById('tracking-section').classList.remove('hidden');
-            
             updateTrackingView();
-            renderKitchen(); // Actualizar tablero del restaurante
+            renderKitchen();
         }
 
         function updateTrackingView() {
@@ -285,7 +320,6 @@
 
             document.getElementById('track-id').innerText = order.id;
             document.getElementById('track-time').innerText = order.time;
-            
             const statusEl = document.getElementById('track-status');
             const step2 = document.getElementById('step-2');
             const step3 = document.getElementById('step-3');
@@ -295,14 +329,12 @@
                 statusEl.className = "text-xl font-bold text-gray-600 uppercase";
                 step2.classList.replace('opacity-100', 'opacity-30');
                 step3.classList.replace('opacity-100', 'opacity-30');
-            } 
-            else if (order.status === 'prep') {
+            } else if (order.status === 'prep') {
                 statusEl.innerText = "En Preparación";
                 statusEl.className = "text-xl font-bold text-yellow-600 uppercase";
                 step2.classList.replace('opacity-30', 'opacity-100');
                 step3.classList.replace('opacity-100', 'opacity-30');
-            } 
-            else if (order.status === 'listo') {
+            } else if (order.status === 'listo') {
                 statusEl.innerText = "¡Listo para Recoger!";
                 statusEl.className = "text-xl font-bold text-green-600 uppercase";
                 step2.classList.replace('opacity-30', 'opacity-100');
@@ -316,39 +348,28 @@
             document.getElementById('cart-section').classList.remove('hidden');
         }
 
-        // --- LÓGICA RESTAURANTE (KANBAN) ---
         function renderKitchen() {
             const pend = orders.filter(o => o.status === 'pendiente');
             const prep = orders.filter(o => o.status === 'prep');
             const listos = orders.filter(o => o.status === 'listo');
-
             document.getElementById('count-pendientes').innerText = pend.length;
             document.getElementById('count-prep').innerText = prep.length;
             document.getElementById('count-listos').innerText = listos.length;
-
             document.getElementById('col-pendientes').innerHTML = pend.map(o => generateTicketHTML(o, 'Iniciar Prep', 'prep')).join('');
             document.getElementById('col-prep').innerHTML = prep.map(o => generateTicketHTML(o, 'Marcar Listo', 'listo')).join('');
             document.getElementById('col-listos').innerHTML = listos.map(o => generateTicketHTML(o, 'Entregado', 'entregado')).join('');
         }
 
         function generateTicketHTML(order, btnText, nextStatus) {
-            // Resumir items
             const itemNames = order.items.map(i => i.plato).join(', ');
-            
             let btnClass = "bg-gray-800 hover:bg-gray-700";
             if(nextStatus === 'listo') btnClass = "bg-blue-600 hover:bg-blue-700";
             if(nextStatus === 'entregado') btnClass = "bg-green-600 hover:bg-green-700";
-
             return `
                 <div class="bg-white p-3 rounded shadow-sm border border-gray-200 text-sm fade-in">
-                    <div class="flex justify-between font-bold mb-1">
-                        <span>#${order.id}</span>
-                        <span class="text-red-600">${order.time}</span>
-                    </div>
+                    <div class="flex justify-between font-bold mb-1"><span>#${order.id}</span><span class="text-red-600">${order.time}</span></div>
                     <p class="text-gray-600 text-xs mb-3 line-clamp-2">${itemNames}</p>
-                    <button onclick="changeOrderStatus(${order.id}, '${nextStatus}')" class="w-full text-white ${btnClass} font-bold py-1.5 rounded text-xs transition-colors">
-                        ${btnText}
-                    </button>
+                    <button onclick="changeOrderStatus(${order.id}, '${nextStatus}')" class="w-full text-white ${btnClass} font-bold py-1.5 rounded text-xs transition-colors">${btnText}</button>
                 </div>
             `;
         }
@@ -356,23 +377,21 @@
         function changeOrderStatus(id, newStatus) {
             const orderIndex = orders.findIndex(o => o.id === id);
             if(orderIndex > -1) {
-                if(newStatus === 'entregado') {
-                    orders.splice(orderIndex, 1); // Remover del tablero
-                } else {
-                    orders[orderIndex].status = newStatus;
-                }
+                if(newStatus === 'entregado') orders.splice(orderIndex, 1);
+                else orders[orderIndex].status = newStatus;
                 renderKitchen();
-                
-                // Si el usuario actual está viendo este pedido, actualizar su UI
-                if(currentBuyerOrderId === id) {
-                    updateTrackingView();
-                }
+                if(currentBuyerOrderId === id) updateTrackingView();
             }
         }
 
         // Inicializar
         renderMenu();
         renderKitchen();
+        
+        // Renderizar el gráfico de Chart.js al cargar la vista
+        document.addEventListener("DOMContentLoaded", function() {
+            renderCongestionChart();
+        });
     </script>
 </body>
 </html>
