@@ -14,8 +14,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://tugui142.github.io/eafit-pedidos-mvp-HTML/"], # Por seguridad, puedes cambiar el "*" por la URL de tu GitHub Pages
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["https://tugui142.github.io/eafit-pedidos-mvp-HTML/"],
+    allow_headers=["https://tugui142.github.io/eafit-pedidos-mvp-HTML/"],
 )
 
 # Estructura de datos que enviará tu frontend
