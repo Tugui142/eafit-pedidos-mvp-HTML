@@ -4,158 +4,375 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prototipo EAFIT - Gestión de Pedidos</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #EFEFEF; color: #222222; font-family: sans-serif; }
         .grayscale-img { filter: grayscale(100%); }
+        /* Animación suave para transiciones de estado */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="max-w-5xl mx-auto space-y-6">
         
-        <!-- Menú de Navegación del Prototipo -->
-        <nav class="bg-white p-4 rounded-lg shadow-sm border border-gray-300 flex justify-between items-center">
-            <h1 class="font-bold text-lg">🍔 EAFIT Pedidos (MVP)</h1>
+        <!-- Navegación MVP -->
+        <nav class="bg-white p-4 rounded-lg shadow-sm border border-gray-300 flex justify-between items-center sticky top-0 z-50">
+            <h1 class="font-bold text-lg">🍔 EAFIT Pedidos</h1>
             <div class="space-x-2">
-                <button onclick="switchView('comprador')" id="btn-comprador" class="px-3 py-1 text-xs font-bold rounded bg-gray-800 text-white">Vista Comprador</button>
-                <button onclick="switchView('vendedor')" id="btn-vendedor" class="px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800">Vista Cocina</button>
+                <button onclick="switchView('comprador')" id="btn-comprador" class="px-3 py-1.5 text-xs font-bold rounded bg-gray-800 text-white transition-colors">Vista Comprador</button>
+                <button onclick="switchView('vendedor')" id="btn-vendedor" class="px-3 py-1.5 text-xs font-bold rounded bg-gray-200 text-gray-800 transition-colors">Vista Cocina</button>
             </div>
         </nav>
 
-        <!-- VISTA 1: COMPRADOR -->
-        <div id="view-comprador" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="md:col-span-2 space-y-4">
+        <!-- ================= VISTA 1: COMPRADOR ================= -->
+        <div id="view-comprador" class="grid grid-cols-1 lg:grid-cols-3 gap-6 fade-in">
+            
+            <!-- Catálogo y Flujo Principal -->
+            <div id="comprador-main" class="lg:col-span-2 space-y-4">
                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300">
-                    <h2 class="text-xl font-bold">👋 Hola, ¿Qué vas a pedir hoy?</h2>
+                    <h2 class="text-2xl font-bold">¿Qué vas a pedir hoy?</h2>
                     <p class="text-xs text-red-600 font-semibold mt-1">🕒 Franja de alta congestión: 12:00 m. - 2:00 p.m.</p>
                 </div>
 
                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300">
-                    <h3 class="font-bold mb-4 text-gray-700">🏪 Restaurantes del Campus (Nikkei, Frisby, Subway, etc.)</h3>
+                    <!-- Filtros (Paso 2 Wireframes) -->
+                    <div class="flex gap-2 overflow-x-auto pb-4 mb-2">
+                        <button onclick="filterMenu('Todos')" class="filter-btn bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">Todos</button>
+                        <button onclick="filterMenu('Hamburguesas')" class="filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200">Hamburguesas</button>
+                        <button onclick="filterMenu('Sushi')" class="filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200">Sushi</button>
+                        <button onclick="filterMenu('Pollo')" class="filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200">Pollo</button>
+                    </div>
+                    
+                    <h3 class="font-bold mb-4 text-gray-700">Restaurantes Destacados</h3>
                     <div id="menu-list" class="space-y-4"></div>
                 </div>
             </div>
 
-            <!-- Carrito -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300 h-fit">
-                <h3 class="font-bold text-lg mb-3">🛒 Tu Canasta</h3>
-                <div id="cart-items" class="space-y-2 text-sm divide-y divide-gray-200">
-                    <p class="text-gray-500 text-xs">Tu canasta está vacía</p>
+            <!-- Panel Lateral: Carrito / Estado de Pedido -->
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300 h-fit sticky top-24">
+                
+                <!-- Modo Carrito -->
+                <div id="cart-section">
+                    <h3 class="font-bold text-lg mb-3">🛒 Tu Canasta</h3>
+                    <div id="cart-items" class="space-y-2 text-sm divide-y divide-gray-100 mb-4">
+                        <p class="text-gray-500 text-xs">Tu canasta está vacía</p>
+                    </div>
+                    <div id="cart-summary" class="hidden space-y-3">
+                        <div class="border-t pt-3">
+                            <div class="flex justify-between text-sm"><span>Subtotal:</span> <span id="subtotal-val">$0</span></div>
+                            <div class="flex justify-between text-sm text-gray-500"><span>Servicio:</span> <span>$1,500</span></div>
+                            <div class="flex justify-between font-bold text-lg mt-2"><span>Total:</span> <span id="total-val">$0</span></div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-gray-700">Recoger a las:</label>
+                            <input type="time" id="pickup-time" class="w-full border border-gray-300 rounded p-2 text-sm" value="12:15">
+                            
+                            <label class="block text-xs font-bold text-gray-700 mt-2">Método de Pago</label>
+                            <select id="payment-method" class="w-full border border-gray-300 rounded p-2 text-sm bg-gray-50">
+                                <option>Descuento Nómina / Carné</option>
+                                <option>Tarjeta de Crédito / PSE</option>
+                            </select>
+                        </div>
+                        <button onclick="submitOrder()" class="w-full bg-green-600 text-white font-bold py-3 rounded text-sm hover:bg-green-700 mt-2 transition-colors">PAGAR</button>
+                    </div>
                 </div>
-                <div id="cart-summary" class="mt-4 pt-4 border-t border-gray-300 hidden">
-                    <div class="flex justify-between text-sm">
-                        <span>Subtotal:</span> <span id="subtotal-val">$0</span>
+
+                <!-- Modo Seguimiento (Paso 5 Wireframes) -->
+                <div id="tracking-section" class="hidden">
+                    <h3 class="font-bold text-lg mb-3">✅ Pedido Confirmado</h3>
+                    <div class="bg-gray-50 border p-4 rounded-lg text-center space-y-2">
+                        <p class="text-xs text-gray-500">Orden #<span id="track-id" class="font-bold text-gray-800"></span></p>
+                        <h4 id="track-status" class="text-xl font-bold text-yellow-600 uppercase">Enviado a Cocina</h4>
+                        <p class="text-sm font-semibold">Recogida: <span id="track-time"></span></p>
                     </div>
-                    <div class="flex justify-between text-sm text-gray-600">
-                        <span>Tarifa servicio (App):</span> <span>$1,500</span>
+                    <div class="mt-6 space-y-4">
+                        <div class="flex items-center gap-3 opacity-100" id="step-1">
+                            <div class="w-4 h-4 rounded-full bg-green-500"></div>
+                            <p class="text-sm font-bold">Pedido recibido</p>
+                        </div>
+                        <div class="flex items-center gap-3 opacity-30" id="step-2">
+                            <div class="w-4 h-4 rounded-full bg-yellow-500"></div>
+                            <p class="text-sm font-bold">En preparación</p>
+                        </div>
+                        <div class="flex items-center gap-3 opacity-30" id="step-3">
+                            <div class="w-4 h-4 rounded-full bg-blue-500"></div>
+                            <p class="text-sm font-bold">Listo para recoger</p>
+                        </div>
                     </div>
-                    <div class="flex justify-between font-bold text-base mt-2 pt-2 border-t">
-                        <span>Total:</span> <span id="total-val">$0</span>
-                    </div>
-                    <div class="mt-4 space-y-3">
-                        <label class="block text-xs font-semibold text-gray-600">Franja de recogida:</label>
-                        <input type="time" class="w-full border border-gray-300 rounded p-1 text-sm bg-gray-50" value="12:15">
-                        <label class="block text-xs font-semibold text-gray-600">Método de Pago</label>
-                        <select class="w-full border border-gray-300 rounded p-1 text-sm bg-gray-50">
-                            <option>Descuento Nómina EAFIT</option>
-                            <option>Saldo Carné</option>
-                            <option>Pasarela (Tarjeta/PSE)</option>
-                        </select>
-                        <button onclick="checkout()" class="w-full bg-gray-800 text-white font-bold py-2 rounded text-sm hover:bg-gray-700">Confirmar Pedido</button>
-                    </div>
+                    <button onclick="resetBuyer()" class="w-full mt-6 bg-gray-200 text-gray-800 font-bold py-2 rounded text-xs hover:bg-gray-300">Hacer otro pedido</button>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA 2: VENDEDOR / COCINA -->
-        <div id="view-vendedor" class="hidden bg-white p-6 rounded-lg shadow-sm border border-gray-300 space-y-4">
-            <h2 class="text-xl font-bold">👨‍🍳 Dashboard de Cocina (Comandas Digitales)</h2>
-            <p class="text-xs text-gray-600">Panel para organizar pedidos virtuales y presenciales sin saturación.</p>
+        <!-- ================= VISTA 2: VENDEDOR / COCINA ================= -->
+        <div id="view-vendedor" class="hidden bg-white p-6 rounded-lg shadow-sm border border-gray-300 space-y-4 fade-in">
+            <div class="flex justify-between items-end border-b pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold">👨‍🍳 Dashboard de Restaurante</h2>
+                    <p class="text-xs text-gray-500 mt-1">Gestión de comandas digitales</p>
+                </div>
+                <div class="space-x-2">
+                    <button class="text-sm font-bold border-b-2 border-gray-800 pb-1">Comandas</button>
+                    <button class="text-sm font-bold text-gray-400 hover:text-gray-800 pb-1">Inventario</button>
+                    <button class="text-sm font-bold text-gray-400 hover:text-gray-800 pb-1">Mensajes</button>
+                </div>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                <div class="border p-3 rounded bg-gray-50">
-                    <h4 class="font-bold text-sm text-yellow-700">Pendientes</h4>
-                    <div class="bg-white p-2 mt-2 rounded border text-xs shadow-sm">
-                        <p class="font-bold">#001 - Camila R.</p>
-                        <p class="text-gray-500">Sushi Roll 10pz (Recoger: 12:15)</p>
-                        <button class="mt-2 bg-gray-800 text-white px-2 py-1 rounded text-xs">Iniciar Preparación</button>
+            <!-- Tablero Kanban -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-100 p-4 rounded-lg min-h-[400px]">
+                
+                <!-- Columna Pendientes -->
+                <div class="flex flex-col gap-3">
+                    <div class="bg-gray-200 px-3 py-2 rounded font-bold text-sm flex justify-between">
+                        <span class="text-yellow-800">Pendientes</span>
+                        <span id="count-pendientes" class="bg-white px-2 rounded-full text-xs">0</span>
                     </div>
+                    <div id="col-pendientes" class="space-y-3"></div>
                 </div>
-                <div class="border p-3 rounded bg-gray-50">
-                    <h4 class="font-bold text-sm text-blue-700">En Preparación</h4>
+
+                <!-- Columna En Preparación -->
+                <div class="flex flex-col gap-3">
+                    <div class="bg-gray-200 px-3 py-2 rounded font-bold text-sm flex justify-between">
+                        <span class="text-blue-800">En Preparación</span>
+                        <span id="count-prep" class="bg-white px-2 rounded-full text-xs">0</span>
+                    </div>
+                    <div id="col-prep" class="space-y-3"></div>
                 </div>
-                <div class="border p-3 rounded bg-gray-50">
-                    <h4 class="font-bold text-sm text-green-700">Listos para recoger</h4>
+
+                <!-- Columna Listos -->
+                <div class="flex flex-col gap-3">
+                    <div class="bg-gray-200 px-3 py-2 rounded font-bold text-sm flex justify-between">
+                        <span class="text-green-800">Listos</span>
+                        <span id="count-listos" class="bg-white px-2 rounded-full text-xs">0</span>
+                    </div>
+                    <div id="col-listos" class="space-y-3"></div>
                 </div>
+
             </div>
         </div>
 
     </div>
 
     <script>
-        const menu = [
-            { id: 1, restaurante: "Nikkei Village", plato: "Sushi Roll 10pz", precio: 22000, tiempo: 15, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&q=80" },
-            { id: 2, restaurante: "Frisby", plato: "Combo Frisby", precio: 25000, tiempo: 10, img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=80" },
-            { id: 3, restaurante: "Subway", plato: "Sub del Día", precio: 18000, tiempo: 8, img: "https://images.unsplash.com/photo-1616075677936-391490218731?w=400&q=80" },
-            { id: 4, restaurante: "The Corral", plato: "Hamburguesa Todoterreno", precio: 28000, tiempo: 12, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80" }
+        // Datos de ejemplo
+        const menuDB = [
+            { id: 1, categoria: "Sushi", restaurante: "Nikkei Village", plato: "Sushi Roll 10pz", precio: 22000, tiempo: 15, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&q=80" },
+            { id: 2, categoria: "Pollo", restaurante: "Frisby", plato: "Combo Frisby", precio: 25000, tiempo: 10, img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=80" },
+            { id: 3, categoria: "Hamburguesas", restaurante: "The Corral", plato: "Hamburguesa Todoterreno", precio: 28000, tiempo: 12, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80" },
+            { id: 4, categoria: "Hamburguesas", restaurante: "Dogger", plato: "Perro Sencillo", precio: 15000, tiempo: 5, img: "https://images.unsplash.com/photo-1612392062631-94dd858cba88?w=400&q=80" }
         ];
 
         let cart = [];
+        let activeCategory = 'Todos';
+        
+        // Estado global de pedidos (simulando Base de Datos)
+        let orders = []; 
+        let orderCounter = 101;
+        let currentBuyerOrderId = null; // Para rastrear el pedido actual del comprador
 
+        // --- NAVEGACIÓN ---
         function switchView(view) {
             document.getElementById('view-comprador').classList.add('hidden');
             document.getElementById('view-vendedor').classList.add('hidden');
             
-            document.getElementById('btn-comprador').className = "px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800";
-            document.getElementById('btn-vendedor').className = "px-3 py-1 text-xs font-bold rounded bg-gray-200 text-gray-800";
+            document.getElementById('btn-comprador').className = "px-3 py-1.5 text-xs font-bold rounded bg-gray-200 text-gray-800 transition-colors";
+            document.getElementById('btn-vendedor').className = "px-3 py-1.5 text-xs font-bold rounded bg-gray-200 text-gray-800 transition-colors";
 
             document.getElementById('view-' + view).classList.remove('hidden');
-            document.getElementById('btn-' + view).className = "px-3 py-1 text-xs font-bold rounded bg-gray-800 text-white";
+            document.getElementById('btn-' + view).className = "px-3 py-1.5 text-xs font-bold rounded bg-gray-800 text-white transition-colors";
+        }
+
+        // --- LÓGICA COMPRADOR ---
+        function filterMenu(categoria) {
+            activeCategory = categoria;
+            
+            // Actualizar UI de botones
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.innerText === categoria) {
+                    btn.className = "filter-btn bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors";
+                } else {
+                    btn.className = "filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200 transition-colors";
+                }
+            });
+            renderMenu();
         }
 
         function renderMenu() {
             const list = document.getElementById('menu-list');
-            list.innerHTML = menu.map(item => `
-                <div class="flex items-center justify-between border-b pb-3 gap-3">
-                    <img src="${item.img}" class="w-16 h-16 object-cover rounded grayscale-img">
+            const filteredMenu = activeCategory === 'Todos' ? menuDB : menuDB.filter(i => i.categoria === activeCategory);
+            
+            list.innerHTML = filteredMenu.map(item => `
+                <div class="flex items-center justify-between border-b pb-4 gap-4">
+                    <img src="${item.img}" class="w-20 h-20 object-cover rounded shadow-sm grayscale-img">
                     <div class="flex-1">
-                        <h4 class="font-bold text-sm">${item.plato}</h4>
-                        <p class="text-xs text-gray-500">${item.restaurante} • ⏱️ ${item.tiempo} min</p>
-                        <p class="text-sm font-semibold mt-1">$${item.precio.toLocaleString()}</p>
+                        <h4 class="font-bold text-base text-gray-800">${item.plato}</h4>
+                        <p class="text-xs text-gray-500 font-semibold">${item.restaurante}</p>
+                        <p class="text-xs text-gray-400 mt-1">⏱️ Prep: ${item.tiempo} min</p>
+                        <p class="text-sm font-bold mt-1 text-gray-700">$${item.precio.toLocaleString()}</p>
                     </div>
-                    <button onclick="addToCart(${item.id})" class="bg-gray-800 text-white text-xs px-3 py-1.5 rounded hover:bg-gray-700 font-semibold">Agregar</button>
+                    <button onclick="addToCart(${item.id})" class="bg-gray-800 text-white text-xs px-4 py-2 rounded hover:bg-gray-700 font-bold transition-transform active:scale-95">Pedir</button>
                 </div>
             `).join('');
         }
 
         function addToCart(id) {
-            cart.push(menu.find(i => i.id === id));
+            const item = menuDB.find(i => i.id === id);
+            cart.push(item);
             renderCart();
         }
 
         function renderCart() {
             const container = document.getElementById('cart-items');
             const summary = document.getElementById('cart-summary');
+            
             if (cart.length === 0) {
                 container.innerHTML = `<p class="text-gray-500 text-xs">Tu canasta está vacía</p>`;
                 summary.classList.add('hidden');
                 return;
             }
+            
             summary.classList.remove('hidden');
-            container.innerHTML = cart.map(item => `<div class="flex justify-between py-1 text-xs"><span>1x ${item.plato}</span><span>$${item.precio.toLocaleString()}</span></div>`).join('');
+            
+            // Agrupar items idénticos
+            const counts = {};
+            cart.forEach(x => { counts[x.id] = (counts[x.id] || 0) + 1; });
+            
+            let html = '';
+            for (let id in counts) {
+                const item = menuDB.find(i => i.id == id);
+                html += `<div class="flex justify-between py-2 text-sm">
+                            <span class="font-semibold text-gray-700">${counts[id]}x ${item.plato}</span>
+                            <span>$${(item.precio * counts[id]).toLocaleString()}</span>
+                         </div>`;
+            }
+            container.innerHTML = html;
+
             const subtotal = cart.reduce((acc, item) => acc + item.precio, 0);
             document.getElementById('subtotal-val').innerText = `$${subtotal.toLocaleString()}`;
             document.getElementById('total-val').innerText = `$${(subtotal + 1500).toLocaleString()}`;
         }
 
-        function checkout() {
-            alert("🎉 ¡Pedido simulado con éxito!");
+        function submitOrder() {
+            if(cart.length === 0) return;
+
+            const newOrder = {
+                id: orderCounter++,
+                items: [...cart],
+                time: document.getElementById('pickup-time').value,
+                status: 'pendiente', // Estados: pendiente, prep, listo
+                total: cart.reduce((acc, item) => acc + item.precio, 0) + 1500
+            };
+
+            orders.push(newOrder);
+            currentBuyerOrderId = newOrder.id;
+            
+            // Limpiar carrito y cambiar vista a tracking
             cart = [];
             renderCart();
+            document.getElementById('cart-section').classList.add('hidden');
+            document.getElementById('tracking-section').classList.remove('hidden');
+            
+            updateTrackingView();
+            renderKitchen(); // Actualizar tablero del restaurante
         }
 
+        function updateTrackingView() {
+            if(!currentBuyerOrderId) return;
+            const order = orders.find(o => o.id === currentBuyerOrderId);
+            if(!order) return;
+
+            document.getElementById('track-id').innerText = order.id;
+            document.getElementById('track-time').innerText = order.time;
+            
+            const statusEl = document.getElementById('track-status');
+            const step2 = document.getElementById('step-2');
+            const step3 = document.getElementById('step-3');
+
+            if(order.status === 'pendiente') {
+                statusEl.innerText = "Enviado a Cocina";
+                statusEl.className = "text-xl font-bold text-gray-600 uppercase";
+                step2.classList.replace('opacity-100', 'opacity-30');
+                step3.classList.replace('opacity-100', 'opacity-30');
+            } 
+            else if (order.status === 'prep') {
+                statusEl.innerText = "En Preparación";
+                statusEl.className = "text-xl font-bold text-yellow-600 uppercase";
+                step2.classList.replace('opacity-30', 'opacity-100');
+                step3.classList.replace('opacity-100', 'opacity-30');
+            } 
+            else if (order.status === 'listo') {
+                statusEl.innerText = "¡Listo para Recoger!";
+                statusEl.className = "text-xl font-bold text-green-600 uppercase";
+                step2.classList.replace('opacity-30', 'opacity-100');
+                step3.classList.replace('opacity-30', 'opacity-100');
+            }
+        }
+
+        function resetBuyer() {
+            currentBuyerOrderId = null;
+            document.getElementById('tracking-section').classList.add('hidden');
+            document.getElementById('cart-section').classList.remove('hidden');
+        }
+
+        // --- LÓGICA RESTAURANTE (KANBAN) ---
+        function renderKitchen() {
+            const pend = orders.filter(o => o.status === 'pendiente');
+            const prep = orders.filter(o => o.status === 'prep');
+            const listos = orders.filter(o => o.status === 'listo');
+
+            document.getElementById('count-pendientes').innerText = pend.length;
+            document.getElementById('count-prep').innerText = prep.length;
+            document.getElementById('count-listos').innerText = listos.length;
+
+            document.getElementById('col-pendientes').innerHTML = pend.map(o => generateTicketHTML(o, 'Iniciar Prep', 'prep')).join('');
+            document.getElementById('col-prep').innerHTML = prep.map(o => generateTicketHTML(o, 'Marcar Listo', 'listo')).join('');
+            document.getElementById('col-listos').innerHTML = listos.map(o => generateTicketHTML(o, 'Entregado', 'entregado')).join('');
+        }
+
+        function generateTicketHTML(order, btnText, nextStatus) {
+            // Resumir items
+            const itemNames = order.items.map(i => i.plato).join(', ');
+            
+            let btnClass = "bg-gray-800 hover:bg-gray-700";
+            if(nextStatus === 'listo') btnClass = "bg-blue-600 hover:bg-blue-700";
+            if(nextStatus === 'entregado') btnClass = "bg-green-600 hover:bg-green-700";
+
+            return `
+                <div class="bg-white p-3 rounded shadow-sm border border-gray-200 text-sm fade-in">
+                    <div class="flex justify-between font-bold mb-1">
+                        <span>#${order.id}</span>
+                        <span class="text-red-600">${order.time}</span>
+                    </div>
+                    <p class="text-gray-600 text-xs mb-3 line-clamp-2">${itemNames}</p>
+                    <button onclick="changeOrderStatus(${order.id}, '${nextStatus}')" class="w-full text-white ${btnClass} font-bold py-1.5 rounded text-xs transition-colors">
+                        ${btnText}
+                    </button>
+                </div>
+            `;
+        }
+
+        function changeOrderStatus(id, newStatus) {
+            const orderIndex = orders.findIndex(o => o.id === id);
+            if(orderIndex > -1) {
+                if(newStatus === 'entregado') {
+                    orders.splice(orderIndex, 1); // Remover del tablero
+                } else {
+                    orders[orderIndex].status = newStatus;
+                }
+                renderKitchen();
+                
+                // Si el usuario actual está viendo este pedido, actualizar su UI
+                if(currentBuyerOrderId === id) {
+                    updateTrackingView();
+                }
+            }
+        }
+
+        // Inicializar
         renderMenu();
+        renderKitchen();
     </script>
 </body>
 </html>
