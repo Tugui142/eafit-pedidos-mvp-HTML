@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAFIT Pedidos - Catálogo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>.hide-scroll::-webkit-scrollbar { display: none; }</style>
+</head>
+<body class="bg-[#EFEFEF] text-[#222222] font-sans pb-24">
+
+    <!-- Navbar con Menú Hamburguesa -->
+    <nav class="bg-white p-4 shadow-sm flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleMenu()" class="text-2xl font-bold">≡</button>
+            <h1 class="font-bold text-lg">EAFIT Pedidos</h1>
+        </div>
+        <button onclick="window.location.href='pago.html'" class="relative font-bold text-xl">
+            🛒 <span id="cart-badge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] px-1.5 rounded-full hidden">0</span>
+        </button>
+    </nav>
+
+    <!-- Menú Lateral Oculto (Wireframe Paso 1) -->
+    <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl transform -translate-x-full transition-transform z-50 p-6">
+        <button onclick="toggleMenu()" class="font-bold text-xl mb-6">✕ Cerrar</button>
+        <ul class="space-y-4 font-bold text-gray-700">
+            <li class="hover:text-gray-900 cursor-pointer">📍 Mapa del Campus</li>
+            <li class="hover:text-gray-900 cursor-pointer">🍔 Restaurantes</li>
+            <li onclick="window.location.href='seguimiento.html'" class="hover:text-gray-900 cursor-pointer">📦 Mis Pedidos</li>
+            <li class="hover:text-gray-900 cursor-pointer">⚙️ Ajustes</li>
+            <li onclick="window.location.href='index.html'" class="text-red-600 cursor-pointer mt-8">Cerrar Sesión</li>
+        </ul>
+    </div>
+
+    <div class="max-w-xl mx-auto p-4 space-y-4">
+        <!-- Gráfico -->
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+            <p class="text-xs font-bold text-gray-600 uppercase">Demanda actual</p>
+            <div class="h-24 w-full mt-2"><canvas id="congestionChart"></canvas></div>
+        </div>
+
+        <!-- Filtros (Wireframe Paso 2) -->
+        <div class="flex gap-2 overflow-x-auto hide-scroll">
+            <button class="bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold">Todos</button>
+            <button class="bg-white text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Hamburguesas</button>
+            <button class="bg-white text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Sushi</button>
+        </div>
+
+        <!-- Catálogo -->
+        <div id="menu-list" class="bg-white p-4 rounded-lg shadow-sm space-y-4"></div>
+    </div>
+
+    <script>
+        const menuDB = [
+            { id: 1, restaurante: "Nikkei Village", plato: "Sushi Roll 10pz", precio: 22000, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&q=80" },
+            { id: 2, restaurante: "Frisby", plato: "Combo Frisby", precio: 25000, img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=80" },
+            { id: 3, restaurante: "The Corral", plato: "Hamburguesa Todoterreno", precio: 28000, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80" }
+        ];
+
+        function renderMenu() {
+            document.getElementById('menu-list').innerHTML = menuDB.map(item => `
+                <div onclick="goToProduct(${item.id})" class="flex items-center gap-4 border-b pb-4 last:border-0 last:pb-0 cursor-pointer active:scale-95 transition-transform">
+                    <img src="${item.img}" class="w-20 h-20 object-cover rounded grayscale">
+                    <div>
+                        <h4 class="font-bold text-gray-800">${item.plato}</h4>
+                        <p class="text-xs text-gray-500">${item.restaurante}</p>
+                        <p class="text-sm font-bold mt-1">$${item.precio.toLocaleString()}</p>
+                    </div>
+                </div>
+            `).join('');
+            updateCartBadge();
+        }
+
+        function goToProduct(id) {
+            localStorage.setItem('selectedProduct', JSON.stringify(menuDB.find(i => i.id === id)));
+            window.location.href = 'producto.html';
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            menu.classList.toggle('-translate-x-full');
+        }
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const badge = document.getElementById('cart-badge');
+            if(cart.length > 0) { badge.innerText = cart.length; badge.classList.remove('hidden'); }
+        }
+
+        renderMenu();
+        
+        // Gráfico simplificado
+        new Chart(document.getElementById('congestionChart').getContext('2d'), {
+            type: 'bar',
+            data: { labels: ['10a','11a','12m','1p','2p','3p'], datasets: [{ data: [20,40,90,100,80,30], backgroundColor: ['#ccc','#ccc','#ef4444','#ef4444','#ef4444','#ccc'], borderRadius: 4 }] },
+            options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, border: { display: false } } } }
+        });
+    </script>
+</body>
+</html>
