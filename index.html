@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prototipo EAFIT - Gestión de Pedidos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Importar Chart.js desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background-color: #EFEFEF; color: #222222; font-family: sans-serif; }
         .grayscale-img { filter: grayscale(100%); }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        /* Ocultar barra de scroll en el carrusel de cocina para un look más limpio */
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -33,14 +31,9 @@
         <!-- ================= VISTA 1: COMPRADOR ================= -->
         <div id="view-comprador" class="grid grid-cols-1 lg:grid-cols-3 gap-6 fade-in">
             
-            <!-- Catálogo y Flujo Principal (Con padding inferior en móvil para que el carrito flotante no lo tape) -->
             <div id="comprador-main" class="lg:col-span-2 space-y-4 pb-48 lg:pb-0">
-                
-                <!-- Encabezado con Gráfico de Congestión -->
                 <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-300">
                     <h2 class="text-2xl font-bold mb-2">¿Qué vas a pedir hoy?</h2>
-                    
-                    <!-- Contenedor del Gráfico -->
                     <div class="mt-4">
                         <div class="flex items-center justify-between mb-1">
                             <p class="text-xs font-bold text-gray-600 uppercase tracking-wider">Demanda actual en el campus</p>
@@ -56,23 +49,20 @@
                 </div>
 
                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-300">
-                    <!-- Filtros -->
                     <div class="flex gap-2 overflow-x-auto pb-4 mb-2 hide-scroll">
                         <button onclick="filterMenu('Todos')" class="filter-btn bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap">Todos</button>
                         <button onclick="filterMenu('Hamburguesas')" class="filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200">Hamburguesas</button>
                         <button onclick="filterMenu('Sushi')" class="filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200">Sushi</button>
                         <button onclick="filterMenu('Pollo')" class="filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200">Pollo</button>
                     </div>
-                    
                     <h3 class="font-bold mb-4 text-gray-700">Restaurantes Destacados</h3>
                     <div id="menu-list" class="space-y-4"></div>
                 </div>
             </div>
 
-            <!-- Panel Lateral: Carrito / Estado de Pedido (Bottom Sheet en móvil, Sticky en Desktop) -->
+            <!-- Panel Lateral: Carrito / Estado de Pedido -->
             <div class="bg-white p-4 rounded-t-2xl lg:rounded-lg shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] lg:shadow-sm border-t lg:border border-gray-300 h-fit fixed bottom-0 left-0 w-full lg:sticky lg:top-24 z-50 max-h-[65vh] overflow-y-auto lg:max-h-none">
                 
-                <!-- Modo Carrito -->
                 <div id="cart-section">
                     <h3 class="font-bold text-lg mb-3">🛒 Tu Canasta</h3>
                     <div id="cart-items" class="space-y-2 text-sm divide-y divide-gray-100 mb-4">
@@ -86,7 +76,8 @@
                         </div>
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-700">Recoger a las:</label>
-                            <input type="time" id="pickup-time" class="w-full border border-gray-300 rounded p-2 text-sm" value="12:15">
+                            <!-- Simulación de selección de hora dentro del horario del campus -->
+                            <input type="time" id="pickup-time" class="w-full border border-gray-300 rounded p-2 text-sm" value="12:15" min="08:00" max="18:00">
                             
                             <label class="block text-xs font-bold text-gray-700 mt-2">Método de Pago</label>
                             <select id="payment-method" class="w-full border border-gray-300 rounded p-2 text-sm bg-gray-50">
@@ -98,7 +89,6 @@
                     </div>
                 </div>
 
-                <!-- Modo Seguimiento -->
                 <div id="tracking-section" class="hidden">
                     <h3 class="font-bold text-lg mb-3">✅ Pedido Confirmado</h3>
                     <div class="bg-gray-50 border p-4 rounded-lg text-center space-y-2">
@@ -127,16 +117,21 @@
 
         <!-- ================= VISTA 2: VENDEDOR / COCINA ================= -->
         <div id="view-vendedor" class="hidden bg-white p-6 rounded-lg shadow-sm border border-gray-300 space-y-4 fade-in">
-            <div class="flex justify-between items-end border-b pb-4">
-                <div>
-                    <h2 class="text-2xl font-bold">👨‍🍳 Dashboard de Restaurante</h2>
+            
+            <div class="flex justify-between items-end border-b pb-4 overflow-x-auto">
+                <div class="min-w-[200px]">
+                    <h2 class="text-2xl font-bold">👨‍🍳 Dashboard Cocina</h2>
                     <p class="text-xs text-gray-500 mt-1">Gestión de comandas digitales</p>
+                </div>
+                <!-- Pestañas de Navegación del Restaurante -->
+                <div class="space-x-4 flex shrink-0">
+                    <button onclick="switchKitchenView('kanban')" id="btn-k-kanban" class="text-sm font-bold border-b-2 border-gray-800 pb-1 text-gray-800 transition-colors">Kanban</button>
+                    <button onclick="switchKitchenView('timeline')" id="btn-k-timeline" class="text-sm font-bold text-gray-400 hover:text-gray-800 pb-1 border-b-2 border-transparent transition-colors">Línea de Tiempo</button>
                 </div>
             </div>
             
-            <!-- Tablero Kanban (Deslizable horizontalmente en móvil) -->
-            <div class="flex md:grid md:grid-cols-3 gap-4 bg-gray-100 p-4 rounded-lg min-h-[400px] overflow-x-auto snap-x snap-mandatory hide-scroll pb-4">
-                
+            <!-- CONTENEDOR 1: Tablero Kanban (Por Defecto) -->
+            <div id="kitchen-kanban" class="flex md:grid md:grid-cols-3 gap-4 bg-gray-100 p-4 rounded-lg min-h-[400px] overflow-x-auto snap-x snap-mandatory hide-scroll pb-4 fade-in">
                 <div class="flex flex-col gap-3 min-w-[85vw] md:min-w-0 snap-center">
                     <div class="bg-gray-200 px-3 py-2 rounded font-bold text-sm flex justify-between">
                         <span class="text-yellow-800">Pendientes</span>
@@ -161,6 +156,13 @@
                     <div id="col-listos" class="space-y-3"></div>
                 </div>
             </div>
+
+            <!-- CONTENEDOR 2: Línea de Tiempo Vertical (Oculto por Defecto) -->
+            <div id="kitchen-timeline" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-200 min-h-[400px] max-h-[70vh] overflow-y-auto fade-in">
+                <!-- Contenedor dinámico inyectado por JS -->
+                <div id="timeline-container" class="pt-4 ml-2"></div>
+            </div>
+
         </div>
     </div>
 
@@ -181,53 +183,22 @@
         // --- RENDERIZADO DEL GRÁFICO (CHART.JS) ---
         function renderCongestionChart() {
             const ctx = document.getElementById('congestionChart').getContext('2d');
-            
-            // Horas del día en el campus
             const labels = ['8am', '9am', '10am', '11am', '12m', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm'];
-            // Simulación de volumen de pedidos
             const data = [10, 15, 25, 40, 95, 100, 85, 40, 25, 15, 10]; 
-            
-            // Si el valor supera 80 (horas pico), la barra se pinta de rojo, de lo contrario gris
             const bgColors = data.map(value => value > 80 ? 'rgba(239, 68, 68, 0.9)' : 'rgba(156, 163, 175, 0.4)');
             
             new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: bgColors,
-                        borderRadius: 4,
-                        borderSkipped: false
-                    }]
-                },
+                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors, borderRadius: 4 }] },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }, 
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    if(context.parsed.y > 80) return 'Alta congestión';
-                                    if(context.parsed.y > 40) return 'Congestión media';
-                                    return 'Baja demanda';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: { display: false, beginAtZero: true }, 
-                        x: { 
-                            grid: { display: false },
-                            border: { display: false },
-                            ticks: { font: { size: 10, family: 'sans-serif' }, color: '#6B7280' }
-                        }
-                    }
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => c.parsed.y > 80 ? 'Alta congestión' : 'Baja demanda' } } },
+                    scales: { y: { display: false }, x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 10 }, color: '#6B7280' } } }
                 }
             });
         }
 
+        // --- NAVEGACIÓN PRINCIPAL ---
         function switchView(view) {
             document.getElementById('view-comprador').classList.add('hidden');
             document.getElementById('view-vendedor').classList.add('hidden');
@@ -237,14 +208,13 @@
             document.getElementById('btn-' + view).className = "px-3 py-1.5 text-xs font-bold rounded bg-gray-800 text-white transition-colors";
         }
 
+        // --- LÓGICA COMPRADOR ---
         function filterMenu(categoria) {
             activeCategory = categoria;
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.innerText === categoria) {
-                    btn.className = "filter-btn bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors";
-                } else {
-                    btn.className = "filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200 transition-colors";
-                }
+                btn.className = btn.innerText === categoria 
+                    ? "filter-btn bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors"
+                    : "filter-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-gray-200 transition-colors";
             });
             renderMenu();
         }
@@ -252,7 +222,6 @@
         function renderMenu() {
             const list = document.getElementById('menu-list');
             const filteredMenu = activeCategory === 'Todos' ? menuDB : menuDB.filter(i => i.categoria === activeCategory);
-            
             list.innerHTML = filteredMenu.map(item => `
                 <div class="flex items-center justify-between border-b pb-4 gap-4">
                     <img src="${item.img}" class="w-20 h-20 object-cover rounded shadow-sm grayscale-img">
@@ -262,8 +231,7 @@
                         <p class="text-xs text-gray-400 mt-1">⏱️ Prep: ${item.tiempo} min</p>
                         <p class="text-sm font-bold mt-1 text-gray-700">$${item.precio.toLocaleString()}</p>
                     </div>
-                    <!-- Botón más grande para móviles -->
-                    <button onclick="addToCart(${item.id})" class="bg-gray-800 text-white text-sm px-5 py-3 rounded hover:bg-gray-700 font-bold transition-transform active:scale-95">Pedir</button>
+                    <button onclick="addToCart(${item.id})" class="bg-gray-800 text-white text-sm px-5 py-3 rounded hover:bg-gray-700 font-bold active:scale-95">Pedir</button>
                 </div>
             `).join('');
         }
@@ -276,13 +244,11 @@
         function renderCart() {
             const container = document.getElementById('cart-items');
             const summary = document.getElementById('cart-summary');
-            
             if (cart.length === 0) {
                 container.innerHTML = `<p class="text-gray-500 text-xs">Tu canasta está vacía</p>`;
                 summary.classList.add('hidden');
                 return;
             }
-            
             summary.classList.remove('hidden');
             const counts = {};
             cart.forEach(x => { counts[x.id] = (counts[x.id] || 0) + 1; });
@@ -299,10 +265,8 @@
             document.getElementById('total-val').innerText = `$${(subtotal + 1500).toLocaleString()}`;
         }
 
-        // --- CONEXIÓN AL BACKEND DE RENDER ---
         async function submitOrder() {
             if(cart.length === 0) return;
-            
             const orderData = {
                 id: orderCounter++,
                 items: cart.map(i => i.plato).join(', '), 
@@ -324,22 +288,15 @@
                 });
 
                 if (response.ok) {
-                    const localOrder = {
-                        id: orderData.id,
-                        items: [...cart], 
-                        time: orderData.time,
-                        status: 'pendiente'
-                    };
-                    
+                    const localOrder = { id: orderData.id, items: [...cart], time: orderData.time, status: 'pendiente' };
                     orders.push(localOrder);
                     currentBuyerOrderId = localOrder.id;
-                    
                     cart = [];
                     renderCart();
                     document.getElementById('cart-section').classList.add('hidden');
                     document.getElementById('tracking-section').classList.remove('hidden');
                     updateTrackingView();
-                    renderKitchen();
+                    renderKitchen(); // Actualiza Kanban y Timeline
                 } else {
                     alert("Hubo un problema comunicándose con el restaurante.");
                 }
@@ -356,7 +313,6 @@
             if(!currentBuyerOrderId) return;
             const order = orders.find(o => o.id === currentBuyerOrderId);
             if(!order) return;
-
             document.getElementById('track-id').innerText = order.id;
             document.getElementById('track-time').innerText = order.time;
             const statusEl = document.getElementById('track-status');
@@ -364,20 +320,14 @@
             const step3 = document.getElementById('step-3');
 
             if(order.status === 'pendiente') {
-                statusEl.innerText = "Enviado a Cocina";
-                statusEl.className = "text-xl font-bold text-gray-600 uppercase";
-                step2.classList.replace('opacity-100', 'opacity-30');
-                step3.classList.replace('opacity-100', 'opacity-30');
+                statusEl.innerText = "Enviado a Cocina"; statusEl.className = "text-xl font-bold text-gray-600 uppercase";
+                step2.classList.replace('opacity-100', 'opacity-30'); step3.classList.replace('opacity-100', 'opacity-30');
             } else if (order.status === 'prep') {
-                statusEl.innerText = "En Preparación";
-                statusEl.className = "text-xl font-bold text-yellow-600 uppercase";
-                step2.classList.replace('opacity-30', 'opacity-100');
-                step3.classList.replace('opacity-100', 'opacity-30');
+                statusEl.innerText = "En Preparación"; statusEl.className = "text-xl font-bold text-yellow-600 uppercase";
+                step2.classList.replace('opacity-30', 'opacity-100'); step3.classList.replace('opacity-100', 'opacity-30');
             } else if (order.status === 'listo') {
-                statusEl.innerText = "¡Listo para Recoger!";
-                statusEl.className = "text-xl font-bold text-green-600 uppercase";
-                step2.classList.replace('opacity-30', 'opacity-100');
-                step3.classList.replace('opacity-30', 'opacity-100');
+                statusEl.innerText = "¡Listo para Recoger!"; statusEl.className = "text-xl font-bold text-green-600 uppercase";
+                step2.classList.replace('opacity-30', 'opacity-100'); step3.classList.replace('opacity-30', 'opacity-100');
             }
         }
 
@@ -387,16 +337,78 @@
             document.getElementById('cart-section').classList.remove('hidden');
         }
 
+        // --- NAVEGACIÓN INTERNA RESTAURANTE ---
+        function switchKitchenView(view) {
+            const kanbanBtn = document.getElementById('btn-k-kanban');
+            const timelineBtn = document.getElementById('btn-k-timeline');
+            
+            if(view === 'kanban') {
+                document.getElementById('kitchen-kanban').classList.remove('hidden');
+                document.getElementById('kitchen-timeline').classList.add('hidden');
+                kanbanBtn.className = "text-sm font-bold border-b-2 border-gray-800 pb-1 text-gray-800 transition-colors";
+                timelineBtn.className = "text-sm font-bold text-gray-400 hover:text-gray-800 pb-1 border-b-2 border-transparent transition-colors";
+            } else {
+                document.getElementById('kitchen-kanban').classList.add('hidden');
+                document.getElementById('kitchen-timeline').classList.remove('hidden');
+                timelineBtn.className = "text-sm font-bold border-b-2 border-gray-800 pb-1 text-gray-800 transition-colors";
+                kanbanBtn.className = "text-sm font-bold text-gray-400 hover:text-gray-800 pb-1 border-b-2 border-transparent transition-colors";
+            }
+        }
+
+        // --- LÓGICA RESTAURANTE (KANBAN Y TIMELINE) ---
         function renderKitchen() {
+            // 1. Renderizar Kanban
             const pend = orders.filter(o => o.status === 'pendiente');
             const prep = orders.filter(o => o.status === 'prep');
             const listos = orders.filter(o => o.status === 'listo');
+            
             document.getElementById('count-pendientes').innerText = pend.length;
             document.getElementById('count-prep').innerText = prep.length;
             document.getElementById('count-listos').innerText = listos.length;
+            
             document.getElementById('col-pendientes').innerHTML = pend.map(o => generateTicketHTML(o, 'Iniciar Prep', 'prep')).join('');
             document.getElementById('col-prep').innerHTML = prep.map(o => generateTicketHTML(o, 'Marcar Listo', 'listo')).join('');
             document.getElementById('col-listos').innerHTML = listos.map(o => generateTicketHTML(o, 'Entregado', 'entregado')).join('');
+
+            // 2. Renderizar Línea de Tiempo
+            renderTimeline();
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            let html = '';
+            
+            // Jornada de 8:00 AM a 6:00 PM (18:00)
+            for(let i = 8; i <= 18; i++) {
+                const hourStr = i.toString().padStart(2, '0');
+                // Filtrar pedidos cuya hora seleccionada comience por esta hora y que no estén entregados
+                const hourOrders = orders.filter(o => o.time.startsWith(hourStr + ':') && o.status !== 'entregado');
+                // Ordenar por minutos
+                hourOrders.sort((a, b) => a.time.localeCompare(b.time));
+
+                html += `
+                <div class="relative pl-6 pb-8 border-l-2 border-gray-200 last:border-0 last:pb-0">
+                    <!-- Punto indicador -->
+                    <div class="absolute w-4 h-4 bg-gray-800 rounded-full -left-[9px] top-0 border-4 border-white shadow-sm"></div>
+                    <!-- Etiqueta de Hora -->
+                    <h3 class="font-bold text-lg text-gray-800 -mt-1.5 mb-3">${i}:00</h3>
+                    
+                    ${hourOrders.length === 0 
+                        ? '<p class="text-xs text-gray-400 italic">Sin pedidos programados</p>' 
+                        : '<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">' + 
+                          hourOrders.map(o => {
+                              // Determinar texto y acción del botón según el estado actual
+                              let nextSt = 'prep'; let btnTxt = 'Iniciar Prep';
+                              if (o.status === 'prep') { nextSt = 'listo'; btnTxt = 'Marcar Listo'; }
+                              else if (o.status === 'listo') { nextSt = 'entregado'; btnTxt = 'Entregado'; }
+                              return generateTicketHTML(o, btnTxt, nextSt);
+                          }).join('') + 
+                          '</div>'
+                    }
+                </div>
+                `;
+            }
+            container.innerHTML = html;
         }
 
         function generateTicketHTML(order, btnText, nextStatus) {
@@ -418,7 +430,8 @@
             if(orderIndex > -1) {
                 if(newStatus === 'entregado') orders.splice(orderIndex, 1);
                 else orders[orderIndex].status = newStatus;
-                renderKitchen();
+                
+                renderKitchen(); // Actualiza tanto Kanban como la Línea de Tiempo
                 if(currentBuyerOrderId === id) updateTrackingView();
             }
         }
@@ -426,11 +439,7 @@
         // Inicializar
         renderMenu();
         renderKitchen();
-        
-        // Renderizar el gráfico de Chart.js al cargar la vista
-        document.addEventListener("DOMContentLoaded", function() {
-            renderCongestionChart();
-        });
+        document.addEventListener("DOMContentLoaded", renderCongestionChart);
     </script>
 </body>
 </html>
