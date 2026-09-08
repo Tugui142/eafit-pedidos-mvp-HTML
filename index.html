@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAFIT Pedidos - Iniciar Sesión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #EFEFEF; color: #222222; font-family: sans-serif; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm fade-in text-center border border-gray-200">
+        <!-- Logo -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-black tracking-tight text-gray-900">🍔 EAFIT</h1>
+            <p class="text-sm font-bold text-gray-500 uppercase tracking-widest mt-1">Pedidos</p>
+        </div>
+
+        <!-- Formulario -->
+        <div class="space-y-4">
+            <input type="email" placeholder="Correo institucional (@eafit.edu.co)" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 transition-all bg-gray-50">
+            
+            <input type="password" placeholder="Contraseña" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 transition-all bg-gray-50">
+            
+            <!-- Botones de ruteo -->
+            <div class="pt-4 space-y-3">
+                <button onclick="window.location.href='catalogo.html'" class="w-full bg-gray-900 text-white font-bold py-3 rounded-lg text-sm hover:bg-gray-800 transition-colors shadow-md">
+                    Ingresar como Estudiante
+                </button>
+                
+                <button onclick="window.location.href='dashboard.html'" class="w-full bg-white text-gray-800 border-2 border-gray-200 font-bold py-3 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                    Ingresar como Restaurante
+                </button>
+            </div>
+        </div>
+
+        <p class="mt-8 text-xs text-gray-400">Prototipo MVP - Semana 8</p>
+    </div>
+
+</body>
+</html>
