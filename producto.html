@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Producto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col">
+
+    <nav class="bg-white p-4 shadow-sm flex items-center gap-4">
+        <button onclick="window.history.back()" class="font-bold text-lg">← Volver</button>
+        <h1 id="prod-restaurant" class="font-bold text-gray-500 uppercase text-sm"></h1>
+    </nav>
+
+    <div class="flex-1 overflow-y-auto">
+        <img id="prod-img" class="w-full h-64 object-cover grayscale">
+        <div class="bg-white p-6 rounded-t-3xl -mt-6 relative shadow-lg space-y-4">
+            <h2 id="prod-name" class="text-2xl font-bold"></h2>
+            <p id="prod-price" class="text-xl font-bold text-gray-700"></p>
+            
+            <hr>
+            
+            <h3 class="font-bold">Opciones</h3>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" checked class="w-4 h-4"> ¿En combo? (+ $4.000)</label>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="w-4 h-4"> Sin salsas</label>
+        </div>
+    </div>
+
+    <div class="bg-white p-4 border-t border-gray-200">
+        <button onclick="addToCart()" class="w-full bg-gray-900 text-white font-bold py-3 rounded-lg hover:bg-gray-800 active:scale-95 transition-transform">
+            Agregar al Carrito
+        </button>
+    </div>
+
+    <script>
+        const product = JSON.parse(localStorage.getItem('selectedProduct'));
+        if(!product) window.location.href = 'catalogo.html';
+
+        document.getElementById('prod-restaurant').innerText = product.restaurante;
+        document.getElementById('prod-name').innerText = product.plato;
+        document.getElementById('prod-price').innerText = `$${product.precio.toLocaleString()}`;
+        document.getElementById('prod-img').src = product.img;
+
+        function addToCart() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push(product);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            window.location.href = 'pago.html';
+        }
+    </script>
+</body>
+</html>
