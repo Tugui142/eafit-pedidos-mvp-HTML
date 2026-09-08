@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cocina</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#EFEFEF] text-[#222222] font-sans p-4 md:p-8 min-h-screen">
+
+    <div class="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-sm border border-gray-300">
+        <div class="flex justify-between items-end border-b pb-4 mb-6">
+            <h2 class="text-2xl font-bold">👨‍🍳 The Corral - Dashboard</h2>
+            
+            <div class="space-x-4">
+                <button id="tab-kanban" onclick="switchTab('kanban')" class="font-bold text-gray-900 border-b-2 border-gray-900 pb-1">Comandas</button>
+                <button id="tab-inv" onclick="switchTab('inv')" class="font-bold text-gray-400 pb-1 border-b-2 border-transparent hover:text-gray-900">Inventario</button>
+                <button id="tab-msg" onclick="switchTab('msg')" class="font-bold text-gray-400 pb-1 border-b-2 border-transparent hover:text-gray-900">Mensajes</button>
+            </div>
+        </div>
+
+        <!-- Módulo 1: Kanban -->
+        <div id="view-kanban" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
+            <div class="bg-gray-200 p-3 rounded font-bold text-sm text-yellow-800">Pendientes (1)
+                <div class="bg-white p-3 rounded shadow-sm border mt-3 text-gray-800">#992 - 1x Hamburguesa <br><span class="text-red-600 text-xs">12:30</span></div>
+            </div>
+            <div class="bg-gray-200 p-3 rounded font-bold text-sm text-blue-800">En Preparación (0)</div>
+            <div class="bg-gray-200 p-3 rounded font-bold text-sm text-green-800">Listos (0)</div>
+        </div>
+
+        <!-- Módulo 2: Inventario -->
+        <div id="view-inv" class="hidden bg-gray-50 p-4 rounded-lg space-y-3">
+            <h3 class="font-bold text-lg mb-4">Inventario de Cocina</h3>
+            <div class="flex justify-between bg-white p-3 border rounded shadow-sm"><span class="font-bold">Hamburguesa Todoterreno</span> <span class="bg-red-100 text-red-800 px-2 rounded font-bold">2 porciones</span></div>
+            <div class="flex justify-between bg-white p-3 border rounded shadow-sm"><span class="font-bold">Perro Sencillo</span> <span class="bg-green-100 text-green-800 px-2 rounded font-bold">15 porciones</span></div>
+        </div>
+
+        <!-- Módulo 3: Mensajería -->
+        <div id="view-msg" class="hidden bg-gray-50 p-4 rounded-lg space-y-3">
+            <h3 class="font-bold text-lg mb-4">Mensajes de usuarios</h3>
+            <div class="bg-white p-3 border rounded shadow-sm border-l-4 border-l-blue-500">
+                <p class="text-xs text-gray-500 font-bold mb-1">Pepe M. - Orden #401 (7:42 PM)</p>
+                <p class="text-sm font-semibold">"Qué pena, ya paso por el pedido"</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            ['kanban', 'inv', 'msg'].forEach(id => {
+                document.getElementById('view-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.replace('text-gray-900', 'text-gray-400');
+                document.getElementById('tab-' + id).classList.replace('border-gray-900', 'border-transparent');
+            });
+            document.getElementById('view-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.replace('text-gray-400', 'text-gray-900');
+            document.getElementById('tab-' + tabId).classList.replace('border-transparent', 'border-gray-900');
+        }
+    </script>
+</body>
+</html>
