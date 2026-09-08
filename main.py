@@ -12,10 +12,10 @@ app = FastAPI()
 # Configuración CORS: Permite que tu GitHub Pages se comunique con este servidor
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://tugui142.github.io/eafit-pedidos-mvp-HTML/"], # Por seguridad, puedes cambiar el "*" por la URL de tu GitHub Pages
+    allow_origins=["https://tugui142.github.io"], # URL exacta de tu frontend sin barra "/" al final
     allow_credentials=True,
-    allow_methods=["https://tugui142.github.io/eafit-pedidos-mvp-HTML/"],
-    allow_headers=["https://tugui142.github.io/eafit-pedidos-mvp-HTML/"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Estructura de datos que enviará tu frontend
