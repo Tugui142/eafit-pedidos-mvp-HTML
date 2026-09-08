@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado de tu pedido</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col p-4 md:p-8">
+
+    <div class="max-w-md mx-auto w-full bg-white p-6 rounded-2xl shadow-sm text-center space-y-6 mt-10">
+        <h2 class="text-2xl font-bold">Estado de tu pedido</h2>
+        
+        <div class="bg-gray-50 p-4 rounded-lg border">
+            <p class="text-sm text-gray-500">Orden <span id="order-id" class="font-bold text-gray-900"></span></p>
+            <h3 class="text-xl font-black text-yellow-600 uppercase mt-1">En Cocina</h3>
+            <p class="text-sm font-bold mt-2">Recogida: <span id="order-time"></span></p>
+        </div>
+
+        <div class="text-left space-y-4 px-4">
+            <div class="flex items-center gap-3"><div class="w-4 h-4 bg-green-500 rounded-full"></div><p class="font-bold">Pedido Recibido</p></div>
+            <div class="flex items-center gap-3 opacity-30"><div class="w-4 h-4 bg-yellow-500 rounded-full"></div><p class="font-bold">En preparación</p></div>
+            <div class="flex items-center gap-3 opacity-30"><div class="w-4 h-4 bg-blue-500 rounded-full"></div><p class="font-bold">Listo para recoger</p></div>
+        </div>
+
+        <div class="pt-6 border-t flex gap-2">
+            <button class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-lg text-sm">💬 Ayuda</button>
+            <button onclick="window.location.href='catalogo.html'" class="flex-1 bg-gray-900 text-white font-bold py-3 rounded-lg text-sm">Volver al menú</button>
+        </div>
+    </div>
+
+    <script>
+        const order = JSON.parse(localStorage.getItem('currentOrder'));
+        if(!order) window.location.href = 'catalogo.html';
+        document.getElementById('order-id').innerText = `#${order.id}`;
+        document.getElementById('order-time').innerText = order.time;
+    </script>
+</body>
+</html>
