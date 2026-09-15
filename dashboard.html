@@ -22,37 +22,58 @@
     <!-- Contenedor amplio para escritorio -->
     <div class="max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200">
         
-        <!-- Cabecera con Selector de Restaurante -->
+        <!-- Cabecera con Selector de los 22 Restaurantes -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 pb-5 mb-6 gap-4">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 bg-eafit-oscuro text-white rounded-xl flex items-center justify-center text-2xl shadow-md">👨‍🍳</div>
                 <div>
-                    <h2 id="dashboard-title" class="text-2xl font-black text-eafit-oscuro">The Corral - Dashboard</h2>
+                    <h2 id="dashboard-title" class="text-2xl font-black text-eafit-oscuro">Bigo's - Dashboard</h2>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mt-0.5">Gestión de comandas en tiempo real</p>
                 </div>
             </div>
             
-            <!-- Selector interactivo de restaurantes -->
+            <!-- Selector interactivo con los 22 locales de EAFIT -->
             <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-xl border border-gray-200">
                 <label for="restaurant-select" class="text-xs font-bold text-gray-600 pl-2">Seleccionar Local:</label>
                 <select id="restaurant-select" onchange="cambiarRestaurante(this.value)" class="bg-white border border-gray-300 text-gray-800 font-bold text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-eafit-oscuro shadow-sm cursor-pointer">
-                    <option value="The Corral">The Corral</option>
-                    <option value="Nikkei Village">Nikkei Village</option>
-                    <option value="Frisby">Frisby</option>
+                    <option value="Bigo's">Bigo's</option>
+                    <option value="Chipstation">Chipstation</option>
                     <option value="Dogger">Dogger</option>
+                    <option value="Frisby">Frisby</option>
+                    <option value="Home Food">Home Food</option>
                     <option value="Juan Valdez">Juan Valdez</option>
+                    <option value="Laboratorio del Café">Laboratorio del Café</option>
+                    <option value="Las Hermosas">Las Hermosas</option>
+                    <option value="Lolita's">Lolita's</option>
+                    <option value="Madelo">Madelo</option>
+                    <option value="Nativos">Nativos</option>
+                    <option value="Nikkei Village">Nikkei Village</option>
+                    <option value="Pimientos">Pimientos</option>
+                    <option value="Plural">Plural</option>
+                    <option value="Recanto Colanta">Recanto Colanta</option>
+                    <option value="Repostería Astor">Repostería Astor</option>
                     <option value="Subway">Subway</option>
+                    <option value="Sushi Light">Sushi Light</option>
                     <option value="Taco Factory">Taco Factory</option>
+                    <option value="The Cafeteria">The Cafeteria</option>
+                    <option value="The Corral">The Corral</option>
+                    <option value="The Little Roof">The Little Roof</option>
                 </select>
             </div>
         </div>
 
-        <!-- Pestañas de navegación interna -->
-        <div class="flex space-x-6 border-b border-gray-100 mb-6 overflow-x-auto">
-            <button id="tab-kanban" onclick="switchTab('kanban')" class="font-bold text-eafit-oscuro border-b-4 border-eafit-oscuro pb-2 transition-colors text-sm">Comandas</button>
-            <button id="tab-inv" onclick="switchTab('inv')" class="font-bold text-gray-400 pb-2 border-b-4 border-transparent hover:text-gray-900 transition-colors text-sm">Inventario</button>
-            <button id="tab-msg" onclick="switchTab('msg')" class="font-bold text-gray-400 pb-2 border-b-4 border-transparent hover:text-gray-900 transition-colors text-sm flex items-center gap-1.5">
-                Mensajes <span id="msg-badge" class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full hidden">Nuevo</span>
+        <!-- Pestañas de navegación interna (Con el botón de la Campana 🔔) -->
+        <div class="flex justify-between items-center border-b border-gray-100 mb-6 overflow-x-auto pb-1">
+            <div class="flex space-x-6">
+                <button id="tab-kanban" onclick="switchTab('kanban')" class="font-bold text-eafit-oscuro border-b-4 border-eafit-oscuro pb-2 transition-colors text-sm">Comandas</button>
+                <button id="tab-inv" onclick="switchTab('inv')" class="font-bold text-gray-400 pb-2 border-b-4 border-transparent hover:text-gray-900 transition-colors text-sm">Inventario</button>
+            </div>
+            
+            <!-- Botón de Notificaciones / Campana en vez de texto plano -->
+            <button id="tab-msg" onclick="switchTab('msg')" class="relative bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl transition-all text-sm flex items-center gap-2 active:scale-95 shadow-sm">
+                <span class="text-lg">🔔</span> 
+                <span>Notificaciones / Ayuda</span>
+                <span id="msg-badge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[9px] font-black flex items-center justify-center animate-bounce hidden">!</span>
             </button>
         </div>
 
@@ -61,11 +82,11 @@
             
             <!-- Columna Pendientes -->
             <div class="bg-gray-200/70 p-4 rounded-xl flex flex-col gap-3 shadow-inner">
-                <div class="font-black text-xs text-yellow-800 uppercase tracking-wider flex justify-between">Pendientes <span id="count-pend" class="bg-white px-2 py-0.5 rounded-full shadow-sm">1</span></div>
+                <div class="font-black text-xs text-yellow-800 uppercase tracking-wider flex justify-between">Pendientes <span class="bg-white px-2 py-0.5 rounded-full shadow-sm">1</span></div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-gray-800 relative cursor-pointer hover:shadow-md transition-shadow">
                     <span class="absolute top-3 right-3 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
                     <p class="font-black text-base mb-1">#992</p>
-                    <p id="item-comanda" class="text-sm font-semibold text-gray-600">1x Hamburguesa Todoterreno</p>
+                    <p id="item-comanda" class="text-sm font-semibold text-gray-600">1x Pedido Destacado del Local</p>
                     <p class="text-red-600 text-xs font-bold mt-3 bg-red-50 inline-block px-2 py-1 rounded">🕒 Recogida: 12:30 PM</p>
                     <button class="w-full mt-3 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 rounded-lg text-xs transition-colors shadow-sm">Iniciar Preparación</button>
                 </div>
@@ -89,20 +110,20 @@
             <h3 class="font-bold text-lg text-gray-800">Control de Stock en Local</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="flex justify-between items-center bg-white p-4 border border-gray-200 rounded-xl shadow-sm">
-                    <span id="prod-stock-1" class="font-bold text-sm">Plato Principal Destacado</span> 
-                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-black">18 porciones</span>
+                    <span class="font-bold text-sm">Plato Principal / Insignia</span> 
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-black">20 porciones</span>
                 </div>
                 <div class="flex justify-between items-center bg-white p-4 border border-gray-200 rounded-lg shadow-sm">
-                    <span id="prod-stock-2" class="font-bold text-sm">Acompañamiento / Bebida</span> 
-                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-black">5 porciones</span>
+                    <span class="font-bold text-sm">Bebidas / Acompañamientos</span> 
+                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-black">12 porciones</span>
                 </div>
             </div>
         </div>
 
-        <!-- Módulo 3: Mensajería (Conectado a LocalStorage) -->
+        <!-- Módulo 3: Mensajería (Campana / Ayuda de Estudiantes) -->
         <div id="view-msg" class="hidden bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col h-[55vh]">
             <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-3">
-                <h3 class="font-bold text-lg text-gray-800">Mensajes de los estudiantes</h3>
+                <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2">🔔 Alertas y Mensajes de Estudiantes</h3>
                 <button onclick="loadMessages()" class="text-xs bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-100 font-bold active:scale-95 transition-all shadow-sm">↻ Actualizar</button>
             </div>
             
@@ -116,34 +137,28 @@
         function switchTab(tabId) {
             ['kanban', 'inv', 'msg'].forEach(id => {
                 document.getElementById('view-' + id).classList.add('hidden');
-                document.getElementById('tab-' + id).classList.replace('text-eafit-oscuro', 'text-gray-400');
-                document.getElementById('tab-' + id).classList.replace('border-eafit-oscuro', 'border-transparent');
             });
-            document.getElementById('view-' + tabId).classList.remove('hidden');
-            document.getElementById('tab-' + tabId).classList.replace('text-gray-400', 'text-eafit-oscuro');
-            document.getElementById('tab-' + tabId).classList.replace('border-transparent', 'border-eafit-oscuro');
+            
+            // Gestionar estilos activos de pestañas superiores
+            document.getElementById('tab-kanban').className = "font-bold text-gray-400 pb-2 border-b-4 border-transparent hover:text-gray-950 transition-colors text-sm";
+            document.getElementById('tab-inv').className = "font-bold text-gray-400 pb-2 border-b-4 border-transparent hover:text-gray-950 transition-colors text-sm";
+            
+            const btnMsg = document.getElementById('tab-msg');
 
             if(tabId === 'msg') {
+                document.getElementById('view-msg').classList.remove('hidden');
+                btnMsg.className = "relative bg-eafit-oscuro text-white font-bold px-4 py-2 rounded-xl transition-all text-sm flex items-center gap-2 active:scale-95 shadow-md";
                 loadMessages();
                 document.getElementById('msg-badge').classList.add('hidden');
+            } else {
+                document.getElementById('view-' + tabId).classList.remove('hidden');
+                document.getElementById('tab-' + tabId).className = "font-bold text-eafit-oscuro border-b-4 border-eafit-oscuro pb-2 transition-colors text-sm";
+                btnMsg.className = "relative bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl transition-all text-sm flex items-center gap-2 active:scale-95 shadow-sm";
             }
         }
 
-        // Lógica para cambiar de restaurante dinámicamente en el dashboard
         function cambiarRestaurante(nombreLocal) {
             document.getElementById('dashboard-title').innerText = `${nombreLocal} - Dashboard`;
-            
-            // Cambiar platos según el local para simular realismo
-            const mockPlatos = {
-                "The Corral": "1x Hamburguesa Todoterreno",
-                "Nikkei Village": "1x Sushi Roll 10pz",
-                "Frisby": "1x Combo Frisby Pollo",
-                "Dogger": "1x Perro Sencillo Especial",
-                "Juan Valdez": "2x Capuchino Grande",
-                "Subway": "1x Sub 30cm Pollo Teriyaki",
-                "Taco Factory": "3x Tacos al Pastor"
-            };
-            document.getElementById('item-comanda').innerText = mockPlatos[nombreLocal] || "1x Menú Especial del Día";
         }
 
         function loadMessages() {
@@ -154,7 +169,7 @@
                 container.innerHTML = `
                     <div class="text-center text-gray-400 mt-16">
                         <span class="text-4xl block mb-2">📭</span>
-                        <p class="font-semibold text-sm">No hay mensajes recientes de los estudiantes.</p>
+                        <p class="font-semibold text-sm">No hay notificaciones ni mensajes nuevos.</p>
                     </div>`;
                 return;
             }
