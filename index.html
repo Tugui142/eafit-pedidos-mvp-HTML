@@ -4,12 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EAFIT Pedidos - Iniciar Sesión</title>
+    
+    <!-- Enlace al nuevo CSS de EAFIT -->
+    <link rel="stylesheet" href="style.css">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #EFEFEF; color: #222222; font-family: sans-serif; }
-        .fade-in { animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        eafit: {
+                            oscuro: 'var(--eafit-azul-oscuro)',
+                            claro: 'var(--eafit-azul-claro)',
+                            amarillo: 'var(--eafit-amarillo)',
+                            arena: 'var(--eafit-arena)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="h-screen flex items-center justify-center p-4">
 
