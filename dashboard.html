@@ -21,8 +21,8 @@
 
     <!-- Contenedor amplio para escritorio -->
     <div class="max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200">
-        
-        <!-- Cabecera con Selector de los 22 Restaurantes -->
+           
+    <!-- Cabecera con Selector de los 22 Restaurantes y Botón de Salir -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 pb-5 mb-6 gap-4">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 bg-eafit-oscuro text-white rounded-xl flex items-center justify-center text-2xl shadow-md">👨‍🍳</div>
@@ -32,36 +32,42 @@
                 </div>
             </div>
             
-            <!-- Selector interactivo con los 22 locales de EAFIT -->
-            <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-xl border border-gray-200">
-                <label for="restaurant-select" class="text-xs font-bold text-gray-600 pl-2">Seleccionar Local:</label>
-                <select id="restaurant-select" onchange="cambiarRestaurante(this.value)" class="bg-white border border-gray-300 text-gray-800 font-bold text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-eafit-oscuro shadow-sm cursor-pointer">
-                    <option value="Bigo's">Bigo's</option>
-                    <option value="Chipstation">Chipstation</option>
-                    <option value="Dogger">Dogger</option>
-                    <option value="Frisby">Frisby</option>
-                    <option value="Home Food">Home Food</option>
-                    <option value="Juan Valdez">Juan Valdez</option>
-                    <option value="Laboratorio del Café">Laboratorio del Café</option>
-                    <option value="Las Hermosas">Las Hermosas</option>
-                    <option value="Lolita's">Lolita's</option>
-                    <option value="Madelo">Madelo</option>
-                    <option value="Nativos">Nativos</option>
-                    <option value="Nikkei Village">Nikkei Village</option>
-                    <option value="Pimientos">Pimientos</option>
-                    <option value="Plural">Plural</option>
-                    <option value="Recanto Colanta">Recanto Colanta</option>
-                    <option value="Repostería Astor">Repostería Astor</option>
-                    <option value="Subway">Subway</option>
-                    <option value="Sushi Light">Sushi Light</option>
-                    <option value="Taco Factory">Taco Factory</option>
-                    <option value="The Cafeteria">The Cafeteria</option>
-                    <option value="The Corral">The Corral</option>
-                    <option value="The Little Roof">The Little Roof</option>
-                </select>
+            <!-- Controles derechos: Selector y Botón Salir -->
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-xl border border-gray-200">
+                    <label for="restaurant-select" class="text-xs font-bold text-gray-600 pl-2">Local:</label>
+                    <select id="restaurant-select" onchange="cambiarRestaurante(this.value)" class="bg-white border border-gray-300 text-gray-800 font-bold text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-eafit-oscuro shadow-sm cursor-pointer">
+                        <option value="Bigo's">Bigo's</option>
+                        <option value="Chipstation">Chipstation</option>
+                        <option value="Dogger">Dogger</option>
+                        <option value="Frisby">Frisby</option>
+                        <option value="Home Food">Home Food</option>
+                        <option value="Juan Valdez">Juan Valdez</option>
+                        <option value="Laboratorio del Café">Laboratorio del Café</option>
+                        <option value="Las Hermosas">Las Hermosas</option>
+                        <option value="Lolita's">Lolita's</option>
+                        <option value="Madelo">Madelo</option>
+                        <option value="Nativos">Nativos</option>
+                        <option value="Nikkei Village">Nikkei Village</option>
+                        <option value="Pimientos">Pimientos</option>
+                        <option value="Plural">Plural</option>
+                        <option value="Recanto Colanta">Recanto Colanta</option>
+                        <option value="Repostería Astor">Repostería Astor</option>
+                        <option value="Subway">Subway</option>
+                        <option value="Sushi Light">Sushi Light</option>
+                        <option value="Taco Factory">Taco Factory</option>
+                        <option value="The Cafeteria">The Cafeteria</option>
+                        <option value="The Corral">The Corral</option>
+                        <option value="The Little Roof">The Little Roof</option>
+                    </select>
+                </div>
+
+                <!-- Botón para volver al Index -->
+                <button onclick="window.location.href='index.html'" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-black px-4 py-2.5 rounded-xl text-xs active:scale-95 transition-transform shadow-sm flex items-center gap-1.5" title="Cerrar sesión">
+                    <span>🚪</span> Salir
+                </button>
             </div>
         </div>
-
         <!-- Pestañas de navegación interna (Con el botón de la Campana 🔔) -->
         <div class="flex justify-between items-center border-b border-gray-100 mb-6 overflow-x-auto pb-1">
             <div class="flex space-x-6">
