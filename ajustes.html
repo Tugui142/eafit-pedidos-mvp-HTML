@@ -3,34 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAFIT Pedidos - Ajustes</title>
+    <title>EAFIT Pedidos</title>
+    
+    <!-- Enlace al nuevo CSS de EAFIT -->
+    <link rel="stylesheet" href="style.css">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Estilos personalizados para el interruptor (Toggle) */
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #111827; /* gray-900 */
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        eafit: {
+                            oscuro: 'var(--eafit-azul-oscuro)',
+                            claro: 'var(--eafit-azul-claro)',
+                            amarillo: 'var(--eafit-amarillo)',
+                            arena: 'var(--eafit-arena)'
+                        }
+                    }
+                }
+            }
         }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: #111827;
-        }
-        .toggle-checkbox {
-            right: 0;
-            z-index: 1;
-            border-color: #e5e7eb;
-            transition: all 0.3s;
-        }
-        .toggle-label {
-            width: 3rem;
-            height: 1.5rem;
-            background-color: #e5e7eb;
-            border-radius: 9999px;
-            transition: all 0.3s;
-        }
-    </style>
+    </script>
 </head>
 <body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col items-center">
 
