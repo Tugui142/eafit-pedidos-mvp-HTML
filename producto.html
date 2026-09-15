@@ -6,31 +6,46 @@
     <title>Detalle de Producto</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col">
+<body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col items-center">
 
-    <nav class="bg-white p-4 shadow-sm flex items-center gap-4">
-        <button onclick="window.history.back()" class="font-bold text-lg">← Volver</button>
-        <h1 id="prod-restaurant" class="font-bold text-gray-500 uppercase text-sm"></h1>
-    </nav>
+    <!-- Contenedor Wrapper -->
+    <div class="max-w-md w-full bg-white shadow-2xl h-full flex flex-col relative border-x border-gray-200">
+        
+        <nav class="absolute top-0 w-full p-4 flex items-center gap-4 z-10">
+            <button onclick="window.history.back()" class="bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-sm font-bold text-sm active:scale-95">← Volver</button>
+        </nav>
 
-    <div class="flex-1 overflow-y-auto">
-        <img id="prod-img" class="w-full h-64 object-cover grayscale">
-        <div class="bg-white p-6 rounded-t-3xl -mt-6 relative shadow-lg space-y-4">
-            <h2 id="prod-name" class="text-2xl font-bold"></h2>
-            <p id="prod-price" class="text-xl font-bold text-gray-700"></p>
-            
-            <hr>
-            
-            <h3 class="font-bold">Opciones</h3>
-            <label class="flex items-center gap-2 text-sm"><input type="checkbox" checked class="w-4 h-4"> ¿En combo? (+ $4.000)</label>
-            <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="w-4 h-4"> Sin salsas</label>
+        <div class="flex-1 overflow-y-auto">
+            <img id="prod-img" class="w-full h-72 object-cover grayscale">
+            <div class="bg-white p-6 rounded-t-3xl -mt-8 relative shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] space-y-4">
+                <h1 id="prod-restaurant" class="font-bold text-gray-500 uppercase text-xs tracking-wider"></h1>
+                <h2 id="prod-name" class="text-3xl font-black text-gray-900 leading-tight"></h2>
+                <p id="prod-price" class="text-2xl font-bold text-gray-700"></p>
+                
+                <hr class="border-gray-100 my-4">
+                
+                <h3 class="font-bold text-lg">Opciones</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg bg-gray-50 cursor-pointer">
+                        <input type="checkbox" checked class="w-5 h-5 accent-gray-900"> 
+                        <span class="text-sm font-semibold">¿En combo? (+ $4.000)</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="w-5 h-5 accent-gray-900"> 
+                        <span class="text-sm font-semibold">Sin salsas</span>
+                    </label>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="bg-white p-4 border-t border-gray-200">
-        <button onclick="addToCart()" class="w-full bg-gray-900 text-white font-bold py-3 rounded-lg hover:bg-gray-800 active:scale-95 transition-transform">
-            Agregar al Carrito
-        </button>
+        <div class="bg-white p-5 border-t border-gray-100 space-y-3 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+            <button onclick="addToCart()" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl hover:bg-gray-800 active:scale-95 transition-transform shadow-md">
+                PEDIR (Agregar al Carrito)
+            </button>
+            <button onclick="window.history.back()" class="w-full bg-white text-gray-900 border-2 border-gray-900 font-bold py-3.5 rounded-xl hover:bg-gray-50 active:scale-95 transition-transform">
+                Seguir buscando
+            </button>
+        </div>
     </div>
 
     <script>
