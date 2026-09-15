@@ -3,29 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAFIT Pedidos - Iniciar Sesión</title>
+    <title>EAFIT Pedidos</title>
     
-    <!-- Enlace al nuevo CSS de EAFIT -->
-    <link rel="stylesheet" href="style.css">
-    
+    <!-- Importar fuentes institucionales y Tailwind directamente -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         eafit: {
-                            oscuro: 'var(--eafit-azul-oscuro)',
-                            claro: 'var(--eafit-azul-claro)',
-                            amarillo: 'var(--eafit-amarillo)',
-                            arena: 'var(--eafit-arena)'
+                            oscuro: '#000066',
+                            claro: '#00a9e0',
+                            amarillo: '#ffe500',
+                            bg: '#f6f6f6'
                         }
                     }
                 }
             }
         }
     </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f6f6f6; color: #333333; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
+
 <body class="h-screen flex items-center justify-center p-4">
 
     <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm fade-in text-center border border-gray-200">
