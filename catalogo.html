@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="style.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- IMPORTANTE: Librería Chart.js para que el gráfico funcione -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -54,11 +57,10 @@
             </ul>
         </div>
 
-        <!-- Modal del Mapa del Campus (Mejorado: Más grande e interactivo) -->
+        <!-- Modal del Mapa del Campus -->
         <div id="map-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-3 backdrop-blur-sm transition-opacity">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg h-[82vh] overflow-hidden relative flex flex-col transform transition-all animate-fadeIn">
                 
-                <!-- Encabezado del Modal -->
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <div class="flex items-center gap-2">
                         <span class="text-xl">📍</span>
@@ -67,12 +69,10 @@
                     <button onclick="toggleMapModal()" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold flex items-center justify-center text-lg active:scale-95 transition-all">✕</button>
                 </div>
 
-                <!-- Contenedor del Mapa (Ocupa todo el alto restante y permite interacción total) -->
                 <div class="flex-1 w-full bg-gray-100 relative">
                     <iframe class="w-full h-full border-0" allowfullscreen src="https://umap.openstreetmap.de/en/map/universidad-eafit-campus-medellin_67039"></iframe>
                 </div>
 
-                <!-- Pie informativo opcional -->
                 <div class="p-3 bg-gray-50 border-t border-gray-100 text-center">
                     <p class="text-xs text-gray-500 font-semibold">Toca o arrastra para explorar los bloques y plazoletas</p>
                 </div>
@@ -80,18 +80,17 @@
         </div>
 
         <div class="p-5 space-y-6">
-            <!-- Saludo y Pregunta de acuerdo al wireframe -->
             <div>
                 <h2 class="text-2xl font-black text-gray-900">¿Qué vas a pedir hoy?</h2>
             </div>
 
-            <!-- Gráfico simplificado -->
+            <!-- Gráfico de Demanda Actual -->
             <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Demanda actual</p>
-                <div class="h-24 w-full mt-2"><canvas id="congestionChart"></canvas></div>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Demanda actual</p>
+                <div class="h-28 w-full"><canvas id="congestionChart"></canvas></div>
             </div>
 
-            <!-- Filtros scrolleables (Wireframe Paso 2) -->
+            <!-- Filtros scrolleables -->
             <div class="flex gap-2 overflow-x-auto hide-scroll pb-1 -mx-2 px-2">
                 <button class="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md">Todos</button>
                 <button class="bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Hamburguesas</button>
@@ -144,18 +143,15 @@
             if(cart.length > 0) { badge.innerText = cart.length; badge.classList.remove('hidden'); }
         }
 
+        // Inicializar Catálogo
         renderMenu();
-    <script>
-        // ... (tus otras funciones de catálogo se mantienen igual) ...
 
         // Gráfico de Demanda Actual Interactivo y Realista
         const ctx = document.getElementById('congestionChart').getContext('2d');
         
-        // Datos por hora en el campus (Eje X) y nivel de congestión de 0 a 100 (Eje Y)
         const horasLabels = ['8am', '9am', '10am', '11am', '12m', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm'];
         const datosDemanda = [15, 25, 45, 65, 95, 100, 80, 50, 30, 20, 10]; 
 
-        // Colores dinámicos: Rojo brillante para horas pico (>80), gris elegante para horas normales
         const backgroundColors = datosDemanda.map(valor => 
             valor > 80 ? 'rgba(220, 38, 38, 0.85)' : 'rgba(209, 213, 219, 0.6)'
         );
@@ -180,7 +176,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 animation: {
-                    duration: 1200, // Animación suave al cargar la página
+                    duration: 1200,
                     easing: 'easeOutQuart'
                 },
                 plugins: {
@@ -193,11 +189,9 @@
                         cornerRadius: 8,
                         displayColors: false,
                         callbacks: {
-                            // Personalizamos el título del globo de información
                             title: function(context) {
                                 return `Hora: ${context[0].label}`;
                             },
-                            // Personalizamos el texto según el nivel de congestión
                             label: function(context) {
                                 const valor = context.parsed.y;
                                 if (valor > 80) {
@@ -213,7 +207,7 @@
                 },
                 scales: {
                     y: { 
-                        display: false, // Ocultamos el eje Y para mantenerlo minimalista tipo app móvil
+                        display: false,
                         grid: { display: false }
                     },
                     x: { 
