@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAFIT Pedidos - Bigo's</title>
+    
+    <!-- Enlace al CSS universal -->
+    <link rel="stylesheet" href="../style.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { eafit: { oscuro: 'var(--eafit-azul-oscuro)', claro: 'var(--eafit-azul-claro)', amarillo: 'var(--eafit-amarillo)', arena: 'var(--eafit-arena)' } } }
+            }
+        }
+    </script>
+</head>
+<body class="bg-eafit-bg text-eafit-gris-texto font-sans h-screen flex flex-col items-center">
+
+    <div class="max-w-md w-full bg-white min-h-screen relative shadow-2xl border-x border-gray-200 flex flex-col">
+        
+        <!-- Navbar -->
+        <nav class="bg-white p-4 shadow-sm flex items-center gap-4 sticky top-0 z-40">
+            <button onclick="window.history.back()" class="bg-gray-100 p-2 rounded-full shadow-sm font-bold text-sm active:scale-95 transition-transform">← Volver</button>
+            <h1 class="font-bold text-lg">Bigo's</h1>
+        </nav>
+
+        <!-- Header del Restaurante -->
+        <div class="bg-eafit-oscuro p-8 text-center text-white space-y-2">
+            <div class="text-5xl mb-2">🍕</div>
+            <h2 class="text-3xl font-black">Bigo's</h2>
+            <p class="text-sm font-semibold opacity-80 text-eafit-amarillo">Menú en construcción para el MVP</p>
+        </div>
+
+        <!-- Placeholder del menú -->
+        <div class="p-5 flex-1">
+            <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center text-gray-500">
+                <span class="text-3xl block mb-3">🚧</span>
+                <h3 class="font-bold text-gray-700">Próximamente</h3>
+                <p class="text-sm mt-1">Aquí irán los platos específicos de este local.</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
