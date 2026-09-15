@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- IMPORTANTE: Librería Chart.js para que el gráfico funcione -->
+    <!-- Librería Chart.js para el gráfico -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
@@ -92,10 +92,10 @@
 
             <!-- Filtros scrolleables -->
             <div class="flex gap-2 overflow-x-auto hide-scroll pb-1 -mx-2 px-2">
-                <button class="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md">Todos</button>
-                <button class="bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Hamburguesas</button>
-                <button class="bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Sushi</button>
-                <button class="bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Pollo</button>
+                <button onclick="filterMenu('Todos')" class="filter-btn bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md">Todos</button>
+                <button onclick="filterMenu('Hamburguesas')" class="filter-btn bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Hamburguesas</button>
+                <button onclick="filterMenu('Sushi')" class="filter-btn bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Sushi</button>
+                <button onclick="filterMenu('Pollo')" class="filter-btn bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Pollo</button>
             </div>
 
             <!-- Lista de Catálogo -->
@@ -105,13 +105,29 @@
 
     <script>
         const menuDB = [
-            { id: 1, restaurante: "Nikkei Village", plato: "Sushi Roll 10pz", precio: 22000, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&q=80" },
-            { id: 2, restaurante: "Frisby", plato: "Combo Frisby", precio: 25000, img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=80" },
-            { id: 3, restaurante: "The Corral", plato: "Hamburguesa Todoterreno", precio: 28000, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80" }
+            { id: 1, categoria: "Sushi", restaurante: "Nikkei Village", plato: "Sushi Roll 10pz", precio: 22000, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&q=80" },
+            { id: 2, categoria: "Pollo", restaurante: "Frisby", plato: "Combo Frisby", precio: 25000, img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=80" },
+            { id: 3, categoria: "Hamburguesas", restaurante: "The Corral", plato: "Hamburguesa Todoterreno", precio: 28000, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80" },
+            { id: 4, categoria: "Hamburguesas", restaurante: "Dogger", plato: "Perro Sencillo", precio: 15000, img: "https://images.unsplash.com/photo-1612392062631-94dd858cba88?w=400&q=80" }
         ];
 
+        let activeCategory = 'Todos';
+
+        function filterMenu(categoria) {
+            activeCategory = categoria;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = btn.innerText === categoria 
+                    ? "filter-btn bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md transition-colors"
+                    : "filter-btn bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50 transition-colors";
+            });
+            renderMenu();
+        }
+
         function renderMenu() {
-            document.getElementById('menu-list').innerHTML = menuDB.map(item => `
+            const list = document.getElementById('menu-list');
+            const filteredMenu = activeCategory === 'Todos' ? menuDB : menuDB.filter(i => i.categoria === activeCategory);
+            
+            list.innerHTML = filteredMenu.map(item => `
                 <div onclick="goToProduct(${item.id})" class="flex items-center gap-4 bg-white p-3 rounded-xl shadow-sm border border-gray-100 cursor-pointer active:scale-95 transition-all">
                     <img src="${item.img}" class="w-20 h-20 object-cover rounded-lg grayscale">
                     <div>
