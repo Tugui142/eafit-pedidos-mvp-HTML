@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAFIT Pedidos - Ajustes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Estilos personalizados para el interruptor (Toggle) */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #111827; /* gray-900 */
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #111827;
+        }
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: #e5e7eb;
+            transition: all 0.3s;
+        }
+        .toggle-label {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col items-center">
+
+    <!-- Contenedor Wrapper -->
+    <div class="max-w-md w-full bg-white min-h-screen relative shadow-2xl pb-10 border-x border-gray-200 overflow-y-auto hide-scroll">
+        
+        <!-- Navbar -->
+        <nav class="bg-white p-4 shadow-sm flex items-center gap-4 sticky top-0 z-40">
+            <button onclick="window.history.back()" class="bg-gray-100 p-2 rounded-full shadow-sm font-bold text-sm active:scale-95 transition-transform">← Volver</button>
+            <h1 class="font-bold text-lg">Ajustes</h1>
+        </nav>
+
+        <div class="p-5 space-y-8">
+            
+            <!-- Perfil de Usuario -->
+            <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
+                <div class="w-16 h-16 bg-gray-900 text-white rounded-full flex items-center justify-center text-xl font-black shadow-md">
+                    JG
+                </div>
+                <div>
+                    <h2 class="text-xl font-black text-gray-900 leading-tight">Juan Pablo Gutiérrez Q.</h2>
+                    <p class="text-xs font-bold text-gray-500 mt-1 uppercase tracking-wide">Estudiante • Diseño Interactivo</p>
+                </div>
+            </div>
+
+            <!-- Sección: Cuenta -->
+            <div class="space-y-3">
+                <h3 class="font-black text-gray-900 text-lg">Mi Cuenta</h3>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">💳</span>
+                            <span class="font-bold text-sm text-gray-800">Métodos de pago</span>
+                        </div>
+                        <span class="text-gray-400 font-bold">›</span>
+                    </button>
+                    
+                    <button onclick="window.location.href='historial.html'" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">📦</span>
+                            <span class="font-bold text-sm text-gray-800">Historial de pedidos</span>
+                        </div>
+                        <span class="text-gray-400 font-bold">›</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sección: Preferencias -->
+            <div class="space-y-3">
+                <h3 class="font-black text-gray-900 text-lg">Preferencias</h3>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-4 space-y-4">
+                    
+                    <!-- Toggle Notificaciones Push -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">🔔</span>
+                            <span class="font-bold text-sm text-gray-800">Notificaciones Push</span>
+                        </div>
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle" id="toggle1" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="toggle1" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <hr class="border-gray-100">
+
+                    <!-- Toggle Correos -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">✉️</span>
+                            <span class="font-bold text-sm text-gray-800">Correos de promociones</span>
+                        </div>
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle" id="toggle2" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="toggle2" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección: Soporte -->
+            <div class="space-y-3">
+                <h3 class="font-black text-gray-900 text-lg">Soporte</h3>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <button class="w-full flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">💬</span>
+                            <span class="font-bold text-sm text-gray-800">Centro de ayuda</span>
+                        </div>
+                        <span class="text-gray-400 font-bold">›</span>
+                    </button>
+                    
+                    <button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">📄</span>
+                            <span class="font-bold text-sm text-gray-800">Términos y condiciones</span>
+                        </div>
+                        <span class="text-gray-400 font-bold">›</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botón Cerrar Sesión -->
+            <div class="pt-4">
+                <button onclick="window.location.href='index.html'" class="w-full bg-red-50 text-red-600 border border-red-200 font-black py-4 rounded-xl text-sm hover:bg-red-100 active:scale-95 transition-transform shadow-sm">
+                    Cerrar Sesión
+                </button>
+                <p class="text-center text-xs text-gray-400 font-bold mt-4">EAFIT Pedidos MVP v1.0</p>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
