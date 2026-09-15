@@ -21,8 +21,8 @@
 
     <!-- Contenedor amplio para escritorio -->
     <div class="max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200">
-           
-    <!-- Cabecera con Selector de los 22 Restaurantes y Botón de Salir -->
+        
+        <!-- Cabecera con Selector de los 22 Restaurantes y Botón de Salir -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 pb-5 mb-6 gap-4">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 bg-eafit-oscuro text-white rounded-xl flex items-center justify-center text-2xl shadow-md">👨‍🍳</div>
@@ -32,7 +32,7 @@
                 </div>
             </div>
             
-            <!-- Controles derechos: Selector y Botón Salir -->
+            <!-- Controles derechos: Selector (22 locales) y Botón Salir -->
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-xl border border-gray-200">
                     <label for="restaurant-select" class="text-xs font-bold text-gray-600 pl-2">Local:</label>
@@ -68,6 +68,7 @@
                 </button>
             </div>
         </div>
+
         <!-- Pestañas de navegación interna (Con el botón de la Campana 🔔) -->
         <div class="flex justify-between items-center border-b border-gray-100 mb-6 overflow-x-auto pb-1">
             <div class="flex space-x-6">
@@ -75,7 +76,7 @@
                 <button id="tab-inv" onclick="switchTab('inv')" class="font-bold text-gray-400 pb-2 border-b-4 border-transparent hover:text-gray-900 transition-colors text-sm">Inventario</button>
             </div>
             
-            <!-- Botón de Notificaciones / Campana en vez de texto plano -->
+            <!-- Botón de Notificaciones / Campana -->
             <button id="tab-msg" onclick="switchTab('msg')" class="relative bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl transition-all text-sm flex items-center gap-2 active:scale-95 shadow-sm">
                 <span class="text-lg">🔔</span> 
                 <span>Notificaciones / Ayuda</span>
@@ -145,7 +146,6 @@
                 document.getElementById('view-' + id).classList.add('hidden');
             });
             
-            // Gestionar estilos activos de pestañas superiores
             document.getElementById('tab-kanban').className = "font-bold text-gray-400 pb-2 border-b-4 border-transparent hover:text-gray-950 transition-colors text-sm";
             document.getElementById('tab-inv').className = "font-bold text-gray-400 pb-2 border-b-4 border-transparent hover:text-gray-950 transition-colors text-sm";
             
