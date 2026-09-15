@@ -3,12 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAFIT Pedidos - Mis Pedidos</title>
+    <title>EAFIT Pedidos - Mis pedidos</title>
+    
+    <!-- Enlace al nuevo CSS de EAFIT -->
+    <link rel="stylesheet" href="style.css">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        eafit: {
+                            oscuro: 'var(--eafit-azul-oscuro)',
+                            claro: 'var(--eafit-azul-claro)',
+                            amarillo: 'var(--eafit-amarillo)',
+                            arena: 'var(--eafit-arena)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col items-center">
 
