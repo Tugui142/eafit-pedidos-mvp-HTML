@@ -6,49 +6,75 @@
     <title>EAFIT Pedidos - Catálogo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>.hide-scroll::-webkit-scrollbar { display: none; }</style>
+    <style>
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="bg-[#EFEFEF] text-[#222222] font-sans pb-24">
+<body class="bg-[#EFEFEF] text-[#222222] font-sans">
+    
+    <!-- Contenedor Wrapper para simular App Móvil en PC -->
+    <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl pb-24 border-x border-gray-200">
+        
+        <!-- Navbar -->
+        <nav class="bg-white p-4 shadow-sm flex justify-between items-center sticky top-0 z-40">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleMenu()" class="text-2xl font-bold active:scale-95">≡</button>
+                <h1 class="font-bold text-lg">EAFIT Pedidos</h1>
+            </div>
+            <button onclick="window.location.href='pago.html'" class="relative font-bold text-xl active:scale-95">
+                🛒 <span id="cart-badge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] px-1.5 rounded-full hidden">0</span>
+            </button>
+        </nav>
 
-    <!-- Navbar con Menú Hamburguesa -->
-    <nav class="bg-white p-4 shadow-sm flex justify-between items-center sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-            <button onclick="toggleMenu()" class="text-2xl font-bold">≡</button>
-            <h1 class="font-bold text-lg">EAFIT Pedidos</h1>
-        </div>
-        <button onclick="window.location.href='pago.html'" class="relative font-bold text-xl">
-            🛒 <span id="cart-badge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] px-1.5 rounded-full hidden">0</span>
-        </button>
-    </nav>
-
-    <!-- Menú Lateral Oculto (Wireframe Paso 1) -->
-    <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl transform -translate-x-full transition-transform z-50 p-6">
-        <button onclick="toggleMenu()" class="font-bold text-xl mb-6">✕ Cerrar</button>
-        <ul class="space-y-4 font-bold text-gray-700">
-            <li class="hover:text-gray-900 cursor-pointer">📍 Mapa del Campus</li>
-            <li class="hover:text-gray-900 cursor-pointer">🍔 Restaurantes</li>
-            <li onclick="window.location.href='seguimiento.html'" class="hover:text-gray-900 cursor-pointer">📦 Mis Pedidos</li>
-            <li class="hover:text-gray-900 cursor-pointer">⚙️ Ajustes</li>
-            <li onclick="window.location.href='index.html'" class="text-red-600 cursor-pointer mt-8">Cerrar Sesión</li>
-        </ul>
-    </div>
-
-    <div class="max-w-xl mx-auto p-4 space-y-4">
-        <!-- Gráfico -->
-        <div class="bg-white p-4 rounded-lg shadow-sm">
-            <p class="text-xs font-bold text-gray-600 uppercase">Demanda actual</p>
-            <div class="h-24 w-full mt-2"><canvas id="congestionChart"></canvas></div>
+        <!-- Menú Lateral -->
+        <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl transform -translate-x-full transition-transform z-50 p-6">
+            <button onclick="toggleMenu()" class="font-bold text-xl mb-6 active:scale-95">✕ Cerrar</button>
+            <ul class="space-y-4 font-bold text-gray-700">
+                <li onclick="toggleMapModal(); toggleMenu()" class="hover:text-gray-900 cursor-pointer flex items-center gap-2">📍 Mapa del Campus</li>
+                <li class="hover:text-gray-900 cursor-pointer flex items-center gap-2">🍔 Restaurantes</li>
+                <li onclick="window.location.href='seguimiento.html'" class="hover:text-gray-900 cursor-pointer flex items-center gap-2">📦 Mis Pedidos</li>
+                <li class="hover:text-gray-900 cursor-pointer flex items-center gap-2">⚙️ Ajustes</li>
+                <li onclick="window.location.href='index.html'" class="text-red-600 cursor-pointer mt-8">Cerrar Sesión</li>
+            </ul>
         </div>
 
-        <!-- Filtros (Wireframe Paso 2) -->
-        <div class="flex gap-2 overflow-x-auto hide-scroll">
-            <button class="bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold">Todos</button>
-            <button class="bg-white text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Hamburguesas</button>
-            <button class="bg-white text-gray-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm">Sushi</button>
+        <!-- Modal del Mapa del Campus -->
+        <div id="map-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative transform transition-all">
+                <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                    <h3 class="font-bold text-lg">📍 Mapa EAFIT</h3>
+                    <button onclick="toggleMapModal()" class="font-bold text-gray-400 hover:text-gray-700 text-xl active:scale-95">✕</button>
+                </div>
+                <div class="w-full bg-gray-200">
+                    <iframe width="100%" height="400px" frameborder="0" allowfullscreen src="https://umap.openstreetmap.de/en/map/universidad-eafit-campus-medellin_67039"></iframe>
+                </div>
+            </div>
         </div>
 
-        <!-- Catálogo -->
-        <div id="menu-list" class="bg-white p-4 rounded-lg shadow-sm space-y-4"></div>
+        <div class="p-5 space-y-6">
+            <!-- Saludo y Pregunta de acuerdo al wireframe -->
+            <div>
+                <h2 class="text-2xl font-black text-gray-900">¿Qué vas a pedir hoy?</h2>
+            </div>
+
+            <!-- Gráfico simplificado -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Demanda actual</p>
+                <div class="h-24 w-full mt-2"><canvas id="congestionChart"></canvas></div>
+            </div>
+
+            <!-- Filtros scrolleables (Wireframe Paso 2) -->
+            <div class="flex gap-2 overflow-x-auto hide-scroll pb-1 -mx-2 px-2">
+                <button class="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md">Todos</button>
+                <button class="bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Hamburguesas</button>
+                <button class="bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Sushi</button>
+                <button class="bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Pollo</button>
+            </div>
+
+            <!-- Lista de Catálogo -->
+            <div id="menu-list" class="space-y-4"></div>
+        </div>
     </div>
 
     <script>
@@ -60,12 +86,12 @@
 
         function renderMenu() {
             document.getElementById('menu-list').innerHTML = menuDB.map(item => `
-                <div onclick="goToProduct(${item.id})" class="flex items-center gap-4 border-b pb-4 last:border-0 last:pb-0 cursor-pointer active:scale-95 transition-transform">
-                    <img src="${item.img}" class="w-20 h-20 object-cover rounded grayscale">
+                <div onclick="goToProduct(${item.id})" class="flex items-center gap-4 bg-white p-3 rounded-xl shadow-sm border border-gray-100 cursor-pointer active:scale-95 transition-all">
+                    <img src="${item.img}" class="w-20 h-20 object-cover rounded-lg grayscale">
                     <div>
                         <h4 class="font-bold text-gray-800">${item.plato}</h4>
-                        <p class="text-xs text-gray-500">${item.restaurante}</p>
-                        <p class="text-sm font-bold mt-1">$${item.precio.toLocaleString()}</p>
+                        <p class="text-xs text-gray-500 font-semibold">${item.restaurante}</p>
+                        <p class="text-sm font-black mt-1 text-gray-900">$${item.precio.toLocaleString()}</p>
                     </div>
                 </div>
             `).join('');
@@ -78,8 +104,11 @@
         }
 
         function toggleMenu() {
-            const menu = document.getElementById('side-menu');
-            menu.classList.toggle('-translate-x-full');
+            document.getElementById('side-menu').classList.toggle('-translate-x-full');
+        }
+
+        function toggleMapModal() {
+            document.getElementById('map-modal').classList.toggle('hidden');
         }
 
         function updateCartBadge() {
@@ -90,11 +119,10 @@
 
         renderMenu();
         
-        // Gráfico simplificado
         new Chart(document.getElementById('congestionChart').getContext('2d'), {
             type: 'bar',
-            data: { labels: ['10a','11a','12m','1p','2p','3p'], datasets: [{ data: [20,40,90,100,80,30], backgroundColor: ['#ccc','#ccc','#ef4444','#ef4444','#ef4444','#ccc'], borderRadius: 4 }] },
-            options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, border: { display: false } } } }
+            data: { labels: ['10a','11a','12m','1p','2p','3p'], datasets: [{ data: [20,40,90,100,80,30], backgroundColor: ['#d1d5db','#d1d5db','#ef4444','#ef4444','#ef4444','#d1d5db'], borderRadius: 4 }] },
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, border: { display: false } } } }
         });
     </script>
 </body>
