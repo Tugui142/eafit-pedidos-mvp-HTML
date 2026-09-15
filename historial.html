@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAFIT Pedidos - Mis Pedidos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col items-center">
+
+    <!-- Contenedor Wrapper para simular App Móvil -->
+    <div class="max-w-md w-full bg-white min-h-screen relative shadow-2xl pb-10 border-x border-gray-200 overflow-y-auto hide-scroll">
+        
+        <!-- Navbar -->
+        <nav class="bg-white p-4 shadow-sm flex items-center gap-4 sticky top-0 z-40">
+            <button onclick="window.location.href='catalogo.html'" class="bg-gray-100 p-2 rounded-full shadow-sm font-bold text-sm active:scale-95 transition-transform">← Volver</button>
+            <h1 class="font-bold text-lg">Mis Pedidos</h1>
+        </nav>
+
+        <div class="p-5 space-y-8">
+            
+            <!-- Sección: En Curso (Dinámica según localStorage) -->
+            <div id="active-order-section" class="hidden space-y-3">
+                <h2 class="text-xl font-black text-gray-900">En curso</h2>
+                
+                <div class="bg-white p-4 rounded-xl shadow-md border border-yellow-300 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-[10px] font-black px-2 py-1 rounded-bl-lg uppercase tracking-wide">Activo</div>
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase">Orden <span id="active-id"></span></p>
+                            <h4 class="font-black text-gray-900 text-lg mt-1">Pedido actual</h4>
+                        </div>
+                        <p id="active-time" class="text-sm font-bold text-gray-800 bg-gray-100 px-2 py-1 rounded-md"></p>
+                    </div>
+                    <button onclick="window.location.href='seguimiento.html'" class="w-full mt-3 bg-gray-900 text-white font-bold py-2.5 rounded-lg text-sm hover:bg-gray-800 active:scale-95 transition-transform">Ver seguimiento detallado</button>
+                </div>
+            </div>
+
+            <!-- Sección: Historial de Pedidos Anteriores -->
+            <div class="space-y-3">
+                <h2 class="text-xl font-black text-gray-900">Anteriores</h2>
+                
+                <div id="history-list" class="space-y-3">
+                    <!-- Las tarjetas del historial se inyectarán aquí -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 1. Revisar si hay un pedido en curso en el localStorage
+        const activeOrder = JSON.parse(localStorage.getItem('currentOrder'));
+        if (activeOrder) {
+            document.getElementById('active-order-section').classList.remove('hidden');
+            document.getElementById('active-id').innerText = `#${activeOrder.id}`;
+            document.getElementById('active-time').innerText = `Hoy, ${activeOrder.time}`;
+        }
+
+        // 2. Datos de prueba para simular el historial de la materia
+        const historialMock = [
+            { id: 842, restaurante: "The Corral", items: "1x Hamburguesa Todoterreno", fecha: "12 Sep, 2026", total: 28000, estado: "Entregado", emoji: "🍔" },
+            { id: 751, restaurante: "Nikkei Village", items: "1x Sushi Roll 10pz", fecha: "05 Sep, 2026", total: 22000, estado: "Entregado", emoji: "🍣" },
+            { id: 620, restaurante: "Frisby", items: "1x Combo Frisby", fecha: "28 Ago, 2026", total: 25000, estado: "Entregado", emoji: "🍗" },
+            { id: 512, restaurante: "Juan Valdez", items: "2x Tinto Campesino", fecha: "21 Ago, 2026", total: 8000, estado: "Cancelado", emoji: "☕" }
+        ];
+
+        // 3. Renderizar el historial
+        function renderHistorial() {
+            const container = document.getElementById('history-list');
+            
+            container.innerHTML = historialMock.map(pedido => {
+                const isCancelado = pedido.estado === 'Cancelado';
+                const statusColor = isCancelado ? 'text-red-600 bg-red-50' : 'text-green-700 bg-green-50';
+                const opacity = isCancelado ? 'opacity-70' : 'opacity-100';
+
+                return `
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 ${opacity}">
+                    <div class="flex justify-between items-start border-b border-gray-100 pb-3 mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-lg">${pedido.emoji}</div>
+                            <div>
+                                <h4 class="font-black text-gray-900 text-base leading-tight">${pedido.restaurante}</h4>
+                                <p class="text-xs text-gray-400 font-semibold">${pedido.fecha}</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-black uppercase px-2 py-1 rounded-md ${statusColor}">${pedido.estado}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <p class="text-xs text-gray-500 font-medium">${pedido.items}</p>
+                            <p class="text-xs text-gray-400 font-bold mt-1">Orden #${pedido.id}</p>
+                        </div>
+                        <p class="font-black text-gray-900 text-sm">$${pedido.total.toLocaleString()}</p>
+                    </div>
+                    
+                    ${!isCancelado ? `<button class="w-full mt-3 bg-white border border-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs hover:bg-gray-50 active:scale-95 transition-transform shadow-sm">Volver a pedir</button>` : ''}
+                </div>
+                `;
+            }).join('');
+        }
+
+        renderHistorial();
+    </script>
+</body>
+</html>
