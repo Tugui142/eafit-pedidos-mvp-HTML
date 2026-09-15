@@ -15,46 +15,41 @@
     <!-- Contenedor Wrapper centrado, sin restringir la altura máxima -->
     <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl border-x border-gray-200 flex flex-col">
         
-        <!-- Navbar con z-index alto para que no se monte nada encima -->
+        <!-- Navbar con z-index alto -->
         <nav class="bg-white p-4 shadow-sm flex items-center gap-4 sticky top-0 z-50">
             <button onclick="window.location.href='catalogo.html'" class="bg-gray-100 p-2 rounded-full shadow-sm font-bold text-sm active:scale-95 transition-transform">← Volver</button>
             <h1 class="font-bold text-lg">Restaurantes EAFIT</h1>
         </nav>
 
-        <!-- Contenido con padding inferior extra (pb-12) para que no quede pegado al final -->
+        <!-- Contenido con padding inferior extra (pb-12) -->
         <div class="p-5 space-y-6 pb-12">
             <div>
                 <h2 class="text-2xl font-black text-gray-900">Locales en el Campus</h2>
                 <p class="text-sm text-gray-500 font-semibold mt-1">Descubre qué comer hoy</p>
             </div>
 
-            <!-- Lista de Restaurantes -->
+            <!-- Lista Completa de Restaurantes -->
             <div id="restaurantes-list" class="space-y-4">
                 
+                <!-- Bigo's -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍣</div>
-                        <div><h4 class="font-black text-gray-900 text-base">Nikkei Village</h4></div>
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍕</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Bigo's</h4></div>
                     </div>
                     <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
                 </div>
 
+                <!-- Chipstation -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍔</div>
-                        <div><h4 class="font-black text-gray-900 text-base">The Corral</h4></div>
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍟</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Chipstation</h4></div>
                     </div>
                     <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍗</div>
-                        <div><h4 class="font-black text-gray-900 text-base">Frisby</h4></div>
-                    </div>
-                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
-                </div>
-
+                <!-- Dogger -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🌭</div>
@@ -63,6 +58,25 @@
                     <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
                 </div>
 
+                <!-- Frisby -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍗</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Frisby</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Home Food -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍲</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Home Food</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Juan Valdez -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">☕</div>
@@ -71,14 +85,97 @@
                     <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
                 </div>
 
+                <!-- Laboratorio del Café -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🌮</div>
-                        <div><h4 class="font-black text-gray-900 text-base">Taco Factory</h4></div>
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🫘</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Laboratorio del Café</h4></div>
                     </div>
                     <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
                 </div>
 
+                <!-- Las Hermosas -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍛</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Las Hermosas</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Lolita's -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍩</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Lolita's</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Madelo -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍦</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Madelo</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Nativos -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🥤</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Nativos</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Nikkei Village -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍣</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Nikkei Village</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Pimientos -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🌶️</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Pimientos</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Plural -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🥗</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Plural</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Recanto Colanta -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🥛</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Recanto Colanta</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Repostería Astor -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍰</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Repostería Astor</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Subway -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🥪</div>
@@ -87,10 +184,47 @@
                     <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
                 </div>
 
+                <!-- Sushi Light -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍦</div>
-                        <div><h4 class="font-black text-gray-900 text-base">Madelo</h4></div>
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍱</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Sushi Light</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- Taco Factory -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🌮</div>
+                        <div><h4 class="font-black text-gray-900 text-base">Taco Factory</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- The Cafeteria -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍽️</div>
+                        <div><h4 class="font-black text-gray-900 text-base">The Cafeteria</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- The Corral -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🍔</div>
+                        <div><h4 class="font-black text-gray-900 text-base">The Corral</h4></div>
+                    </div>
+                    <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
+                </div>
+
+                <!-- The Little Roof -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl shadow-inner shrink-0">🏠</div>
+                        <div><h4 class="font-black text-gray-900 text-base">The Little Roof</h4></div>
                     </div>
                     <button onclick="window.location.href='catalogo.html'" class="bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-800 active:scale-95 transition-transform">Ver</button>
                 </div>
