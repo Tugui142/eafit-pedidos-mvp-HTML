@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto+Serif:opsz,wght@8..144,400;700&display=swap');
+
+:root {
+    /* Paleta de colores principal de EAFIT */
+    --eafit-azul-oscuro: rgba(0, 0, 102, 1);
+    --eafit-azul-claro: rgba(0, 169, 224, 1);
+    --eafit-amarillo: rgba(255, 229, 0, 1);
+    --eafit-arena: rgba(242, 237, 225, 1);
+    --eafit-gris-texto: rgba(51, 51, 51, 1);
+    --eafit-bg: rgba(246, 246, 246, 1);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--eafit-bg);
+    color: var(--eafit-gris-texto);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ocultar barra de desplazamiento */
+.hide-scroll::-webkit-scrollbar { 
+    display: none; 
+}
+.hide-scroll { 
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+}
+
+/* Estilos para los interruptores (Toggles) de Ajustes */
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: var(--eafit-azul-oscuro);
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: var(--eafit-azul-oscuro);
+}
+.toggle-checkbox {
+    right: 0;
+    z-index: 1;
+    border-color: #e5e7eb;
+    transition: all 0.3s;
+}
+.toggle-label {
+    width: 3rem;
+    height: 1.5rem;
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    transition: all 0.3s;
+}
