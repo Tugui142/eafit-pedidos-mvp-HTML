@@ -54,15 +54,27 @@
             </ul>
         </div>
 
-        <!-- Modal del Mapa del Campus -->
-        <div id="map-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative transform transition-all">
-                <div class="p-4 border-b flex justify-between items-center bg-gray-50">
-                    <h3 class="font-bold text-lg">📍 Mapa EAFIT</h3>
-                    <button onclick="toggleMapModal()" class="font-bold text-gray-400 hover:text-gray-700 text-xl active:scale-95">✕</button>
+        <!-- Modal del Mapa del Campus (Mejorado: Más grande e interactivo) -->
+        <div id="map-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-3 backdrop-blur-sm transition-opacity">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg h-[82vh] overflow-hidden relative flex flex-col transform transition-all animate-fadeIn">
+                
+                <!-- Encabezado del Modal -->
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">📍</span>
+                        <h3 class="font-black text-gray-900 text-base">Mapa Interactivo - Campus EAFIT</h3>
+                    </div>
+                    <button onclick="toggleMapModal()" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold flex items-center justify-center text-lg active:scale-95 transition-all">✕</button>
                 </div>
-                <div class="w-full bg-gray-200">
-                    <iframe width="100%" height="400px" frameborder="0" allowfullscreen src="https://umap.openstreetmap.de/en/map/universidad-eafit-campus-medellin_67039"></iframe>
+
+                <!-- Contenedor del Mapa (Ocupa todo el alto restante y permite interacción total) -->
+                <div class="flex-1 w-full bg-gray-100 relative">
+                    <iframe class="w-full h-full border-0" allowfullscreen src="https://umap.openstreetmap.de/en/map/universidad-eafit-campus-medellin_67039"></iframe>
+                </div>
+
+                <!-- Pie informativo opcional -->
+                <div class="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                    <p class="text-xs text-gray-500 font-semibold">Toca o arrastra para explorar los bloques y plazoletas</p>
                 </div>
             </div>
         </div>
