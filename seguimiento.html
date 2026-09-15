@@ -6,26 +6,41 @@
     <title>Estado de tu pedido</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col p-4 md:p-8">
+<body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col items-center">
 
-    <div class="max-w-md mx-auto w-full bg-white p-6 rounded-2xl shadow-sm text-center space-y-6 mt-10">
-        <h2 class="text-2xl font-bold">Estado de tu pedido</h2>
+    <div class="max-w-md w-full bg-white shadow-2xl h-full flex flex-col border-x border-gray-200">
         
-        <div class="bg-gray-50 p-4 rounded-lg border">
-            <p class="text-sm text-gray-500">Orden <span id="order-id" class="font-bold text-gray-900"></span></p>
-            <h3 class="text-xl font-black text-yellow-600 uppercase mt-1">En Cocina</h3>
-            <p class="text-sm font-bold mt-2">Recogida: <span id="order-time"></span></p>
+        <div class="p-6 text-center space-y-6 mt-6 flex-1">
+            <h2 class="text-2xl font-black">Estado de tu pedido</h2>
+            
+            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <p class="text-sm text-gray-500 font-semibold">Orden <span id="order-id" class="font-bold text-gray-900 text-lg"></span></p>
+                <h3 class="text-2xl font-black text-yellow-600 uppercase mt-2">En Cocina</h3>
+                <p class="text-sm font-bold mt-3 bg-white inline-block px-4 py-2 rounded-full shadow-sm border border-gray-100">Recogida: <span id="order-time" class="text-gray-900"></span></p>
+            </div>
+
+            <div class="text-left space-y-5 px-6 pt-4">
+                <div class="flex items-center gap-4"><div class="w-5 h-5 bg-green-500 rounded-full shadow-md"></div><p class="font-bold text-lg">Pedido Recibido</p></div>
+                <div class="flex items-center gap-4 opacity-40"><div class="w-5 h-5 bg-yellow-500 rounded-full"></div><p class="font-bold text-lg">En preparación</p></div>
+                <div class="flex items-center gap-4 opacity-40"><div class="w-5 h-5 bg-blue-500 rounded-full"></div><p class="font-bold text-lg">Listo para recoger</p></div>
+            </div>
         </div>
 
-        <div class="text-left space-y-4 px-4">
-            <div class="flex items-center gap-3"><div class="w-4 h-4 bg-green-500 rounded-full"></div><p class="font-bold">Pedido Recibido</p></div>
-            <div class="flex items-center gap-3 opacity-30"><div class="w-4 h-4 bg-yellow-500 rounded-full"></div><p class="font-bold">En preparación</p></div>
-            <div class="flex items-center gap-3 opacity-30"><div class="w-4 h-4 bg-blue-500 rounded-full"></div><p class="font-bold">Listo para recoger</p></div>
+        <div class="p-5 border-t border-gray-100 flex gap-3 bg-white shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+            <button onclick="toggleChat()" class="flex-1 bg-gray-100 text-gray-800 font-bold py-4 rounded-xl text-sm hover:bg-gray-200 active:scale-95 transition-all">💬 Ayuda</button>
+            <button onclick="window.location.href='catalogo.html'" class="flex-1 bg-gray-900 text-white font-bold py-4 rounded-xl text-sm hover:bg-gray-800 active:scale-95 transition-all shadow-md">Volver al menú</button>
         </div>
+    </div>
 
-        <div class="pt-6 border-t flex gap-2">
-            <button class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 rounded-lg text-sm">💬 Ayuda</button>
-            <button onclick="window.location.href='catalogo.html'" class="flex-1 bg-gray-900 text-white font-bold py-3 rounded-lg text-sm">Volver al menú</button>
+    <!-- Modal de Chat/Mensajería -->
+    <div id="chat-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 space-y-4 transform transition-all">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h3 class="font-bold text-lg">💬 Mensaje al Restaurante</h3>
+                <button onclick="toggleChat()" class="text-gray-400 hover:text-gray-700 font-bold text-xl active:scale-95">✕</button>
+            </div>
+            <textarea id="chat-input" rows="3" class="w-full border border-gray-200 rounded-xl p-3 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none" placeholder="Ej. Qué pena, ya paso por el pedido..."></textarea>
+            <button onclick="sendMessage()" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl active:scale-95 transition-all shadow-md">Enviar Mensaje</button>
         </div>
     </div>
 
@@ -34,6 +49,29 @@
         if(!order) window.location.href = 'catalogo.html';
         document.getElementById('order-id').innerText = `#${order.id}`;
         document.getElementById('order-time').innerText = order.time;
+
+        function toggleChat() {
+            document.getElementById('chat-modal').classList.toggle('hidden');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value;
+            if(!msg.trim()) return;
+            
+            // Crear el objeto del mensaje
+            const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const newMsg = { user: `Estudiante - Orden #${order.id}`, msg: msg, time: timeStr };
+            
+            // Guardar en localStorage
+            let msgs = JSON.parse(localStorage.getItem('mensajes_pedido')) || [];
+            msgs.push(newMsg);
+            localStorage.setItem('mensajes_pedido', JSON.stringify(msgs));
+            
+            input.value = '';
+            toggleChat();
+            alert("Mensaje enviado a la cocina con éxito.");
+        }
     </script>
 </body>
 </html>
