@@ -48,7 +48,7 @@ eafit-pedidos-mvp-HTML/
 ```
 
 ## Uso de IA
-**Herramientas:** Gemini
+**Herramientas:** Gemini y NotebookLM
 **Para qué se usaron:** Generación de la estructura base HTML, guía de implementación de Google Analytics y consolidación de la documentación final a partir de los hallazgos de las pruebas Lean UX.
 **Qué decidió el equipo sin la IA:** La investigación de usuarios (6 entrevistas a estudiantes), la ejecución del Paseo Cognitivo, la aplicación de la Escala Likert, el Prototipado Colaborativo y el análisis de Benchmark con Rappi.
 Registro completo: ver `BITACORA.md`.

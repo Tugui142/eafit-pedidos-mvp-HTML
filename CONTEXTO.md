@@ -25,17 +25,23 @@ Reducir la congestión y los tiempos de espera en los restaurantes del campus de
 - **Referente Visual (Benchmark):** Rappi (visualización de categorías, carrito flexible, pasarela integrada).
 
 ## 6. Estructura del sitio
-- Inicio | `index.html` | Onboarding, solicitud de ubicación y acceso principal.
-- Catálogo | `catalogo.html` | Exploración de platos, combos de la semana y emprendimientos.
-- Producto | `producto.html` | Detalles y personalización.
-- Pago | `pago.html` | Carrito acumulativo, selección de turno y pago con saldo institucional.
-- Seguimiento | `seguimiento.html` | Status tracker en vivo del pedido.
-- Dashboard | `dashboard.html` | Panel de gestión de cocina/usuarios.
-- Historial | `historial.html` | Revisión de compras.
+- **restaurantes/nombrederestaurante.html**
+- **ajustes.html**
+- **catalogo.html**
+- **dashboard.html**
+- **historial.html**
+- **index.html**
+- **main.py**
+- **pago.html**
+- **producto.html**
+- **requirements.txt**
+- **restaurantes.html**
+- **seguimiento.html**
+- **style.css**
 
 ## 7. Sistema visual
 - **Hoja de estilos:** `style.css` (Manejo centralizado de UI y colores).
-- **Enfoque:** Diseño responsivo (Mobile First), ya que el celular es el canal principal.
+- **Enfoque:** Diseño responsivo (Mobile First), ya que el celular es el canal principal. El panel para los restaurantes se puede ver en una pantalla horizontal.
 
 ## 8. Reglas para la IA
 1. Usa los textos exactos que se te entregan. No inventes datos.
@@ -48,4 +54,4 @@ Reducir la congestión y los tiempos de espera en los restaurantes del campus de
 - **Terminado:** Investigación Lean UX (6 entrevistas), validación mediante Paseo Cognitivo y Escala Likert, Prototipado Colaborativo, análisis benchmark (Rappi) y diseño del MVP funcional.
 - **En curso:** Preparación de la entrega final y sustentación.
 - **Siguiente paso:** Evaluación Heurística profunda de la interfaz.
-- **Última actualización:** 2026-10-20 por Verónica Mejía, Alejandra Fonseca y Juan Pablo Gutiérrez.
+- **Última actualización:** 2026-10-27 por Verónica Mejía, Alejandra Fonseca y Juan Pablo Gutiérrez.
