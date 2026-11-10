@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Emprendedor Estudiantil - EAFIT Pedidos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="pb-16">
+
+  <header class="bg-emerald-800 text-white sticky top-0 z-30 shadow-md">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="index.html" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+        <div>
+          <h1 class="font-bold text-base">Panel de Emprendedor Estudiantil</h1>
+          <p class="text-[11px] text-emerald-200">Dulce Bloque 38 · Venta en Campus y Casilleros</p>
+        </div>
+      </div>
+      <a href="catalogo.html" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold">
+        Ver mi Tienda en Catálogo
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 pt-5 space-y-6">
+
+    <!-- 1. Editor de Catálogo y Stock con Actualización Diaria -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-boxes-packing text-emerald-700"></i> Editar Catálogo y Stock Diario
+          </h2>
+          <p class="text-xs text-slate-500">Publica las unidades que trajiste hoy a la universidad. Se actualiza en vivo en el catálogo.</p>
+        </div>
+        <span id="statusPublicacion" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+          Catálogo de hoy publicado ✓
+        </span>
+      </div>
+
+      <div id="catalogEditorList" class="divide-y divide-slate-100"></div>
+
+      <!-- Formulario Rápido para Nuevo Producto del Día -->
+      <div class="pt-3 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-4 gap-2">
+        <input id="newProdName" type="text" placeholder="Nuevo producto (ej. Empanada)" class="p-2 text-xs border border-slate-300 rounded-xl sm:col-span-2" />
+        <input id="newProdPrice" type="number" placeholder="Precio ($)" class="p-2 text-xs border border-slate-300 rounded-xl" />
+        <button onclick="agregarProductoEmprendedor()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl py-2 px-3">
+          + Publicar Producto Hoy
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. Tablero Kanban de Pedidos del Emprendimiento -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-slate-800">Flujo de Pedidos Pagados (Kanban)</h2>
+        <button onclick="simularPedidoEmprendedor()" class="text-xs font-bold text-emerald-800 underline">
+          + Simular Nuevo Pedido Pagado
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="kanbanBoard">
+        <!-- Renderizado por JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const KANBAN_COLS = [
+      { key: 'Alerta de nuevo pedido pagado', icon: 'fa-bell text-amber-500', next: 'Empacar producto', nextOrderState: 'En cocina' },
+      { key: 'Empacar producto', icon: 'fa-box-open text-blue-600', next: 'Esperar en punto / Mandar con repartidor', nextOrderState: 'Buscando repartidor' },
+      { key: 'Esperar en punto / Mandar con repartidor', icon: 'fa-person-walking-arrow-right text-emerald-600', next: 'Entregado', nextOrderState: 'En camino' }
+    ];
+
+    function obtenerCatalogo() {
+      const guardado = localStorage.getItem('eafit_emprendedor_catalog');
+      if (guardado) return JSON.parse(guardado);
+      const inicial = [
+        { id: 'emp-1', nombre: 'Brownie Melcochudo Artesanal', precio: 6500, stock: 18 },
+        { id: 'emp-2', nombre: 'Galleta Red Velvet ChocoBites', precio: 5000, stock: 12 },
+        { id: 'emp-3', nombre: 'Cold Brew Café de Origen (250ml)', precio: 7500, stock: 9 }
+      ];
+      localStorage.setItem('eafit_emprendedor_catalog', JSON.stringify(inicial));
+      return inicial;
+    }
+
+    function renderizarEditorCatalogo() {
+      const items = obtenerCatalogo();
+      const cont = document.getElementById('catalogEditorList');
+      cont.innerHTML = items.map((item, idx) => `
+        <div class="py-2.5 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p class="text-sm font-bold text-slate-800">${item.nombre}</p>
+            <p class="text-xs text-slate-500">$${Number(item.precio).toLocaleString('es-CO')}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-500">Stock hoy:</label>
+            <input type="number" value="${item.stock}" onchange="actualizarStockItem(${idx}, this.value)"
+              class="w-16 p-1.5 text-center text-xs font-bold border border-slate-300 rounded-lg" />
+            <button onclick="eliminarItem(${idx})" class="text-red-500 hover:bg-red-50 p-1.5 rounded-lg text-xs">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function actualizarStockItem(idx, nuevoStock) {
+      const items = obtenerCatalogo();
+      items[idx].stock = Math.max(0, parseInt(nuevoStock || 0, 10));
+      localStorage.setItem('eafit_emprendedor_catalog', JSON.stringify(items));
+      const badge = document.getElementById('statusPublicacion');
+      badge.textContent = 'Stock actualizado hoy a las ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ✓';
+    }
+
+    function agregarProductoEmprendedor() {
+      const nombre = document.getElementById('newProdName').value.trim();
+      const precio = parseInt(document.getElementById('newProdPrice').value, 10);
+      if (!nombre || !precio) return alert('Completa el nombre y precio del producto.');
+      const items = obtenerCatalogo();
+      items.push({ id: 'emp-' + Date.now(), nombre, precio, stock: 15 });
+      localStorage.setItem('eafit_emprendedor_catalog', JSON.stringify(items));
+      document.getElementById('newProdName').value = '';
+      document.getElementById('newProdPrice').value = '';
+      renderizarEditorCatalogo();
+    }
+
+    function eliminarItem(idx) {
+      const items = obtenerCatalogo();
+      items.splice(idx, 1);
+      localStorage.setItem('eafit_emprendedor_catalog', JSON.stringify(items));
+      renderizarEditorCatalogo();
+    }
+
+    function simularPedidoEmprendedor() {
+      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+      const nueva = {
+        id: 'ORD-' + Math.floor(100 + Math.random() * 900),
+        fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        comprador: 'sofia.a@eafit.edu.co',
+        items: [{ prodName: '2x Brownie Melcochudo Artesanal', storeName: 'Dulce Bloque 38', storeType: 'emprendimiento', cantidad: 2, precio: 6500 }],
+        total: 13000,
+        horario: '12:30 PM - 12:45 PM',
+        modoEntrega: 'Compañero Repartidor',
+        ubicacion: {
+          bloque: 'Bloque 38',
+          piso: 'Piso 1',
+          aula: 'Casillero / Mesas entrada',
+          direccionCompleta: 'Bloque 38 · Piso 1 · Casillero / Mesas entrada'
+        },
+        metodoPago: 'Nequi',
+        estado: 'Recibido',
+        estadoEmprendedor: 'Alerta de nuevo pedido pagado',
+        esEmprendimiento: true,
+        alertaLlegada: false,
+        pin: Math.floor(1000 + Math.random() * 9000).toString()
+      };
+      ordenes.unshift(nueva);
+      localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
+      localStorage.setItem('eafit_active_order_id', nueva.id);
+      renderizarKanban();
+    }
+
+    function avanzarKanban(id, nuevoEstadoEmp, nuevoEstadoGlobal) {
+      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+      const idx = ordenes.findIndex(o => o.id === id);
+      if (idx > -1) {
+        ordenes[idx].estadoEmprendedor = nuevoEstadoEmp;
+        ordenes[idx].estado = nuevoEstadoGlobal;
+        if (nuevoEstadoGlobal === 'En camino') {
+          ordenes[idx].alertaLlegada = true;
+        }
+        localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
+        renderizarKanban();
+      }
+    }
+
+    function renderizarKanban() {
+      const board = document.getElementById('kanbanBoard');
+      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+
+      board.innerHTML = KANBAN_COLS.map(col => {
+        const filtradas = ordenes.filter(o => (o.estadoEmprendedor || 'Alerta de nuevo pedido pagado') === col.key);
+
+        const cardsHTML = filtradas.length === 0
+          ? `<p class="text-xs text-slate-400 italic py-4 text-center">Sin pedidos en esta etapa</p>`
+          : filtradas.map(o => `
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2 shadow-sm">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-extrabold text-slate-900">${o.id}</span>
+                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">${o.metodoPago || 'Pagado'}</span>
+              </div>
+              <p class="text-xs font-semibold text-slate-700">${o.items.map(i => i.prodName).join(', ')}</p>
+              <p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot"></i> ${o.ubicacion.direccionCompleta}</p>
+              <p class="text-[11px] text-slate-500">Modalidad: <strong>${o.modoEntrega}</strong> · PIN: <strong>${o.pin}</strong></p>
+              <button onclick="avanzarKanban('${o.id}', '${col.next}', '${col.nextOrderState}')"
+                class="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg transition">
+                Pasar a: ${col.next} →
+              </button>
+            </div>
+          `).join('');
+
+        return `
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
+                <h3 class="text-xs font-extrabold uppercase text-slate-700 flex items-center gap-1.5">
+                  <i class="fa-solid ${col.icon}"></i> ${col.key}
+                </h3>
+                <span class="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">${filtradas.length}</span>
+              </div>
+              <div class="space-y-3">${cardsHTML}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    renderizarEditorCatalogo();
+    renderizarKanban();
+  </script>
+</body>
+</html>
