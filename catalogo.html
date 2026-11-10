@@ -1,258 +1,359 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EAFIT Pedidos</title>
-    
-    <!-- Importar fuentes institucionales y Tailwind directamente -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        eafit: {
-                            oscuro: '#000066',
-                            claro: '#00a9e0',
-                            amarillo: '#ffe500',
-                            bg: '#f6f6f6'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f6f6f6; color: #333333; }
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TDKGHDT9WV"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-TDKGHDT9WV');
-</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo y Disponibilidad - EAFIT Pedidos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
+<body class="pb-28">
 
-<body class="bg-[#EFEFEF] text-[#222222] font-sans">
-    
-    <!-- Contenedor Wrapper para simular App Móvil en PC -->
-    <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl pb-24 border-x border-gray-200">
-        
-        <!-- Navbar -->
-        <nav class="bg-white p-4 shadow-sm flex justify-between items-center sticky top-0 z-40">
-            <div class="flex items-center gap-3">
-                <button onclick="toggleMenu()" class="text-2xl font-bold active:scale-95">≡</button>
-                <h1 class="font-bold text-lg">EAFIT Pedidos</h1>
-            </div>
-            <button onclick="window.location.href='pago.html'" class="relative font-bold text-xl active:scale-95">
-                🛒 <span id="cart-badge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] px-1.5 rounded-full hidden">0</span>
-            </button>
-        </nav>
-
-        <!-- Menú Lateral -->
-        <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl transform -translate-x-full transition-transform z-50 p-6">
-            <button onclick="toggleMenu()" class="font-bold text-xl mb-6 active:scale-95">✕ Cerrar</button>
-            <ul class="space-y-4 font-bold text-gray-700">
-                <li onclick="toggleMapModal(); toggleMenu()" class="hover:text-gray-900 cursor-pointer flex items-center gap-2">📍 Mapa del Campus</li>
-                <li onclick="window.location.href='restaurantes.html'" class="hover:text-gray-900 cursor-pointer flex items-center gap-2">🍔 Restaurantes</li>
-                <li onclick="window.location.href='historial.html'" class="hover:text-gray-900 cursor-pointer flex items-center gap-2">📦 Mis Pedidos</li>
-                <li onclick="window.location.href='ajustes.html'" class="hover:text-gray-900 cursor-pointer flex items-center gap-2">⚙️ Ajustes</li>
-                <li onclick="window.location.href='index.html'" class="text-red-600 cursor-pointer mt-8">Cerrar Sesión</li>
-            </ul>
+  <!-- Navbar -->
+  <header class="bg-eafit-oscuro text-white sticky top-0 z-30 shadow-md">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="index.html" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20" title="Volver al Login">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+        <div>
+          <h1 class="font-bold text-base leading-tight">EAFIT Pedidos</h1>
+          <p class="text-[11px] text-emerald-300 flex items-center gap-1">
+            <i class="fa-solid fa-location-crosshairs"></i> GPS Activo · Campus Medellín
+          </p>
         </div>
-
-        <!-- Modal del Mapa del Campus -->
-        <div id="map-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-3 backdrop-blur-sm transition-opacity">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg h-[82vh] overflow-hidden relative flex flex-col transform transition-all animate-fadeIn">
-                
-                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xl">📍</span>
-                        <h3 class="font-black text-gray-900 text-base">Mapa Interactivo - Campus EAFIT</h3>
-                    </div>
-                    <button onclick="toggleMapModal()" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold flex items-center justify-center text-lg active:scale-95 transition-all">✕</button>
-                </div>
-
-                <div class="flex-1 w-full bg-gray-100 relative">
-                    <iframe class="w-full h-full border-0" allowfullscreen src="https://umap.openstreetmap.de/en/map/universidad-eafit-campus-medellin_67039"></iframe>
-                </div>
-
-                <div class="p-3 bg-gray-50 border-t border-gray-100 text-center">
-                    <p class="text-xs text-gray-500 font-semibold">Toca o arrastra para explorar los bloques y plazoletas</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-5 space-y-6">
-            <div>
-                <h2 class="text-2xl font-black text-gray-900">¿Qué vas a pedir hoy?</h2>
-            </div>
-
-            <!-- Gráfico de Demanda Actual -->
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm">
-                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Demanda actual</p>
-                <div class="h-28 w-full"><canvas id="congestionChart"></canvas></div>
-            </div>
-
-            <!-- Filtros scrolleables -->
-            <div class="flex gap-2 overflow-x-auto hide-scroll pb-1 -mx-2 px-2">
-                <button onclick="filterMenu('Todos')" class="filter-btn bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md">Todos</button>
-                <button onclick="filterMenu('Hamburguesas')" class="filter-btn bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Hamburguesas</button>
-                <button onclick="filterMenu('Sushi')" class="filter-btn bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Sushi</button>
-                <button onclick="filterMenu('Pollo')" class="filter-btn bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50">Pollo</button>
-            </div>
-
-            <!-- Lista de Catálogo -->
-            <div id="menu-list" class="space-y-4"></div>
-        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <a href="seguimiento.html" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium flex items-center gap-1.5">
+          <i class="fa-solid fa-clock-rotate-left"></i> Seguimiento
+        </a>
+      </div>
     </div>
+  </header>
 
-    <script>
-        const menuDB = [
-            { id: 1, categoria: "Sushi", restaurante: "Nikkei Village", plato: "Sushi Roll 10pz", precio: 22000, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&q=80" },
-            { id: 2, categoria: "Pollo", restaurante: "Frisby", plato: "Combo Frisby", precio: 25000, img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=80" },
-            { id: 3, categoria: "Hamburguesas", restaurante: "The Corral", plato: "Hamburguesa Todoterreno", precio: 28000, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80" },
-            { id: 4, categoria: "Hamburguesas", restaurante: "Dogger", plato: "Perro Sencillo", precio: 15000, img: "https://images.unsplash.com/photo-1612392062631-94dd858cba88?w=400&q=80" }
-        ];
+  <main class="max-w-5xl mx-auto px-4 pt-5 space-y-6">
 
-        let activeCategory = 'Todos';
+    <!-- Panel Interactivo: Gráfico de Demanda + Mapa del Campus en Tiempo Real -->
+    <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-chart-column text-blue-900"></i> Demanda y Saturación en el Campus (Tiempo Real)
+          </h2>
+          <p class="text-xs text-slate-500">Haz clic en una barra o punto del mapa para inspeccionar tiempos de fila y stock disponible.</p>
+        </div>
+        <span class="text-[11px] bg-blue-50 text-blue-900 font-semibold px-2.5 py-1 rounded-full border border-blue-200">
+          Actualizado hace 10 seg
+        </span>
+      </div>
 
-        function filterMenu(categoria) {
-            activeCategory = categoria;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.className = btn.innerText === categoria 
-                    ? "filter-btn bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-md transition-colors"
-                    : "filter-btn bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap shadow-sm hover:bg-gray-50 transition-colors";
-            });
-            renderMenu();
-        }
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+        <!-- Gráfico de Barras Interactivo -->
+        <div class="space-y-2.5 bg-slate-50 p-3.5 rounded-xl border border-slate-200" id="demandChart">
+          <!-- Renderizado por JS -->
+        </div>
 
-        function renderMenu() {
-            const list = document.getElementById('menu-list');
-            const filteredMenu = activeCategory === 'Todos' ? menuDB : menuDB.filter(i => i.categoria === activeCategory);
-            
-            list.innerHTML = filteredMenu.map(item => `
-                <div onclick="goToProduct(${item.id})" class="flex items-center gap-4 bg-white p-3 rounded-xl shadow-sm border border-gray-100 cursor-pointer active:scale-95 transition-all">
-                    <img src="${item.img}" class="w-20 h-20 object-cover rounded-lg grayscale">
-                    <div>
-                        <h4 class="font-bold text-gray-800">${item.plato}</h4>
-                        <p class="text-xs text-gray-500 font-semibold">${item.restaurante}</p>
-                        <p class="text-sm font-black mt-1 text-gray-900">$${item.precio.toLocaleString()}</p>
-                    </div>
-                </div>
-            `).join('');
-            updateCartBadge();
-        }
+        <!-- Mapa Simulado del Campus EAFIT -->
+        <div class="relative bg-gradient-to-br from-emerald-50 via-slate-100 to-blue-50 h-56 rounded-xl border border-slate-300 overflow-hidden p-3 flex flex-col justify-between">
+          <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-500">
+            <span><i class="fa-solid fa-map"></i> Mapa Campus EAFIT</span>
+            <div class="flex gap-2">
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Baja</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Media</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> Saturado</span>
+            </div>
+          </div>
 
-        function goToProduct(id) {
-            localStorage.setItem('selectedProduct', JSON.stringify(menuDB.find(i => i.id === id)));
-            window.location.href = 'producto.html';
-        }
+          <!-- Nodos en el mapa -->
+          <div id="campusMapNodes" class="relative w-full h-36">
+            <!-- Renderizado por JS -->
+          </div>
 
-        function toggleMenu() {
-            document.getElementById('side-menu').classList.toggle('-translate-x-full');
-        }
+          <div id="mapZoneDetail" class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-200 text-xs flex justify-between items-center">
+            <span class="font-semibold text-slate-700">Selecciona una zona en el gráfico o mapa</span>
+            <span class="text-blue-900 font-bold">-- min</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        function toggleMapModal() {
-            document.getElementById('map-modal').classList.toggle('hidden');
-        }
+    <!-- Barra de Filtros Destacados -->
+    <section class="flex flex-wrap items-center gap-2">
+      <button onclick="filtrarCatalogo('todos')" id="filter-todos"
+        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-eafit-oscuro text-white shadow-sm transition">
+        Todos los Comercios
+      </button>
+      <button onclick="filtrarCatalogo('emprendimiento')" id="filter-emprendimiento"
+        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5 ring-2 ring-emerald-300">
+        <i class="fa-solid fa-seedling"></i> Emprendimientos Estudiantiles
+      </button>
+      <button onclick="filtrarCatalogo('disponibilidad')" id="filter-disponibilidad"
+        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition flex items-center gap-1.5">
+        <i class="fa-solid fa-bolt text-amber-500"></i> Mejor Disponibilidad (&lt; 10 min)
+      </button>
+      <button onclick="filtrarCatalogo('restaurante')" id="filter-restaurante"
+        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition">
+        Plazoletas y Restaurantes
+      </button>
+    </section>
 
-        function updateCartBadge() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const badge = document.getElementById('cart-badge');
-            if(cart.length > 0) { badge.innerText = cart.length; badge.classList.remove('hidden'); }
-        }
+    <!-- Grid de Tiendas y Productos -->
+    <section id="storesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Renderizado dinámico -->
+    </section>
 
-        // Inicializar Catálogo
-        renderMenu();
+  </main>
 
-        // Gráfico de Demanda Actual Interactivo y Realista
-        const ctx = document.getElementById('congestionChart').getContext('2d');
-        
-        const horasLabels = ['8am', '9am', '10am', '11am', '12m', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm'];
-        const datosDemanda = [15, 25, 45, 65, 95, 100, 80, 50, 30, 20, 10]; 
+  <!-- Barra Flotante del Carrito Acumulable -->
+  <div id="cartBar" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 shadow-2xl p-3 z-40 hidden">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div>
+        <p class="text-xs text-slate-500 font-medium">Carrito Acumulable (<span id="cartCount">0</span> productos)</p>
+        <p class="text-lg font-extrabold text-eafit-oscuro" id="cartTotal">$0</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="vaciarCarrito()" class="px-3 py-2 text-xs text-red-600 hover:bg-red-50 rounded-xl font-semibold">
+          Vaciar
+        </button>
+        <a href="pago.html" class="px-5 py-2.5 bg-eafit-oscuro hover:bg-blue-900 text-white text-sm font-bold rounded-xl shadow flex items-center gap-2">
+          Ir al Checkout <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
 
-        const backgroundColors = datosDemanda.map(valor => 
-            valor > 80 ? 'rgba(220, 38, 38, 0.85)' : 'rgba(209, 213, 219, 0.6)'
-        );
-        
-        const hoverColors = datosDemanda.map(valor => 
-            valor > 80 ? 'rgba(185, 28, 28, 1)' : 'rgba(156, 163, 175, 1)'
-        );
+  <script>
+    // Datos base + Sincronización con el catálogo del Emprendedor Estudiantil
+    const defaultEmprendedorItems = [
+      { id: 'emp-1', nombre: 'Brownie Melcochudo Artesanal', precio: 6500, stock: 18 },
+      { id: 'emp-2', nombre: 'Galleta Red Velvet ChocoBites', precio: 5000, stock: 12 },
+      { id: 'emp-3', nombre: 'Cold Brew Café de Origen (250ml)', precio: 7500, stock: 9 }
+    ];
 
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: horasLabels,
-                datasets: [{
-                    data: datosDemanda,
-                    backgroundColor: backgroundColors,
-                    hoverBackgroundColor: hoverColors,
-                    borderRadius: 6,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 1200,
-                    easing: 'easeOutQuart'
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                        titleFont: { family: 'Inter', size: 12, weight: 'bold' },
-                        bodyFont: { family: 'Inter', size: 12 },
-                        padding: 10,
-                        cornerRadius: 8,
-                        displayColors: false,
-                        callbacks: {
-                            title: function(context) {
-                                return `Hora: ${context[0].label}`;
-                            },
-                            label: function(context) {
-                                const valor = context.parsed.y;
-                                if (valor > 80) {
-                                    return `🔴 Alta congestión (${valor}% - Plazoletas llenas)`;
-                                } else if (valor > 50) {
-                                    return `🟡 Demanda moderada (${valor}%)`;
-                                } else {
-                                    return `🟢 Flujo normal / Baja demanda (${valor}%)`;
-                                }
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: { 
-                        display: false,
-                        grid: { display: false }
-                    },
-                    x: { 
-                        grid: { display: false }, 
-                        border: { display: false }, 
-                        ticks: { 
-                            font: { family: 'Inter', size: 10, weight: 'bold' }, 
-                            color: '#6B7280' 
-                        } 
-                    }
-                }
-            }
-        });
-    </script>
+    function obtenerCatalogoEmprendedor() {
+      const guardado = localStorage.getItem('eafit_emprendedor_catalog');
+      if (guardado) return JSON.parse(guardado);
+      localStorage.setItem('eafit_emprendedor_catalog', JSON.stringify(defaultEmprendedorItems));
+      return defaultEmprendedorItems;
+    }
+
+    const comercios = [
+      {
+        id: 'store-emp-1',
+        nombre: 'Dulce Bloque 38 (Emprendimiento Estudiantil)',
+        tipo: 'emprendimiento',
+        bloque: 'Bloque 38 · Hall Primer Piso',
+        saturacion: 25,
+        tiempoEspera: 5,
+        coords: { top: '28%', left: '62%' },
+        productos: obtenerCatalogoEmprendedor()
+      },
+      {
+        id: 'store-emp-2',
+        nombre: 'Sánduches & Wraps El Inge (Emprendimiento)',
+        tipo: 'emprendimiento',
+        bloque: 'Bloque 19 · Zona Verde Ingeniería',
+        saturacion: 35,
+        tiempoEspera: 7,
+        coords: { top: '60%', left: '30%' },
+        productos: [
+          { id: 'emp-4', nombre: 'Wrap de Pollo Pesto Casero', precio: 13500, stock: 10 },
+          { id: 'emp-5', nombre: 'Hatsu / Té Frío Artesanal', precio: 5500, stock: 15 }
+        ]
+      },
+      {
+        id: 'store-rest-1',
+        nombre: 'Bigos (Plazoleta del Estudiante)',
+        tipo: 'restaurante',
+        bloque: 'Plazoleta Central · Bloque 26',
+        saturacion: 88,
+        tiempoEspera: 22,
+        coords: { top: '45%', left: '48%' },
+        productos: [
+          { id: 'rest-1', nombre: 'bowl Mexicano con Guacamole', precio: 18900, stock: 25 },
+          { id: 'rest-2', nombre: 'Burrito Clásico Mixto', precio: 17500, stock: 14 }
+        ]
+      },
+      {
+        id: 'store-rest-2',
+        nombre: 'ChipStation (Cafetería Sur)',
+        tipo: 'restaurante',
+        bloque: 'Plazoleta Sur · Bloque 18',
+        saturacion: 40,
+        tiempoEspera: 8,
+        coords: { top: '72%', left: '70%' },
+        productos: [
+          { id: 'rest-3', nombre: 'Papas Belgas con Topping Pollo', precio: 14900, stock: 30 },
+          { id: 'rest-4', nombre: 'Limonada Natural 16oz', precio: 4800, stock: 40 }
+        ]
+      }
+    ];
+
+    let filtroActual = 'todos';
+    let comercioSeleccionadoMapa = comercios[0].id;
+
+    function colorSaturacion(sat) {
+      if (sat < 45) return { bg: 'bg-emerald-500', text: 'text-emerald-700', label: 'Baja saturación' };
+      if (sat < 75) return { bg: 'bg-amber-500', text: 'text-amber-700', label: 'Demanda media' };
+      return { bg: 'bg-red-500', text: 'text-red-700', label: 'Alta congestión' };
+    }
+
+    function renderizarDemandaYMapa() {
+      const chart = document.getElementById('demandChart');
+      const mapNodes = document.getElementById('campusMapNodes');
+      chart.innerHTML = '';
+      mapNodes.innerHTML = '';
+
+      comercios.forEach(c => {
+        const col = colorSaturacion(c.saturacion);
+        const activo = c.id === comercioSeleccionadoMapa;
+
+        // Barra en el gráfico
+        chart.innerHTML += `
+          <div onclick="seleccionarNodoMapa('${c.id}')" class="cursor-pointer p-2 rounded-lg transition ${activo ? 'bg-white shadow-sm ring-2 ring-blue-900' : 'hover:bg-white/60'}">
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <span class="truncate pr-2">${c.nombre}</span>
+              <span class="${col.text} font-bold">${c.saturacion}% · ~${c.tiempoEspera}m</span>
+            </div>
+            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div class="${col.bg} h-full rounded-full transition-all duration-500" style="width: ${c.saturacion}%"></div>
+            </div>
+          </div>
+        `;
+
+        // Nodo en el mapa
+        mapNodes.innerHTML += `
+          <button onclick="seleccionarNodoMapa('${c.id}')" 
+            style="top: ${c.coords.top}; left: ${c.coords.left};"
+            class="absolute -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full ${col.bg} text-white text-[10px] font-bold flex items-center justify-center shadow-lg hotspot-pulse ${activo ? 'ring-4 ring-blue-900 scale-125 z-10' : ''}"
+            title="${c.nombre}">
+            ${c.tiempoEspera}'
+          </button>
+        `;
+      });
+
+      const sel = comercios.find(x => x.id === comercioSeleccionadoMapa);
+      if (sel) {
+        const stockTotal = sel.productos.reduce((acc, p) => acc + Number(p.stock), 0);
+        document.getElementById('mapZoneDetail').innerHTML = `
+          <div>
+            <p class="font-bold text-slate-800">${sel.nombre}</p>
+            <p class="text-[11px] text-slate-500">${sel.bloque} · Stock total: <strong>${stockTotal} uds</strong></p>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-blue-900 text-white font-bold text-xs">~${sel.tiempoEspera} min</span>
+        `;
+      }
+    }
+
+    function seleccionarNodoMapa(id) {
+      comercioSeleccionadoMapa = id;
+      renderizarDemandaYMapa();
+    }
+
+    function filtrarCatalogo(filtro) {
+      filtroActual = filtro;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('ring-2', 'ring-offset-1', 'ring-blue-900');
+      });
+      document.getElementById('filter-' + filtro).classList.add('ring-2', 'ring-offset-1', 'ring-blue-900');
+      renderizarTiendas();
+    }
+
+    function renderizarTiendas() {
+      const container = document.getElementById('storesContainer');
+      container.innerHTML = '';
+
+      let lista = comercios;
+      if (filtroActual === 'emprendimiento') {
+        lista = comercios.filter(c => c.tipo === 'emprendimiento');
+      } else if (filtroActual === 'restaurante') {
+        lista = comercios.filter(c => c.tipo === 'restaurante');
+      } else if (filtroActual === 'disponibilidad') {
+        lista = comercios.filter(c => c.tiempoEspera <= 10).sort((a, b) => a.tiempoEspera - b.tiempoEspera);
+      }
+
+      lista.forEach(c => {
+        const col = colorSaturacion(c.saturacion);
+        const badgeTipo = c.tipo === 'emprendimiento'
+          ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-seedling"></i> Emprendimiento Estudiantil</span>`
+          : `<span class="bg-blue-100 text-blue-900 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-utensils"></i> Restaurante Campus</span>`;
+
+        const productosHTML = c.productos.map(p => `
+          <div class="flex items-center justify-between py-2.5 border-t border-slate-100">
+            <div>
+              <p class="text-sm font-semibold text-slate-800">${p.nombre}</p>
+              <p class="text-xs text-slate-500">
+                <span class="font-bold text-slate-700">$${Number(p.precio).toLocaleString('es-CO')}</span> 
+                · Stock: <span class="${p.stock > 5 ? 'text-emerald-600' : 'text-amber-600'} font-semibold">${p.stock} disp.</span>
+              </p>
+            </div>
+            <button onclick="agregarAlCarrito('${c.id}', '${c.nombre}', '${c.tipo}', '${p.id}', '${p.nombre}', ${p.precio})"
+              ${p.stock <= 0 ? 'disabled' : ''}
+              class="px-3 py-1.5 rounded-xl text-xs font-bold ${p.stock > 0 ? 'bg-eafit-oscuro hover:bg-blue-900 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'} transition">
+              + Añadir
+            </button>
+          </div>
+        `).join('');
+
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                ${badgeTipo}
+                <span class="text-xs font-bold ${col.text} flex items-center gap-1">
+                  <i class="fa-regular fa-clock"></i> ~${c.tiempoEspera} min
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900">${c.nombre}</h3>
+              <p class="text-xs text-slate-500 mb-3"><i class="fa-solid fa-location-dot"></i> ${c.bloque}</p>
+              <div class="divide-y divide-slate-100">
+                ${productosHTML}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function obtenerCarrito() {
+      return JSON.parse(localStorage.getItem('eafit_cart') || '[]');
+    }
+
+    function agregarAlCarrito(storeId, storeName, storeType, prodId, prodName, precio) {
+      const cart = obtenerCarrito();
+      const index = cart.findIndex(item => item.prodId === prodId);
+      if (index > -1) {
+        cart[index].cantidad += 1;
+      } else {
+        cart.push({ storeId, storeName, storeType, prodId, prodName, precio, cantidad: 1 });
+      }
+      localStorage.setItem('eafit_cart', JSON.stringify(cart));
+      actualizarBarraCarrito();
+    }
+
+    function vaciarCarrito() {
+      localStorage.removeItem('eafit_cart');
+      actualizarBarraCarrito();
+    }
+
+    function actualizarBarraCarrito() {
+      const cart = obtenerCarrito();
+      const bar = document.getElementById('cartBar');
+      if (cart.length === 0) {
+        bar.classList.add('hidden');
+        return;
+      }
+      bar.classList.remove('hidden');
+      const totalItems = cart.reduce((acc, i) => acc + i.cantidad, 0);
+      const totalPrecio = cart.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
+      document.getElementById('cartCount').textContent = totalItems;
+      document.getElementById('cartTotal').textContent = '$' + totalPrecio.toLocaleString('es-CO');
+    }
+
+    renderizarDemandaYMapa();
+    renderizarTiendas();
+    actualizarBarraCarrito();
+  </script>
 </body>
 </html>
