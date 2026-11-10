@@ -1,106 +1,208 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado de tu pedido</title>
-    
-    <!-- Enlace al nuevo CSS de EAFIT -->
-    <link rel="stylesheet" href="style.css">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        eafit: {
-                            oscuro: 'var(--eafit-azul-oscuro)',
-                            claro: 'var(--eafit-azul-claro)',
-                            amarillo: 'var(--eafit-amarillo)',
-                            arena: 'var(--eafit-arena)'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TDKGHDT9WV"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-TDKGHDT9WV');
-</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seguimiento en Tiempo Real - EAFIT Pedidos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-[#EFEFEF] text-[#222222] font-sans h-screen flex flex-col items-center">
+<body class="pb-16">
 
-    <div class="max-w-md w-full bg-white shadow-2xl h-full flex flex-col border-x border-gray-200">
-        
-        <div class="p-6 text-center space-y-6 mt-6 flex-1">
-            <h2 class="text-2xl font-black">Estado de tu pedido</h2>
-            
-            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-sm">
-                <p class="text-sm text-gray-500 font-semibold">Orden <span id="order-id" class="font-bold text-gray-900 text-lg"></span></p>
-                <h3 class="text-2xl font-black text-yellow-600 uppercase mt-2">En Cocina</h3>
-                <p class="text-sm font-bold mt-3 bg-white inline-block px-4 py-2 rounded-full shadow-sm border border-gray-100">Recogida: <span id="order-time" class="text-gray-900"></span></p>
-            </div>
-
-            <div class="text-left space-y-5 px-6 pt-4">
-                <div class="flex items-center gap-4"><div class="w-5 h-5 bg-green-500 rounded-full shadow-md"></div><p class="font-bold text-lg">Pedido Recibido</p></div>
-                <div class="flex items-center gap-4 opacity-40"><div class="w-5 h-5 bg-yellow-500 rounded-full"></div><p class="font-bold text-lg">En preparación</p></div>
-                <div class="flex items-center gap-4 opacity-40"><div class="w-5 h-5 bg-blue-500 rounded-full"></div><p class="font-bold text-lg">Listo para recoger</p></div>
-            </div>
+  <header class="bg-eafit-oscuro text-white sticky top-0 z-30 shadow-md">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="catalogo.html" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+        <div>
+          <h1 class="font-bold text-base">Seguimiento de tu Pedido</h1>
+          <p class="text-[11px] text-blue-200" id="orderHeaderSub">Sincronizado en tiempo real</p>
         </div>
-
-        <div class="p-5 border-t border-gray-100 flex gap-3 bg-white shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
-            <button onclick="toggleChat()" class="flex-1 bg-gray-100 text-gray-800 font-bold py-4 rounded-xl text-sm hover:bg-gray-200 active:scale-95 transition-all">💬 Ayuda</button>
-            <button onclick="window.location.href='catalogo.html'" class="flex-1 bg-gray-900 text-white font-bold py-4 rounded-xl text-sm hover:bg-gray-800 active:scale-95 transition-all shadow-md">Volver al menú</button>
-        </div>
+      </div>
+      <div class="flex gap-2">
+        <a href="delivery.html" class="px-2.5 py-1 bg-amber-500 text-white rounded-lg text-xs font-bold">Vista Delivery</a>
+        <a href="emprendedor.html" class="px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-xs font-bold">Vista Emprendedor</a>
+      </div>
     </div>
+  </header>
 
-    <!-- Modal de Chat/Mensajería -->
-    <div id="chat-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 space-y-4 transform transition-all">
-            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                <h3 class="font-bold text-lg">💬 Mensaje al Restaurante</h3>
-                <button onclick="toggleChat()" class="text-gray-400 hover:text-gray-700 font-bold text-xl active:scale-95">✕</button>
-            </div>
-            <textarea id="chat-input" rows="3" class="w-full border border-gray-200 rounded-xl p-3 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none" placeholder="Ej. Qué pena, ya paso por el pedido..."></textarea>
-            <button onclick="sendMessage()" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl active:scale-95 transition-all shadow-md">Enviar Mensaje</button>
-        </div>
+  <main class="max-w-3xl mx-auto px-4 pt-5 space-y-5" id="mainTracking">
+    <!-- Renderizado por JS -->
+  </main>
+
+  <!-- Modal Alerta de Llegada + Código PIN y QR -->
+  <div id="modalLlegada" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4">
+      <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-2xl">
+        <i class="fa-solid fa-bell-concierge"></i>
+      </div>
+      <div>
+        <span class="text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">
+          ¡Tu pedido llegó al punto!
+        </span>
+        <h3 class="text-lg font-extrabold text-slate-900 mt-2">Valida tu Entrega</h3>
+        <p class="text-xs text-slate-500 mt-1" id="modalDireccionText"></p>
+      </div>
+
+      <!-- Código PIN -->
+      <div class="bg-slate-100 p-4 rounded-xl border border-slate-200">
+        <p class="text-[11px] uppercase font-bold text-slate-500">Código PIN de Seguridad</p>
+        <p id="modalPinCode" class="text-3xl font-black tracking-widest text-eafit-oscuro mt-1">----</p>
+      </div>
+
+      <!-- QR Simulado -->
+      <div class="p-3 border border-dashed border-slate-300 rounded-xl inline-block">
+        <i class="fa-solid fa-qrcode text-6xl text-slate-800"></i>
+        <p class="text-[10px] text-slate-500 mt-1">Muestra este QR o dicta el PIN al repartidor</p>
+      </div>
+
+      <button onclick="cerrarModalLlegada()" class="w-full py-2.5 bg-eafit-oscuro text-white font-bold rounded-xl text-sm">
+        Entendido
+      </button>
     </div>
+  </div>
 
-    <script>
-        const order = JSON.parse(localStorage.getItem('currentOrder'));
-        if(!order) window.location.href = 'catalogo.html';
-        document.getElementById('order-id').innerText = `#${order.id}`;
-        document.getElementById('order-time').innerText = order.time;
+  <script>
+    const ESTADOS = [
+      'Recibido',
+      'En cocina',
+      'Buscando repartidor',
+      'En camino',
+      'Entregado'
+    ];
 
-        function toggleChat() {
-            document.getElementById('chat-modal').classList.toggle('hidden');
+    function obtenerOrdenActiva() {
+      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+      const idActivo = localStorage.getItem('eafit_active_order_id');
+      return ordenes.find(o => o.id === idActivo) || ordenes[0] || null;
+    }
+
+    function actualizarEstadoManual(nuevoEstado) {
+      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+      const orden = obtenerOrdenActiva();
+      if (!orden) return;
+      const idx = ordenes.findIndex(o => o.id === orden.id);
+      if (idx > -1) {
+        ordenes[idx].estado = nuevoEstado;
+        if (nuevoEstado === 'En camino') {
+          ordenes[idx].alertaLlegada = true;
         }
+        localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
+        renderizarSeguimiento();
+      }
+    }
 
-        function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const msg = input.value;
-            if(!msg.trim()) return;
-            
-            // Crear el objeto del mensaje
-            const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const newMsg = { user: `Estudiante - Orden #${order.id}`, msg: msg, time: timeStr };
-            
-            // Guardar en localStorage
-            let msgs = JSON.parse(localStorage.getItem('mensajes_pedido')) || [];
-            msgs.push(newMsg);
-            localStorage.setItem('mensajes_pedido', JSON.stringify(msgs));
-            
-            input.value = '';
-            toggleChat();
-            alert("Mensaje enviado a la cocina con éxito.");
-        }
-    </script>
+    function abrirModalLlegada() {
+      const orden = obtenerOrdenActiva();
+      if (!orden) return;
+      document.getElementById('modalPinCode').textContent = orden.pin;
+      document.getElementById('modalDireccionText').textContent = orden.ubicacion.direccionCompleta;
+      const modal = document.getElementById('modalLlegada');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function cerrarModalLlegada() {
+      const modal = document.getElementById('modalLlegada');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderizarSeguimiento() {
+      const orden = obtenerOrdenActiva();
+      const cont = document.getElementById('mainTracking');
+
+      if (!orden) {
+        cont.innerHTML = `
+          <div class="bg-white rounded-2xl p-6 text-center border border-slate-200">
+            <p class="text-sm text-slate-600 mb-3">No tienes pedidos activos en este momento.</p>
+            <a href="catalogo.html" class="px-4 py-2 bg-eafit-oscuro text-white rounded-xl text-xs font-bold">Ir al Catálogo</a>
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById('orderHeaderSub').textContent = `${orden.id} · ${orden.horario}`;
+      const pasoActual = ESTADOS.indexOf(orden.estado);
+
+      const timelineHTML = ESTADOS.map((est, index) => {
+        const completado = index <= pasoActual;
+        const actual = index === pasoActual;
+        return `
+          <div class="flex items-start space-x-3">
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                completado ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-500'
+              } ${actual ? 'ring-4 ring-emerald-200' : ''}">
+                ${completado ? '<i class="fa-solid fa-check"></i>' : index + 1}
+              </div>
+              ${index < ESTADOS.length - 1 ? `<div class="w-0.5 h-8 ${index < pasoActual ? 'bg-emerald-600' : 'bg-slate-200'}"></div>` : ''}
+            </div>
+            <div class="pt-1">
+              <p class="text-sm font-bold ${completado ? 'text-slate-900' : 'text-slate-400'}">${est}</p>
+              <p class="text-xs text-slate-500">${actual ? 'Estado actual en curso' : ''}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      cont.innerHTML = `
+        <!-- Banner Alerta de Llegada si el repartidor notificó -->
+        ${orden.alertaLlegada && orden.estado !== 'Entregado' ? `
+          <div class="bg-amber-500 text-white p-4 rounded-2xl shadow-lg flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-bell text-2xl animate-bounce"></i>
+              <div>
+                <p class="font-extrabold text-sm">¡El repartidor ha llegado a ${orden.ubicacion.bloque}!</p>
+                <p class="text-xs">Muestra el código PIN <strong>${orden.pin}</strong> para recibir tu pedido.</p>
+              </div>
+            </div>
+            <button onclick="abrirModalLlegada()" class="px-3 py-1.5 bg-white text-amber-700 font-bold text-xs rounded-xl">
+              Ver PIN / QR
+            </button>
+          </div>
+        ` : ''}
+
+        <!-- Tarjeta Principal de Estado y PIN -->
+        <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+          <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <span class="text-xs font-bold text-blue-900 bg-blue-50 px-2.5 py-1 rounded-full">${orden.modoEntrega}</span>
+              <h2 class="text-lg font-extrabold text-slate-900 mt-1">Orden ${orden.id}</h2>
+              <p class="text-xs text-slate-500"><i class="fa-solid fa-location-dot"></i> ${orden.ubicacion.direccionCompleta}</p>
+            </div>
+            <div class="text-right bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200">
+              <p class="text-[10px] uppercase font-bold text-slate-500">PIN de Entrega</p>
+              <p class="text-xl font-black text-eafit-oscuro tracking-widest">${orden.pin}</p>
+            </div>
+          </div>
+
+          <!-- Línea de Tiempo Interactiva -->
+          <div class="py-2">
+            ${timelineHTML}
+          </div>
+
+          <!-- Acciones de Simulación y Modal de Llegada -->
+          <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <button onclick="abrirModalLlegada()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5">
+              <i class="fa-solid fa-qrcode"></i> Simular Alerta de Llegada / Ver PIN y QR
+            </button>
+            <div class="flex flex-wrap gap-1">
+              ${ESTADOS.map(e => `
+                <button onclick="actualizarEstadoManual('${e}')" class="px-2 py-1 text-[11px] rounded-lg border ${orden.estado === e ? 'bg-eafit-oscuro text-white' : 'bg-slate-50 text-slate-600'}">
+                  ${e}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    window.addEventListener('storage', renderizarSeguimiento);
+    renderizarSeguimiento();
+  </script>
 </body>
 </html>
