@@ -1,52 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto+Serif:opsz,wght@8..144,400;700&display=swap');
-
 :root {
-    /* Paleta de colores principal de EAFIT */
-    --eafit-azul-oscuro: rgba(0, 0, 102, 1);
-    --eafit-azul-claro: rgba(0, 169, 224, 1);
-    --eafit-amarillo: rgba(255, 229, 0, 1);
-    --eafit-arena: rgba(242, 237, 225, 1);
-    --eafit-gris-texto: rgba(51, 51, 51, 1);
-    --eafit-bg: rgba(246, 246, 246, 1);
+  --eafit-oscuro: #002855;
+  --eafit-medio: #004B87;
+  --eafit-claro: #00843D;
+  --eafit-acento: #F2A900;
+  --eafit-fondo: #F4F6F9;
 }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--eafit-bg);
-    color: var(--eafit-gris-texto);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  background-color: var(--eafit-fondo);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1e293b;
 }
 
-/* Animación de entrada suave (Traída del index.html) */
-.fade-in { animation: fadeIn 0.4s ease-in-out; }
-@keyframes fadeIn { 
-    from { opacity: 0; transform: translateY(10px); } 
-    to { opacity: 1; transform: translateY(0); } 
-}
+.bg-eafit-oscuro { background-color: var(--eafit-oscuro); }
+.bg-eafit-medio { background-color: var(--eafit-medio); }
+.bg-eafit-claro { background-color: var(--eafit-claro); }
+.bg-eafit-acento { background-color: var(--eafit-acento); }
+.text-eafit-oscuro { color: var(--eafit-oscuro); }
+.text-eafit-medio { color: var(--eafit-medio); }
+.text-eafit-claro { color: var(--eafit-claro); }
+.border-eafit-oscuro { border-color: var(--eafit-oscuro); }
 
-/* Ocultar barra de desplazamiento */
-.hide-scroll::-webkit-scrollbar { display: none; }
-.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* Estilos para los interruptores (Toggles) de Ajustes */
-.toggle-checkbox:checked {
-    right: 0;
-    border-color: var(--eafit-azul-oscuro);
+/* Animación de pulso para nodos de alta demanda en el mapa */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
 }
-.toggle-checkbox:checked + .toggle-label {
-    background-color: var(--eafit-azul-oscuro);
-}
-.toggle-checkbox {
-    right: 0;
-    z-index: 1;
-    border-color: #e5e7eb;
-    transition: all 0.3s;
-}
-.toggle-label {
-    width: 3rem;
-    height: 1.5rem;
-    background-color: #e5e7eb;
-    border-radius: 9999px;
-    transition: all 0.3s;
+.hotspot-pulse::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  background-color: inherit;
+  animation: pulse-ring 1.5s infinite;
+  z-index: -1;
 }
