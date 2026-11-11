@@ -7,21 +7,12 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- Librerías de Mapas (Leaflet) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            eafit: {
-              oscuro: 'var(--eafit-azul-oscuro)',
-              claro: 'var(--eafit-azul-claro)',
-              amarillo: 'var(--eafit-amarillo)',
-              arena: 'var(--eafit-arena)'
-            }
+            eafit: { oscuro: 'var(--eafit-azul-oscuro)', claro: 'var(--eafit-azul-claro)', amarillo: 'var(--eafit-amarillo)', arena: 'var(--eafit-arena)' }
           }
         }
       }
@@ -30,96 +21,78 @@
 </head>
 <body class="bg-[#EFEFEF] text-[#222222] font-sans">
 
-  <!-- Contenedor Wrapper Móvil Original -->
   <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl border-x border-gray-200 flex flex-col pb-24">
 
-    <!-- Navbar Superior con Botón Hamburguesa Original -->
+    <!-- Navbar -->
     <nav class="bg-white p-4 shadow-sm flex items-center justify-between sticky top-0 z-40 border-b border-gray-100">
       <div class="flex items-center gap-3">
-        <button onclick="toggleSidebar()" class="bg-gray-100 w-10 h-10 rounded-xl shadow-sm font-black text-lg flex items-center justify-center active:scale-95 transition-transform" title="Menú">
-          ☰
-        </button>
+        <button onclick="toggleSidebar()" class="bg-gray-100 w-10 h-10 rounded-xl shadow-sm font-black text-lg flex items-center justify-center active:scale-95" title="Menú">☰</button>
         <div>
           <h1 class="font-black text-lg leading-tight text-gray-900">EAFIT Pedidos</h1>
           <p class="text-[11px] font-bold text-emerald-600">📍 Campus Medellín · GPS Activo</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="window.location.href='restaurantes.html'" class="bg-gray-100 px-3 py-2 rounded-xl font-bold text-xs text-gray-800 hover:bg-gray-200">
-          🏪 Locales (22)
-        </button>
-        <button onclick="window.location.href='pago.html'" class="bg-gray-900 text-white px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5">
-          🛒 <span id="navCartBadge">0</span>
-        </button>
+        <button onclick="window.location.href='restaurantes.html'" class="bg-gray-100 px-3 py-2 rounded-xl font-bold text-xs text-gray-800 hover:bg-gray-200">🏪 Locales (22)</button>
+        <button onclick="window.location.href='pago.html'" class="bg-gray-900 text-white px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5">🛒 <span id="navCartBadge">0</span></button>
       </div>
     </nav>
 
-    <!-- Menú Lateral Desplegable (Hamburguesa) -->
+    <!-- Menú Lateral -->
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-50 hidden"></div>
     <aside id="sidebarMenu" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col justify-between">
       <div>
         <div class="bg-eafit-oscuro p-5 text-white flex items-center justify-between">
           <div>
-            <p class="font-black text-base">Menú EAFIT Pedidos</p>
+            <p class="font-black text-base">Menú EAFIT</p>
             <p id="menuUserEmail" class="text-xs text-eafit-amarillo font-semibold">estudiante@eafit.edu.co</p>
           </div>
           <button onclick="toggleSidebar()" class="text-white text-xl font-bold">✕</button>
         </div>
         <div class="p-4 space-y-1.5 text-sm font-bold text-gray-800">
           <a href="catalogo.html" class="flex items-center gap-3 p-3 rounded-xl bg-gray-100">🍔 Catálogo e Inicio</a>
-          <a href="restaurantes.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">🏪 Todos los Restaurantes (22)</a>
-          <a href="pago.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">🛒 Mi Carrito / Checkout</a>
-          <a href="seguimiento.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">⏱️ Seguimiento de Pedido</a>
-          <a href="historial.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">🧾 Historial de Compras</a>
-          <a href="ajustes.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">⚙️ Ajustes de Cuenta</a>
+          <a href="restaurantes.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">🏪 Todos los Restaurantes</a>
+          <a href="pago.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">🛒 Mi Carrito</a>
+          <a href="seguimiento.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">⏱️ Seguimiento</a>
+          <a href="historial.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">🧾 Historial</a>
+          <a href="ajustes.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">⚙️ Ajustes</a>
           <hr class="my-2 border-gray-200" />
-          <p class="px-3 pt-2 text-[10px] uppercase tracking-wider text-gray-400">Cambiar Vista de Rol</p>
+          <p class="px-3 pt-2 text-[10px] uppercase tracking-wider text-gray-400">Vistas de Rol</p>
           <a href="emprendedor.html" class="flex items-center gap-3 p-3 rounded-xl text-emerald-800 hover:bg-emerald-50">🌱 Panel Emprendedor</a>
-          <a href="delivery.html" class="flex items-center gap-3 p-3 rounded-xl text-amber-700 hover:bg-amber-50">🏃 Panel Delivery Colaborativo</a>
+          <a href="delivery.html" class="flex items-center gap-3 p-3 rounded-xl text-amber-700 hover:bg-amber-50">🏃 Panel Delivery</a>
           <a href="dashboard.html" class="flex items-center gap-3 p-3 rounded-xl text-blue-900 hover:bg-blue-50">👨‍🍳 Panel Restaurante</a>
         </div>
       </div>
       <div class="p-4 border-t border-gray-100">
-        <a href="index.html" class="block w-full py-2.5 text-center bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-gray-700">
-          ← Volver al Login de Roles
-        </a>
+        <a href="index.html" class="block w-full py-2.5 text-center bg-gray-100 rounded-xl text-xs font-black text-gray-700">← Volver al Login</a>
       </div>
     </aside>
 
-    <!-- Contenido Principal -->
+    <!-- Contenido -->
     <div class="p-4 space-y-5">
-
-      <!-- Acceso Rápido a Restaurantes.html (Tus 22 locales originales) -->
-      <div class="bg-eafit-oscuro text-white p-4 rounded-2xl shadow-sm flex items-center justify-between">
-        <div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-eafit-amarillo">Directorio Completo</span>
-          <h2 class="font-black text-base">22 Locales en el Campus</h2>
-          <p class="text-xs text-gray-200">Bigo's, Chipstation, Frisby, Corral...</p>
-        </div>
-        <button onclick="window.location.href='restaurantes.html'" class="bg-eafit-amarillo text-gray-900 font-black px-4 py-2.5 rounded-xl text-xs shrink-0 active:scale-95 transition-transform">
-          Ver Todos →
-        </button>
-      </div>
-
-      <!-- Mapa Real con Leaflet y GeoJSON -->
+      
+      <!-- Mapa Realizado en Google My Maps -->
       <div class="bg-gray-50 p-2 rounded-2xl border border-gray-200 space-y-2">
         <div class="flex items-center justify-between px-2 pt-1">
           <div>
-            <h3 class="font-black text-gray-900 text-sm">📍 Mapa EAFIT en Vivo</h3>
-            <p class="text-[11px] text-gray-500 font-medium">Demanda en restaurantes (Bloques)</p>
+            <h3 class="font-black text-gray-900 text-sm">📍 Mapa EAFIT Oficial</h3>
+            <p class="text-[11px] text-gray-500 font-medium">Ubicaciones y bloques marcados por ti</p>
           </div>
-          <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Actualizado</span>
+          <span class="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full shadow-sm"><i class="fa-solid fa-map-location-dot"></i> En vivo</span>
         </div>
         
-        <!-- Contenedor del Mapa Real (z-index bajo para que no monte los modales) -->
-        <div id="realMap" class="w-full h-56 rounded-xl border border-gray-300 z-10"></div>
-        
-        <!-- Leyenda -->
-        <div class="flex justify-between items-center px-2 pb-1 text-[10px] font-bold text-gray-500">
-          <span class="text-emerald-600">● Libre (&lt; 10m)</span>
-          <span class="text-amber-600">● Medio (~20m)</span>
-          <span class="text-red-600">● Lleno (&gt; 30m)</span>
+        <!-- Iframe que carga exactamente tu proyecto de Google My Maps -->
+        <div class="w-full h-72 rounded-xl border border-gray-300 overflow-hidden bg-gray-200 shadow-inner relative">
+          <iframe 
+            src="https://www.google.com/maps/d/embed?mid=1JSZm2EdCQnVevrhEfxApvgGkK8sP6t8&ehbc=2N485D" 
+            width="100%" 
+            height="120%" 
+            style="border:0; position: absolute; top: -10%; left: 0;" 
+            allowfullscreen="" 
+            loading="lazy">
+          </iframe>
         </div>
+        <p class="text-[10px] text-center text-gray-400 font-semibold px-2">Interactúa con el mapa para ver los detalles que guardaste.</p>
       </div>
 
       <!-- Filtros -->
@@ -127,26 +100,21 @@
         <button onclick="filtrarCatalogo('todos')" id="filter-todos" class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-900 text-white">Todos</button>
         <button onclick="filtrarCatalogo('emprendimiento')" id="filter-emprendimiento" class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-sm">🌱 Emprendimientos</button>
         <button onclick="filtrarCatalogo('disponibilidad')" id="filter-disponibilidad" class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-100 text-gray-800 border border-gray-200">⚡ Más Rápido</button>
-        <button onclick="filtrarCatalogo('restaurante')" id="filter-restaurante" class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-100 text-gray-800 border border-gray-200">🍕 Restaurantes</button>
       </div>
 
-      <!-- Lista de Tiendas -->
       <div id="storesContainer" class="space-y-4"></div>
-
     </div>
 
-    <!-- Barra Inferior Fija del Carrito Acumulativo -->
+    <!-- Carrito Inferior -->
     <div id="cartBar" class="fixed bottom-0 max-w-md w-full bg-white border-t border-gray-200 p-4 shadow-2xl z-30 hidden">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-[11px] text-gray-500 font-bold uppercase">Carrito Acumulable (<span id="cartCount">0</span>)</p>
+          <p class="text-[11px] text-gray-500 font-bold uppercase">Carrito (<span id="cartCount">0</span>)</p>
           <p id="cartTotal" class="text-xl font-black text-gray-900">$0</p>
         </div>
         <div class="flex gap-2">
           <button onclick="vaciarCarrito()" class="px-3 py-2 text-xs font-bold text-red-600 bg-red-50 rounded-xl">Vaciar</button>
-          <button onclick="window.location.href='pago.html'" class="bg-gray-900 text-white font-bold px-5 py-3 rounded-xl text-xs shadow-md active:scale-95 transition-transform">
-            Ir a Pagar →
-          </button>
+          <button onclick="window.location.href='pago.html'" class="bg-gray-900 text-white font-bold px-5 py-3 rounded-xl text-xs shadow-md active:scale-95 transition-transform">Pagar →</button>
         </div>
       </div>
     </div>
@@ -154,24 +122,18 @@
   </div>
 
   <script>
-    // ======== 1. DATOS Y LÓGICA ========
     document.getElementById('menuUserEmail').textContent = localStorage.getItem('eafit_user_email') || 'estudiante@eafit.edu.co';
 
     function toggleSidebar() {
       const menu = document.getElementById('sidebarMenu');
       const overlay = document.getElementById('sidebarOverlay');
-      if (menu.classList.contains('-translate-x-full')) {
-        menu.classList.remove('-translate-x-full');
-        overlay.classList.remove('hidden');
-      } else {
-        menu.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      }
+      menu.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
     }
 
     const defaultEmprendedorItems = [
-      { id: 'emp-1', nombre: 'Brownie Melcochudo Artesanal', precio: 6500, stock: 18, img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80' },
-      { id: 'emp-2', nombre: 'Galleta Red Velvet ChocoBites', precio: 5000, stock: 12, img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&q=80' }
+      { id: 'emp-1', nombre: 'Brownie Melcochudo', precio: 6500, stock: 18, img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80' },
+      { id: 'emp-2', nombre: 'Galleta Red Velvet', precio: 5000, stock: 12, img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&q=80' }
     ];
 
     function obtenerCatalogoEmprendedor() {
@@ -183,50 +145,20 @@
 
     const comercios = [
       {
-        id: 'store-emp-1',
-        nombre: 'Dulce Bloque 38 (Emprendimiento)',
-        tipo: 'emprendimiento',
-        linkLocal: null,
-        bloque: 'Bloque 38',
-        saturacion: 22,
-        tiempoEspera: 4,
+        id: 'store-emp-1', nombre: 'Dulce Bloque 38', tipo: 'emprendimiento', bloque: 'Bloque 38', tiempoEspera: 4,
         productos: obtenerCatalogoEmprendedor()
       },
       {
-        id: 'store-emp-2',
-        nombre: 'Wraps & Sánduches El Inge',
-        tipo: 'emprendimiento',
-        linkLocal: null,
-        bloque: 'Bloque 19',
-        saturacion: 35,
-        tiempoEspera: 6,
-        productos: [
-          { id: 'emp-4', nombre: 'Wrap de Pollo Pesto', precio: 13500, stock: 10, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&q=80' }
-        ]
+        id: 'store-emp-2', nombre: 'Wraps El Inge', tipo: 'emprendimiento', bloque: 'Bloque 19', tiempoEspera: 6,
+        productos: [{ id: 'emp-4', nombre: 'Wrap de Pollo', precio: 13500, stock: 10, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&q=80' }]
       },
       {
-        id: 'store-rest-1',
-        nombre: "Bigo's",
-        tipo: 'restaurante',
-        linkLocal: 'restaurantes/bigos.html',
-        bloque: 'Plazoleta del Estudiante',
-        saturacion: 85,
-        tiempoEspera: 20,
-        productos: [
-          { id: 'rest-1', nombre: 'Pizza Personal', precio: 16900, stock: 25, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80' }
-        ]
+        id: 'store-rest-1', nombre: "Bigo's", tipo: 'restaurante', linkLocal: 'restaurantes/bigos.html', bloque: 'Cafetería Central', tiempoEspera: 20,
+        productos: [{ id: 'rest-1', nombre: 'Pizza Personal', precio: 16900, stock: 25, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80' }]
       },
       {
-        id: 'store-rest-2',
-        nombre: 'Chipstation',
-        tipo: 'restaurante',
-        linkLocal: 'restaurantes/chipstation.html',
-        bloque: 'Bloque 14',
-        saturacion: 38,
-        tiempoEspera: 8,
-        productos: [
-          { id: 'rest-3', nombre: 'Papas Belgas', precio: 14900, stock: 30, img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80' }
-        ]
+        id: 'store-rest-2', nombre: 'Chipstation', tipo: 'restaurante', linkLocal: 'restaurantes/chipstation.html', bloque: 'Bloque 14', tiempoEspera: 8,
+        productos: [{ id: 'rest-3', nombre: 'Papas Belgas', precio: 14900, stock: 30, img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80' }]
       }
     ];
 
@@ -235,9 +167,8 @@
     function filtrarCatalogo(filtro) {
       filtroActual = filtro;
       document.querySelectorAll('.filter-btn').forEach(b => {
-        b.classList.remove('bg-gray-900', 'text-white');
+        b.classList.remove('bg-gray-900', 'text-white', 'bg-emerald-600');
         b.classList.add('bg-gray-100', 'text-gray-800');
-        if(b.id === 'filter-emprendimiento') b.classList.add('bg-emerald-600', 'text-white');
       });
       const act = document.getElementById('filter-' + filtro);
       act.className = `filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black ${filtro==='emprendimiento' ? 'bg-emerald-600' : 'bg-gray-900'} text-white shadow-sm`;
@@ -246,9 +177,7 @@
 
     function irADetalleProducto(restaurante, plato, precio, img, storeType) {
       const prodObj = {
-        restaurante,
-        plato,
-        precio: Number(precio),
+        restaurante, plato, precio: Number(precio),
         img: img || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80',
         storeType
       };
@@ -271,12 +200,9 @@
             <div onclick="irADetalleProducto('${c.nombre.replace(/'/g, "")}', '${p.nombre.replace(/'/g, "")}', ${p.precio}, '${p.img}', '${c.tipo}')" class="flex-1 cursor-pointer">
               <p class="font-bold text-sm text-gray-900 hover:underline">${p.nombre}</p>
               <p class="text-xs text-gray-500 font-semibold">$${Number(p.precio).toLocaleString('es-CO')} · <span class="text-emerald-700">${p.stock} disp.</span></p>
-              <span class="text-[10px] font-bold text-blue-800 underline">Personalizar plato →</span>
             </div>
             <button onclick="agregarDirecto('${c.id}', '${c.nombre.replace(/'/g, "")}', '${c.tipo}', '${p.id}', '${p.nombre.replace(/'/g, "")}', ${p.precio})"
-              class="bg-gray-900 text-white font-bold px-3.5 py-2 rounded-xl text-xs active:scale-95 shrink-0">
-              + Carrito
-            </button>
+              class="bg-gray-900 text-white font-bold px-3.5 py-2 rounded-xl text-xs active:scale-95 shrink-0">+ Carrito</button>
           </div>
         `).join('');
 
@@ -284,7 +210,7 @@
           <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200" id="card-${c.id}">
             <div class="flex items-center justify-between mb-1">
               <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${esEmp ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-800'}">
-                ${esEmp ? '🌱 Emprendimiento' : '🏪 Restaurante Campus'}
+                ${esEmp ? '🌱 Emprendimiento' : '🏪 Restaurante'}
               </span>
               <span class="text-xs font-bold text-gray-600">⏱️ ~${c.tiempoEspera} min</span>
             </div>
@@ -307,13 +233,8 @@
       if (cViejo.length > 0) {
         cViejo.forEach(p => {
           cNuevo.push({
-            storeId: 'store-prod',
-            storeName: p.restaurante || 'Restaurante EAFIT',
-            storeType: p.storeType || 'restaurante',
-            prodId: 'prod-' + Date.now() + Math.random(),
-            prodName: p.plato,
-            precio: Number(p.precio),
-            cantidad: 1
+            storeId: 'store-prod', storeName: p.restaurante || 'Restaurante', storeType: p.storeType || 'restaurante',
+            prodId: 'prod-' + Date.now() + Math.random(), prodName: p.plato, precio: Number(p.precio), cantidad: 1
           });
         });
         localStorage.removeItem('cart');
@@ -333,7 +254,6 @@
 
     function vaciarCarrito() {
       localStorage.removeItem('eafit_cart');
-      localStorage.removeItem('cart');
       actualizarBarraCarrito();
     }
 
@@ -343,75 +263,16 @@
       const totalPrecio = cart.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
       document.getElementById('navCartBadge').textContent = totalItems;
       const bar = document.getElementById('cartBar');
-      if (totalItems === 0) {
-        bar.classList.add('hidden');
-        return;
-      }
+      if (totalItems === 0) return bar.classList.add('hidden');
       bar.classList.remove('hidden');
       document.getElementById('cartCount').textContent = totalItems;
       document.getElementById('cartTotal').textContent = '$' + totalPrecio.toLocaleString('es-CO');
     }
 
-    // ======== 2. INYECCIÓN DEL MAPA REAL (LEAFLET + GEOJSON) ========
-    
-    // El GeoJSON que me pasaste comprimido en una variable
-    const eafitGeoJSON = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"coordinates":[[[-75.578492,6.197323],[-75.578709,6.197408],[-75.578948,6.197459],[-75.579012,6.19719],[-75.579296,6.197251],[-75.579275,6.19744],[-75.579709,6.197504],[-75.579734,6.197278],[-75.58009,6.19736],[-75.57975,6.198347],[-75.579452,6.199568],[-75.579205,6.201035],[-75.579114,6.201771],[-75.579023,6.202752],[-75.578966,6.202819],[-75.578682,6.202963],[-75.578331,6.203107],[-75.578245,6.203123],[-75.578135,6.203115],[-75.577958,6.203045],[-75.577639,6.202907],[-75.577531,6.202805],[-75.577456,6.202712],[-75.577408,6.202581],[-75.577419,6.202443],[-75.577625,6.200552],[-75.577714,6.199822],[-75.577886,6.199],[-75.577977,6.198755],[-75.578119,6.198779],[-75.578213,6.198232],[-75.578151,6.198155],[-75.578492,6.197323]]],"type":"Polygon"},"properties":{"name":"Perímetro del campus"}},{"type":"Feature","geometry":{"coordinates":[[[-75.578891,6.201723],[-75.57906,6.20172],[-75.579055,6.20144],[-75.578886,6.201437],[-75.578891,6.201723]]],"type":"Polygon"},"properties":{"name":"Bloque 36 (Cafetería norte)"}},{"type":"Feature","geometry":{"coordinates":[[[-75.578679,6.199512],[-75.578374,6.19951],[-75.578368,6.198883],[-75.578658,6.198878],[-75.578679,6.199512]]],"type":"Polygon"},"properties":{"name":"Cafetería Central (Bigos, Frisby, Corral)"}},{"type":"Feature","geometry":{"coordinates":[[[-75.578561,6.200877],[-75.578559,6.200254],[-75.578256,6.200248],[-75.57828,6.200877],[-75.578561,6.200877]]],"type":"Polygon"},"properties":{"name":"Plazoleta del Estudiante"}},{"type":"Feature","geometry":{"coordinates":[[[-75.578746,6.201795],[-75.578746,6.201472],[-75.578548,6.201472],[-75.578548,6.201592],[-75.578288,6.201592],[-75.578288,6.201477],[-75.57814,6.201477],[-75.578146,6.201592],[-75.578105,6.201595],[-75.578105,6.201795],[-75.578746,6.201795]]],"type":"Polygon"},"properties":{"name":"Bloque 38"}},{"type":"Feature","geometry":{"coordinates":[[[-75.579782,6.198171],[-75.57979,6.197944],[-75.579878,6.197774],[-75.579599,6.197688],[-75.579457,6.197611],[-75.579479,6.198158],[-75.579782,6.198171]]],"type":"Polygon"},"properties":{"name":"Bloque 19"}},{"type":"Feature","geometry":{"coordinates":[[[-75.57895,6.198608],[-75.578953,6.198494],[-75.578771,6.198491],[-75.578771,6.198606],[-75.57895,6.198608]]],"type":"Polygon"},"properties":{"name":"Bloque 14 (Chipstation)"}},{"type":"Feature","geometry":{"coordinates":[[[-75.579025,6.200038],[-75.579243,6.20003],[-75.57924,6.199912],[-75.579168,6.199912],[-75.579162,6.199854],[-75.579248,6.199851],[-75.579243,6.199731],[-75.579025,6.199734],[-75.579025,6.200038]]],"type":"Polygon"},"properties":{"name":"Bloque 26"}}]}
-
-    function inicializarMapa() {
-      // Centrar el mapa en la Cafetería Central de EAFIT
-      const map = L.map('realMap', { zoomControl: false }).setView([6.2005, -75.5785], 16);
-      
-      // Cargar capa base clara (tipo Google Maps limpio)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap',
-        maxZoom: 19
-      }).addTo(map);
-
-      // Función para asignar colores según el bloque / restaurante
-      function styleMapFeature(feature) {
-        const nombre = feature.properties.name || "";
-        
-        // Colores de Saturación
-        let colorSaturacion = '#94a3b8'; // Gris por defecto (bloques sin restaurante)
-        
-        if (nombre.includes("Cafetería Central")) colorSaturacion = '#ef4444'; // Rojo (Bigos, 85%)
-        if (nombre.includes("Bloque 14")) colorSaturacion = '#10b981'; // Verde (Chipstation, 38%)
-        if (nombre.includes("Bloque 19")) colorSaturacion = '#10b981'; // Verde (El Inge, 35%)
-        if (nombre.includes("Bloque 38")) colorSaturacion = '#10b981'; // Verde (Dulce, 22%)
-        if (nombre.includes("Perímetro")) return { color: '#002855', weight: 1, fillOpacity: 0, dashArray: '4' };
-
-        return {
-          color: colorSaturacion,
-          weight: 2,
-          fillColor: colorSaturacion,
-          fillOpacity: 0.6
-        };
-      }
-
-      // Añadir el GeoJSON interactivo al mapa
-      L.geoJSON(eafitGeoJSON, {
-        style: styleMapFeature,
-        onEachFeature: function (feature, layer) {
-          if(feature.properties.name && !feature.properties.name.includes("Perímetro")) {
-            layer.bindPopup(`<strong class="text-xs font-black text-gray-900">${feature.properties.name}</strong>`);
-            layer.on('click', function() {
-              if (feature.properties.name.includes("Cafetería Central")) document.getElementById('card-store-rest-1').scrollIntoView({behavior: "smooth"});
-              if (feature.properties.name.includes("Bloque 14")) document.getElementById('card-store-rest-2').scrollIntoView({behavior: "smooth"});
-              if (feature.properties.name.includes("Bloque 38")) document.getElementById('card-store-emp-1').scrollIntoView({behavior: "smooth"});
-              if (feature.properties.name.includes("Bloque 19")) document.getElementById('card-store-emp-2').scrollIntoView({behavior: "smooth"});
-            });
-          }
-        }
-      }).addTo(map);
-    }
-
-    // Inicializar mapa y cargar productos al final
     window.onload = () => {
       renderizarTiendas();
       actualizarBarraCarrito();
-      setTimeout(inicializarMapa, 100);
     };
-
   </script>
 </body>
 </html>
