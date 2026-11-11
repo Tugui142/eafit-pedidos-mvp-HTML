@@ -3,132 +3,192 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catálogo y Disponibilidad - EAFIT Pedidos</title>
+  <title>EAFIT Pedidos - Catálogo</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            eafit: {
+              oscuro: 'var(--eafit-azul-oscuro)',
+              claro: 'var(--eafit-azul-claro)',
+              amarillo: 'var(--eafit-amarillo)',
+              arena: 'var(--eafit-arena)'
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="pb-28">
+<body class="bg-[#EFEFEF] text-[#222222] font-sans">
 
-  <!-- Navbar -->
-  <header class="bg-eafit-oscuro text-white sticky top-0 z-30 shadow-md">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <a href="index.html" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20" title="Volver al Login">
-          <i class="fa-solid fa-arrow-left text-sm"></i>
-        </a>
+  <!-- Contenedor Wrapper Móvil Original -->
+  <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl border-x border-gray-200 flex flex-col pb-24">
+
+    <!-- Navbar Superior con Botón Hamburguesa Original -->
+    <nav class="bg-white p-4 shadow-sm flex items-center justify-between sticky top-0 z-40 border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="bg-gray-100 w-10 h-10 rounded-xl shadow-sm font-black text-lg flex items-center justify-center active:scale-95 transition-transform" title="Menú">
+          ☰
+        </button>
         <div>
-          <h1 class="font-bold text-base leading-tight">EAFIT Pedidos</h1>
-          <p class="text-[11px] text-emerald-300 flex items-center gap-1">
-            <i class="fa-solid fa-location-crosshairs"></i> GPS Activo · Campus Medellín
-          </p>
+          <h1 class="font-black text-lg leading-tight text-gray-900">EAFIT Pedidos</h1>
+          <p class="text-[11px] font-bold text-emerald-600">📍 Campus Medellín · GPS Activo</p>
         </div>
-      </div>
-      <div class="flex items-center space-x-2">
-        <a href="seguimiento.html" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium flex items-center gap-1.5">
-          <i class="fa-solid fa-clock-rotate-left"></i> Seguimiento
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <main class="max-w-5xl mx-auto px-4 pt-5 space-y-6">
-
-    <!-- Panel Interactivo: Gráfico de Demanda + Mapa del Campus en Tiempo Real -->
-    <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-        <div>
-          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-chart-column text-blue-900"></i> Demanda y Saturación en el Campus (Tiempo Real)
-          </h2>
-          <p class="text-xs text-slate-500">Haz clic en una barra o punto del mapa para inspeccionar tiempos de fila y stock disponible.</p>
-        </div>
-        <span class="text-[11px] bg-blue-50 text-blue-900 font-semibold px-2.5 py-1 rounded-full border border-blue-200">
-          Actualizado hace 10 seg
-        </span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-        <!-- Gráfico de Barras Interactivo -->
-        <div class="space-y-2.5 bg-slate-50 p-3.5 rounded-xl border border-slate-200" id="demandChart">
-          <!-- Renderizado por JS -->
-        </div>
-
-        <!-- Mapa Simulado del Campus EAFIT -->
-        <div class="relative bg-gradient-to-br from-emerald-50 via-slate-100 to-blue-50 h-56 rounded-xl border border-slate-300 overflow-hidden p-3 flex flex-col justify-between">
-          <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-500">
-            <span><i class="fa-solid fa-map"></i> Mapa Campus EAFIT</span>
-            <div class="flex gap-2">
-              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Baja</span>
-              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Media</span>
-              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> Saturado</span>
-            </div>
-          </div>
-
-          <!-- Nodos en el mapa -->
-          <div id="campusMapNodes" class="relative w-full h-36">
-            <!-- Renderizado por JS -->
-          </div>
-
-          <div id="mapZoneDetail" class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-200 text-xs flex justify-between items-center">
-            <span class="font-semibold text-slate-700">Selecciona una zona en el gráfico o mapa</span>
-            <span class="text-blue-900 font-bold">-- min</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Barra de Filtros Destacados -->
-    <section class="flex flex-wrap items-center gap-2">
-      <button onclick="filtrarCatalogo('todos')" id="filter-todos"
-        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-eafit-oscuro text-white shadow-sm transition">
-        Todos los Comercios
-      </button>
-      <button onclick="filtrarCatalogo('emprendimiento')" id="filter-emprendimiento"
-        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 transition flex items-center gap-1.5 ring-2 ring-emerald-300">
-        <i class="fa-solid fa-seedling"></i> Emprendimientos Estudiantiles
-      </button>
-      <button onclick="filtrarCatalogo('disponibilidad')" id="filter-disponibilidad"
-        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition flex items-center gap-1.5">
-        <i class="fa-solid fa-bolt text-amber-500"></i> Mejor Disponibilidad (&lt; 10 min)
-      </button>
-      <button onclick="filtrarCatalogo('restaurante')" id="filter-restaurante"
-        class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition">
-        Plazoletas y Restaurantes
-      </button>
-    </section>
-
-    <!-- Grid de Tiendas y Productos -->
-    <section id="storesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Renderizado dinámico -->
-    </section>
-
-  </main>
-
-  <!-- Barra Flotante del Carrito Acumulable -->
-  <div id="cartBar" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 shadow-2xl p-3 z-40 hidden">
-    <div class="max-w-5xl mx-auto flex items-center justify-between">
-      <div>
-        <p class="text-xs text-slate-500 font-medium">Carrito Acumulable (<span id="cartCount">0</span> productos)</p>
-        <p class="text-lg font-extrabold text-eafit-oscuro" id="cartTotal">$0</p>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="vaciarCarrito()" class="px-3 py-2 text-xs text-red-600 hover:bg-red-50 rounded-xl font-semibold">
-          Vaciar
+        <button onclick="window.location.href='restaurantes.html'" class="bg-gray-100 px-3 py-2 rounded-xl font-bold text-xs text-gray-800 hover:bg-gray-200">
+          🏪 Locales (22)
         </button>
-        <a href="pago.html" class="px-5 py-2.5 bg-eafit-oscuro hover:bg-blue-900 text-white text-sm font-bold rounded-xl shadow flex items-center gap-2">
-          Ir al Checkout <i class="fa-solid fa-arrow-right"></i>
+        <button onclick="window.location.href='pago.html'" class="bg-gray-900 text-white px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5">
+          🛒 <span id="navCartBadge">0</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Menú Lateral Desplegable (Hamburguesa) -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-50 hidden"></div>
+    <aside id="sidebarMenu" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col justify-between">
+      <div>
+        <div class="bg-eafit-oscuro p-5 text-white flex items-center justify-between">
+          <div>
+            <p class="font-black text-base">Menú EAFIT Pedidos</p>
+            <p id="menuUserEmail" class="text-xs text-eafit-amarillo font-semibold">estudiante@eafit.edu.co</p>
+          </div>
+          <button onclick="toggleSidebar()" class="text-white text-xl font-bold">✕</button>
+        </div>
+        <div class="p-4 space-y-1.5 text-sm font-bold text-gray-800">
+          <a href="catalogo.html" class="flex items-center gap-3 p-3 rounded-xl bg-gray-100">🍔 Catálogo e Inicio</a>
+          <a href="restaurantes.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">🏪 Todos los Restaurantes (22)</a>
+          <a href="pago.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">🛒 Mi Carrito / Checkout</a>
+          <a href="seguimiento.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">⏱️ Seguimiento de Pedido</a>
+          <a href="historial.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">🧾 Historial de Compras</a>
+          <a href="ajustes.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50">⚙️ Ajustes de Cuenta</a>
+          <hr class="my-2 border-gray-200" />
+          <p class="px-3 pt-2 text-[10px] uppercase tracking-wider text-gray-400">Cambiar Vista de Rol</p>
+          <a href="emprendedor.html" class="flex items-center gap-3 p-3 rounded-xl text-emerald-800 hover:bg-emerald-50">🌱 Panel Emprendedor</a>
+          <a href="delivery.html" class="flex items-center gap-3 p-3 rounded-xl text-amber-700 hover:bg-amber-50">🏃 Panel Delivery Colaborativo</a>
+          <a href="dashboard.html" class="flex items-center gap-3 p-3 rounded-xl text-blue-900 hover:bg-blue-50">👨‍🍳 Panel Restaurante</a>
+        </div>
+      </div>
+      <div class="p-4 border-t border-gray-100">
+        <a href="index.html" class="block w-full py-2.5 text-center bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-gray-700">
+          ← Volver al Login de Roles
         </a>
       </div>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <div class="p-4 space-y-5">
+
+      <!-- Acceso Rápido a Restaurantes.html (Tus 22 locales originales) -->
+      <div class="bg-eafit-oscuro text-white p-4 rounded-2xl shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-eafit-amarillo">Directorio Completo</span>
+          <h2 class="font-black text-base">22 Locales en el Campus</h2>
+          <p class="text-xs text-gray-200">Bigo's, Chipstation, Frisby, Corral, Juan Valdez...</p>
+        </div>
+        <button onclick="window.location.href='restaurantes.html'" class="bg-eafit-amarillo text-gray-900 font-black px-4 py-2.5 rounded-xl text-xs shrink-0 active:scale-95 transition-transform">
+          Ver Todos →
+        </button>
+      </div>
+
+      <!-- Gráfico de Demanda Actual + Mapa Interactivo del Campus -->
+      <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-black text-gray-900 text-sm">📊 Demanda y Mapa en Tiempo Real</h3>
+            <p class="text-[11px] text-gray-500 font-medium">Toca una barra o nodo para ver fila y stock</p>
+          </div>
+          <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">En vivo</span>
+        </div>
+
+        <!-- Barras de Demanda -->
+        <div id="demandChart" class="space-y-2"></div>
+
+        <!-- Mapa del Campus Simulado -->
+        <div class="relative bg-gradient-to-br from-emerald-50 via-gray-100 to-blue-50 h-40 rounded-xl border border-gray-300 overflow-hidden p-2.5 flex flex-col justify-between">
+          <div class="flex justify-between items-center text-[10px] font-bold text-gray-500">
+            <span>🗺️ MAPA SATURACIÓN CAMPUS</span>
+            <span class="flex gap-2">
+              <span class="text-emerald-600">● Baja</span>
+              <span class="text-amber-600">● Media</span>
+              <span class="text-red-600">● Alta</span>
+            </span>
+          </div>
+          <div id="campusMapNodes" class="relative w-full h-24"></div>
+          <div id="mapZoneDetail" class="bg-white/95 px-2.5 py-1.5 rounded-lg border border-gray-200 text-[11px] flex justify-between items-center font-bold"></div>
+        </div>
+      </div>
+
+      <!-- Filtros: Todos | Emprendimientos Estudiantiles | Mejor Disponibilidad -->
+      <div class="flex gap-2 overflow-x-auto pb-1">
+        <button onclick="filtrarCatalogo('todos')" id="filter-todos"
+          class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-900 text-white">
+          Todos
+        </button>
+        <button onclick="filtrarCatalogo('emprendimiento')" id="filter-emprendimiento"
+          class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-sm">
+          🌱 Emprendimientos Estudiantiles
+        </button>
+        <button onclick="filtrarCatalogo('disponibilidad')" id="filter-disponibilidad"
+          class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-100 text-gray-800 border border-gray-200">
+          ⚡ Mejor Disponibilidad (&lt;10m)
+        </button>
+        <button onclick="filtrarCatalogo('restaurante')" id="filter-restaurante"
+          class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-100 text-gray-800 border border-gray-200">
+          🍕 Restaurantes
+        </button>
+      </div>
+
+      <!-- Lista de Platos, Combos y Tiendas de Emprendedores -->
+      <div id="storesContainer" class="space-y-4"></div>
+
     </div>
+
+    <!-- Barra Inferior Fija del Carrito Acumulativo -->
+    <div id="cartBar" class="fixed bottom-0 max-w-md w-full bg-white border-t border-gray-200 p-4 shadow-2xl z-30 hidden">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-[11px] text-gray-500 font-bold uppercase">Carrito Acumulable (<span id="cartCount">0</span>)</p>
+          <p id="cartTotal" class="text-xl font-black text-gray-900">$0</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="vaciarCarrito()" class="px-3 py-2 text-xs font-bold text-red-600 bg-red-50 rounded-xl">Vaciar</button>
+          <button onclick="window.location.href='pago.html'" class="bg-gray-900 text-white font-bold px-5 py-3 rounded-xl text-xs shadow-md active:scale-95 transition-transform">
+            Ir a Pagar →
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // Datos base + Sincronización con el catálogo del Emprendedor Estudiantil
+    document.getElementById('menuUserEmail').textContent = localStorage.getItem('eafit_user_email') || 'estudiante@eafit.edu.co';
+
+    function toggleSidebar() {
+      const menu = document.getElementById('sidebarMenu');
+      const overlay = document.getElementById('sidebarOverlay');
+      const isHidden = menu.classList.contains('-translate-x-full');
+      if (isHidden) {
+        menu.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      } else {
+        menu.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    // Catálogo sincronizado con el Panel de Emprendedores
     const defaultEmprendedorItems = [
-      { id: 'emp-1', nombre: 'Brownie Melcochudo Artesanal', precio: 6500, stock: 18 },
-      { id: 'emp-2', nombre: 'Galleta Red Velvet ChocoBites', precio: 5000, stock: 12 },
-      { id: 'emp-3', nombre: 'Cold Brew Café de Origen (250ml)', precio: 7500, stock: 9 }
+      { id: 'emp-1', nombre: 'Brownie Melcochudo Artesanal', precio: 6500, stock: 18, img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80' },
+      { id: 'emp-2', nombre: 'Galleta Red Velvet ChocoBites', precio: 5000, stock: 12, img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&q=80' },
+      { id: 'emp-3', nombre: 'Cold Brew Café de Origen (250ml)', precio: 7500, stock: 9, img: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=500&q=80' }
     ];
 
     function obtenerCatalogoEmprendedor() {
@@ -141,51 +201,55 @@
     const comercios = [
       {
         id: 'store-emp-1',
-        nombre: 'Dulce Bloque 38 (Emprendimiento Estudiantil)',
+        nombre: 'Dulce Bloque 38 (Emprendimiento)',
         tipo: 'emprendimiento',
-        bloque: 'Bloque 38 · Hall Primer Piso',
-        saturacion: 25,
-        tiempoEspera: 5,
+        linkLocal: null,
+        bloque: 'Bloque 38 · Piso 1',
+        saturacion: 22,
+        tiempoEspera: 4,
         coords: { top: '28%', left: '62%' },
         productos: obtenerCatalogoEmprendedor()
       },
       {
         id: 'store-emp-2',
-        nombre: 'Sánduches & Wraps El Inge (Emprendimiento)',
+        nombre: 'Wraps & Sánduches El Inge',
         tipo: 'emprendimiento',
-        bloque: 'Bloque 19 · Zona Verde Ingeniería',
+        linkLocal: null,
+        bloque: 'Bloque 19 · Zona Verde',
         saturacion: 35,
-        tiempoEspera: 7,
-        coords: { top: '60%', left: '30%' },
+        tiempoEspera: 6,
+        coords: { top: '65%', left: '28%' },
         productos: [
-          { id: 'emp-4', nombre: 'Wrap de Pollo Pesto Casero', precio: 13500, stock: 10 },
-          { id: 'emp-5', nombre: 'Hatsu / Té Frío Artesanal', precio: 5500, stock: 15 }
+          { id: 'emp-4', nombre: 'Wrap de Pollo Pesto Casero', precio: 13500, stock: 10, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&q=80' },
+          { id: 'emp-5', nombre: 'Té Helado Artesanal Durazno', precio: 5500, stock: 15, img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&q=80' }
         ]
       },
       {
         id: 'store-rest-1',
-        nombre: 'Bigos (Plazoleta del Estudiante)',
+        nombre: "Bigo's",
         tipo: 'restaurante',
-        bloque: 'Plazoleta Central · Bloque 26',
-        saturacion: 88,
-        tiempoEspera: 22,
+        linkLocal: 'restaurantes/bigos.html',
+        bloque: 'Plazoleta Estudiante · Bloque 26',
+        saturacion: 85,
+        tiempoEspera: 20,
         coords: { top: '45%', left: '48%' },
         productos: [
-          { id: 'rest-1', nombre: 'bowl Mexicano con Guacamole', precio: 18900, stock: 25 },
-          { id: 'rest-2', nombre: 'Burrito Clásico Mixto', precio: 17500, stock: 14 }
+          { id: 'rest-1', nombre: 'Pizza Personal Margarita / Pepperoni', precio: 16900, stock: 25, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80' },
+          { id: 'rest-2', nombre: 'Burrito Mixto Gratinado', precio: 17500, stock: 14, img: 'https://images.unsplash.com/photo-1566740933430-b5e70b06d2d5?w=500&q=80' }
         ]
       },
       {
         id: 'store-rest-2',
-        nombre: 'ChipStation (Cafetería Sur)',
+        nombre: 'Chipstation',
         tipo: 'restaurante',
-        bloque: 'Plazoleta Sur · Bloque 18',
-        saturacion: 40,
+        linkLocal: 'restaurantes/chipstation.html',
+        bloque: 'Cafetería Sur · Bloque 18',
+        saturacion: 38,
         tiempoEspera: 8,
-        coords: { top: '72%', left: '70%' },
+        coords: { top: '75%', left: '72%' },
         productos: [
-          { id: 'rest-3', nombre: 'Papas Belgas con Topping Pollo', precio: 14900, stock: 30 },
-          { id: 'rest-4', nombre: 'Limonada Natural 16oz', precio: 4800, stock: 40 }
+          { id: 'rest-3', nombre: 'Cono de Papas Belgas con Pollo', precio: 14900, stock: 30, img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80' },
+          { id: 'rest-4', nombre: 'Combo Papas + Limonada', precio: 17900, stock: 22, img: 'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=500&q=80' }
         ]
       }
     ];
@@ -194,9 +258,9 @@
     let comercioSeleccionadoMapa = comercios[0].id;
 
     function colorSaturacion(sat) {
-      if (sat < 45) return { bg: 'bg-emerald-500', text: 'text-emerald-700', label: 'Baja saturación' };
-      if (sat < 75) return { bg: 'bg-amber-500', text: 'text-amber-700', label: 'Demanda media' };
-      return { bg: 'bg-red-500', text: 'text-red-700', label: 'Alta congestión' };
+      if (sat < 45) return { bg: 'bg-emerald-500', text: 'text-emerald-700' };
+      if (sat < 75) return { bg: 'bg-amber-500', text: 'text-amber-700' };
+      return { bg: 'bg-red-500', text: 'text-red-700' };
     }
 
     function renderizarDemandaYMapa() {
@@ -209,25 +273,22 @@
         const col = colorSaturacion(c.saturacion);
         const activo = c.id === comercioSeleccionadoMapa;
 
-        // Barra en el gráfico
         chart.innerHTML += `
-          <div onclick="seleccionarNodoMapa('${c.id}')" class="cursor-pointer p-2 rounded-lg transition ${activo ? 'bg-white shadow-sm ring-2 ring-blue-900' : 'hover:bg-white/60'}">
-            <div class="flex justify-between text-xs font-semibold mb-1">
+          <div onclick="seleccionarNodoMapa('${c.id}')" class="cursor-pointer p-2 rounded-xl transition ${activo ? 'bg-white shadow-sm ring-2 ring-gray-900' : 'hover:bg-white'}">
+            <div class="flex justify-between text-xs font-bold mb-1">
               <span class="truncate pr-2">${c.nombre}</span>
-              <span class="${col.text} font-bold">${c.saturacion}% · ~${c.tiempoEspera}m</span>
+              <span class="${col.text}">${c.saturacion}% · ~${c.tiempoEspera}m</span>
             </div>
-            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-              <div class="${col.bg} h-full rounded-full transition-all duration-500" style="width: ${c.saturacion}%"></div>
+            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="${col.bg} h-full rounded-full" style="width: ${c.saturacion}%"></div>
             </div>
           </div>
         `;
 
-        // Nodo en el mapa
         mapNodes.innerHTML += `
           <button onclick="seleccionarNodoMapa('${c.id}')" 
             style="top: ${c.coords.top}; left: ${c.coords.left};"
-            class="absolute -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full ${col.bg} text-white text-[10px] font-bold flex items-center justify-center shadow-lg hotspot-pulse ${activo ? 'ring-4 ring-blue-900 scale-125 z-10' : ''}"
-            title="${c.nombre}">
+            class="absolute -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full ${col.bg} text-white text-[10px] font-black flex items-center justify-center shadow-md hotspot-pulse ${activo ? 'ring-4 ring-gray-900 scale-110 z-10' : ''}">
             ${c.tiempoEspera}'
           </button>
         `;
@@ -237,11 +298,8 @@
       if (sel) {
         const stockTotal = sel.productos.reduce((acc, p) => acc + Number(p.stock), 0);
         document.getElementById('mapZoneDetail').innerHTML = `
-          <div>
-            <p class="font-bold text-slate-800">${sel.nombre}</p>
-            <p class="text-[11px] text-slate-500">${sel.bloque} · Stock total: <strong>${stockTotal} uds</strong></p>
-          </div>
-          <span class="px-2.5 py-1 rounded-lg bg-blue-900 text-white font-bold text-xs">~${sel.tiempoEspera} min</span>
+          <span class="truncate pr-2">${sel.nombre} (Stock: ${stockTotal})</span>
+          <span class="text-eafit-oscuro shrink-0">Espera: ~${sel.tiempoEspera} min</span>
         `;
       }
     }
@@ -253,11 +311,20 @@
 
     function filtrarCatalogo(filtro) {
       filtroActual = filtro;
-      document.querySelectorAll('.filter-btn').forEach(b => {
-        b.classList.remove('ring-2', 'ring-offset-1', 'ring-blue-900');
-      });
-      document.getElementById('filter-' + filtro).classList.add('ring-2', 'ring-offset-1', 'ring-blue-900');
       renderizarTiendas();
+    }
+
+    // Conecta con tu producto.html original guardando 'selectedProduct'
+    function irADetalleProducto(restaurante, plato, precio, img, storeType) {
+      const prodObj = {
+        restaurante,
+        plato,
+        precio: Number(precio),
+        img: img || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80',
+        storeType
+      };
+      localStorage.setItem('selectedProduct', JSON.stringify(prodObj));
+      window.location.href = 'producto.html';
     }
 
     function renderizarTiendas() {
@@ -265,88 +332,97 @@
       container.innerHTML = '';
 
       let lista = comercios;
-      if (filtroActual === 'emprendimiento') {
-        lista = comercios.filter(c => c.tipo === 'emprendimiento');
-      } else if (filtroActual === 'restaurante') {
-        lista = comercios.filter(c => c.tipo === 'restaurante');
-      } else if (filtroActual === 'disponibilidad') {
-        lista = comercios.filter(c => c.tiempoEspera <= 10).sort((a, b) => a.tiempoEspera - b.tiempoEspera);
-      }
+      if (filtroActual === 'emprendimiento') lista = comercios.filter(c => c.tipo === 'emprendimiento');
+      if (filtroActual === 'restaurante') lista = comercios.filter(c => c.tipo === 'restaurante');
+      if (filtroActual === 'disponibilidad') lista = comercios.filter(c => c.tiempoEspera <= 10);
 
       lista.forEach(c => {
-        const col = colorSaturacion(c.saturacion);
-        const badgeTipo = c.tipo === 'emprendimiento'
-          ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-seedling"></i> Emprendimiento Estudiantil</span>`
-          : `<span class="bg-blue-100 text-blue-900 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-utensils"></i> Restaurante Campus</span>`;
-
+        const esEmp = c.tipo === 'emprendimiento';
         const productosHTML = c.productos.map(p => `
-          <div class="flex items-center justify-between py-2.5 border-t border-slate-100">
-            <div>
-              <p class="text-sm font-semibold text-slate-800">${p.nombre}</p>
-              <p class="text-xs text-slate-500">
-                <span class="font-bold text-slate-700">$${Number(p.precio).toLocaleString('es-CO')}</span> 
-                · Stock: <span class="${p.stock > 5 ? 'text-emerald-600' : 'text-amber-600'} font-semibold">${p.stock} disp.</span>
+          <div class="py-3 flex items-center justify-between gap-3 border-t border-gray-100">
+            <div onclick="irADetalleProducto('${c.nombre.replace(/'/g, "")}', '${p.nombre.replace(/'/g, "")}', ${p.precio}, '${p.img || ""}', '${c.tipo}')" class="flex-1 cursor-pointer">
+              <p class="font-bold text-sm text-gray-900 hover:underline">${p.nombre}</p>
+              <p class="text-xs text-gray-500 font-semibold">
+                $${Number(p.precio).toLocaleString('es-CO')} · <span class="text-emerald-700">${p.stock} disp.</span>
               </p>
+              <span class="text-[10px] font-bold text-blue-800 underline">Personalizar plato →</span>
             </div>
-            <button onclick="agregarAlCarrito('${c.id}', '${c.nombre}', '${c.tipo}', '${p.id}', '${p.nombre}', ${p.precio})"
-              ${p.stock <= 0 ? 'disabled' : ''}
-              class="px-3 py-1.5 rounded-xl text-xs font-bold ${p.stock > 0 ? 'bg-eafit-oscuro hover:bg-blue-900 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'} transition">
-              + Añadir
+            <button onclick="agregarDirecto('${c.id}', '${c.nombre.replace(/'/g, "")}', '${c.tipo}', '${p.id}', '${p.nombre.replace(/'/g, "")}', ${p.precio})"
+              class="bg-gray-900 text-white font-bold px-3.5 py-2 rounded-xl text-xs active:scale-95 transition-transform shrink-0">
+              + Carrito
             </button>
           </div>
         `).join('');
 
         container.innerHTML += `
-          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                ${badgeTipo}
-                <span class="text-xs font-bold ${col.text} flex items-center gap-1">
-                  <i class="fa-regular fa-clock"></i> ~${c.tiempoEspera} min
-                </span>
-              </div>
-              <h3 class="text-base font-bold text-slate-900">${c.nombre}</h3>
-              <p class="text-xs text-slate-500 mb-3"><i class="fa-solid fa-location-dot"></i> ${c.bloque}</p>
-              <div class="divide-y divide-slate-100">
-                ${productosHTML}
-              </div>
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${esEmp ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-800'}">
+                ${esEmp ? '🌱 Emprendimiento Estudiantil' : '🏪 Restaurante Campus'}
+              </span>
+              <span class="text-xs font-bold text-gray-600">⏱️ ~${c.tiempoEspera} min</span>
             </div>
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h4 class="font-black text-gray-900 text-base">${c.nombre}</h4>
+                <p class="text-xs text-gray-500 font-medium">📍 ${c.bloque}</p>
+              </div>
+              ${c.linkLocal ? `<a href="${c.linkLocal}" class="text-xs font-bold bg-gray-100 px-2.5 py-1 rounded-lg">Ver local</a>` : ''}
+            </div>
+            <div>${productosHTML}</div>
           </div>
         `;
       });
     }
 
-    function obtenerCarrito() {
-      return JSON.parse(localStorage.getItem('eafit_cart') || '[]');
+    // Unifica el carrito ('cart' de producto.html y 'eafit_cart')
+    function obtenerCarritoUnificado() {
+      const cNuevo = JSON.parse(localStorage.getItem('eafit_cart') || '[]');
+      const cViejo = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (cViejo.length > 0) {
+        cViejo.forEach(p => {
+          cNuevo.push({
+            storeId: 'store-prod',
+            storeName: p.restaurante || 'Restaurante EAFIT',
+            storeType: p.storeType || 'restaurante',
+            prodId: 'prod-' + Date.now() + Math.random(),
+            prodName: p.plato,
+            precio: Number(p.precio),
+            cantidad: 1
+          });
+        });
+        localStorage.removeItem('cart');
+        localStorage.setItem('eafit_cart', JSON.stringify(cNuevo));
+      }
+      return cNuevo;
     }
 
-    function agregarAlCarrito(storeId, storeName, storeType, prodId, prodName, precio) {
-      const cart = obtenerCarrito();
-      const index = cart.findIndex(item => item.prodId === prodId);
-      if (index > -1) {
-        cart[index].cantidad += 1;
-      } else {
-        cart.push({ storeId, storeName, storeType, prodId, prodName, precio, cantidad: 1 });
-      }
+    function agregarDirecto(storeId, storeName, storeType, prodId, prodName, precio) {
+      const cart = obtenerCarritoUnificado();
+      const idx = cart.findIndex(i => i.prodId === prodId);
+      if (idx > -1) cart[idx].cantidad += 1;
+      else cart.push({ storeId, storeName, storeType, prodId, prodName, precio, cantidad: 1 });
       localStorage.setItem('eafit_cart', JSON.stringify(cart));
       actualizarBarraCarrito();
     }
 
     function vaciarCarrito() {
       localStorage.removeItem('eafit_cart');
+      localStorage.removeItem('cart');
       actualizarBarraCarrito();
     }
 
     function actualizarBarraCarrito() {
-      const cart = obtenerCarrito();
+      const cart = obtenerCarritoUnificado();
+      const totalItems = cart.reduce((acc, i) => acc + i.cantidad, 0);
+      const totalPrecio = cart.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
+      document.getElementById('navCartBadge').textContent = totalItems;
       const bar = document.getElementById('cartBar');
-      if (cart.length === 0) {
+      if (totalItems === 0) {
         bar.classList.add('hidden');
         return;
       }
       bar.classList.remove('hidden');
-      const totalItems = cart.reduce((acc, i) => acc + i.cantidad, 0);
-      const totalPrecio = cart.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
       document.getElementById('cartCount').textContent = totalItems;
       document.getElementById('cartTotal').textContent = '$' + totalPrecio.toLocaleString('es-CO');
     }
