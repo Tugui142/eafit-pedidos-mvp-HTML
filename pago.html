@@ -321,7 +321,7 @@
         total,
         modalidadTiempo,
         horario,
-        modoEntrega,
+        modoEntrega, // Aquí guardamos: 'Compañero Repartidor', 'Casillero Campus' o 'Punto Fijo'
         ubicacion: {
           bloque: valBloque,
           piso: valPiso,
@@ -345,7 +345,14 @@
       localStorage.removeItem('eafit_cart');
       localStorage.removeItem('cart');
 
-      window.location.href = 'seguimiento.html';
+      // ENRUTAMIENTO INTELIGENTE A LA CARPETA 'seguimientos'
+      if (modoEntrega.includes('Repartidor')) {
+        window.location.href = 'seguimientos/seguimiento1.html';
+      } else if (modoEntrega.includes('Casillero')) {
+        window.location.href = 'seguimientos/seguimiento2.html';
+      } else {
+        window.location.href = 'seguimientos/seguimiento3.html';
+      }
     }
 
     renderizarResumen();
