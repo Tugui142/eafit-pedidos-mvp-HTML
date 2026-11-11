@@ -1,27 +1,35 @@
 :root {
+  /* Variables originales de EAFIT Pedidos */
+  --eafit-azul-oscuro: #002855;
+  --eafit-azul-claro: #004B87;
+  --eafit-amarillo: #F2A900;
+  --eafit-arena: #F4F1EA;
+  --eafit-bg: #EFEFEF;
+  --eafit-gris-texto: #222222;
+
+  /* Alias de compatibilidad */
   --eafit-oscuro: #002855;
   --eafit-medio: #004B87;
   --eafit-claro: #00843D;
   --eafit-acento: #F2A900;
-  --eafit-fondo: #F4F6F9;
+  --eafit-fondo: #EFEFEF;
 }
 
 body {
-  background-color: var(--eafit-fondo);
+  background-color: var(--eafit-bg);
+  color: var(--eafit-gris-texto);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: #1e293b;
 }
 
-.bg-eafit-oscuro { background-color: var(--eafit-oscuro); }
-.bg-eafit-medio { background-color: var(--eafit-medio); }
-.bg-eafit-claro { background-color: var(--eafit-claro); }
-.bg-eafit-acento { background-color: var(--eafit-acento); }
-.text-eafit-oscuro { color: var(--eafit-oscuro); }
-.text-eafit-medio { color: var(--eafit-medio); }
-.text-eafit-claro { color: var(--eafit-claro); }
-.border-eafit-oscuro { border-color: var(--eafit-oscuro); }
+.bg-eafit-oscuro { background-color: var(--eafit-azul-oscuro); }
+.bg-eafit-claro { background-color: var(--eafit-azul-claro); }
+.bg-eafit-amarillo { background-color: var(--eafit-amarillo); }
+.bg-eafit-arena { background-color: var(--eafit-arena); }
+.bg-eafit-bg { background-color: var(--eafit-bg); }
+.text-eafit-oscuro { color: var(--eafit-azul-oscuro); }
+.text-eafit-amarillo { color: var(--eafit-amarillo); }
+.text-eafit-gris-texto { color: var(--eafit-gris-texto); }
 
-/* Animación de pulso para nodos de alta demanda en el mapa */
 @keyframes pulse-ring {
   0% { transform: scale(0.8); opacity: 0.8; }
   100% { transform: scale(1.8); opacity: 0; }
