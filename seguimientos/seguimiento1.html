@@ -1,1 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seguimiento Delivery - EAFIT Pedidos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="../style.css" /> <!-- Atención al ../ -->
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { eafit: { oscuro: 'var(--eafit-azul-oscuro)', amarillo: 'var(--eafit-amarillo)' } } } }
+    }
+  </script>
+</head>
+<body class="bg-[#EFEFEF] text-[#222222] font-sans pb-16">
 
+  <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl border-x border-gray-200 flex flex-col">
+    <!-- Navbar -->
+    <header class="bg-eafit-oscuro text-white sticky top-0 z-30 shadow-md">
+      <div class="px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <a href="../catalogo.html" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20">
+            <i class="fa-solid fa-arrow-left text-sm"></i>
+          </a>
+          <div>
+            <h1 class="font-bold text-base">Delivery en Curso</h1>
+            <p class="text-[11px] text-eafit-amarillo" id="orderHeaderSub">Buscando Repartidor...</p>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <!-- Botones de prueba para saltar entre roles -->
+          <a href="../delivery.html" class="px-2 py-1 bg-amber-500 text-white rounded-md text-[10px] font-bold">Ver Rol Repartidor</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="px-4 pt-5 space-y-5 flex-1" id="mainTracking">
+      <!-- Renderizado por JS -->
+    </main>
+  </div>
+
+  <!-- Modal Alerta de Llegada Repartidor -->
+  <div id="modalLlegada" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4">
+      <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl">
+        🏃
+      </div>
+      <div>
+        <span class="text-[10px] font-black uppercase tracking-wider bg-gray-100 text-gray-500 px-3 py-1 rounded-full border border-gray-200">
+          ¡Tu Repartidor llegó!
+        </span>
+        <h3 class="text-xl font-black text-gray-900 mt-3">Dicta el PIN para recibir</h3>
+        <p class="text-xs text-gray-500 mt-1" id="modalDireccionText"></p>
+      </div>
+
+      <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+        <p class="text-[10px] uppercase font-black text-gray-400">PIN DE SEGURIDAD</p>
+        <p id="modalPinCode" class="text-4xl font-black tracking-widest text-eafit-oscuro mt-2">----</p>
+      </div>
+
+      <button onclick="cerrarModalLlegada()" class="w-full py-3 bg-gray-900 text-white font-bold rounded-xl text-sm active:scale-95 transition-transform">
+        Entendido, voy en camino
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Línea de tiempo específica para DELIVERY
+    const ESTADOS = [
+      { id: 'Recibido', text: 'Pedido Recibido' },
+      { id: 'En cocina', text: 'Preparando' },
+      { id: 'Buscando repartidor', text: 'Asignando Repartidor' },
+      { id: 'En camino', text: 'En Camino a tu bloque' },
+      { id: 'Entregado', text: 'Entregado con Éxito' }
+    ];
+
+    function obtenerOrdenActiva() {
+      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+      const idActivo = localStorage.getItem('eafit_active_order_id');
+      return ordenes.find(o => o.id === idActivo) || null;
+    }
+
+    // Funciones de control y renderizado compartidas
+    function actualizarEstadoManual(nuevoEstado) {
+      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+      const orden = obtenerOrdenActiva();
+      if (!orden) return;
+      const idx = ordenes.findIndex(o => o.id === orden.id);
+      if (idx > -1) {
+        ordenes[idx].estado = nuevoEstado;
+        if (nuevoEstado === 'En camino') ordenes[idx].alertaLlegada = true;
+        localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
+        renderizarSeguimiento();
+      }
+    }
+
+    function abrirModalLlegada() {
+      const orden = obtenerOrdenActiva();
+      if (!orden) return;
+      document.getElementById('modalPinCode').textContent = orden.pin;
+      document.getElementById('modalDireccionText').textContent = orden.ubicacion.direccionCompleta;
+      const modal = document.getElementById('modalLlegada');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function cerrarModalLlegada() {
+      document.getElementById('modalLlegada').classList.add('hidden');
+      document.getElementById('modalLlegada').classList.remove('flex');
+    }
+
+    function renderizarSeguimiento() {
+      const orden = obtenerOrdenActiva();
+      const cont = document.getElementById('mainTracking');
+
+      if (!orden || !orden.modoEntrega.includes('Repartidor')) {
+        cont.innerHTML = `<div class="bg-gray-50 p-6 rounded-2xl text-center text-sm font-semibold border border-gray-200">No hay pedido de Delivery activo.</div>`;
+        return;
+      }
+
+      document.getElementById('orderHeaderSub').textContent = `Orden ${orden.id}`;
+      const pasoActualIndex = ESTADOS.findIndex(e => e.id === orden.estado);
+      const pasoAUsar = pasoActualIndex === -1 ? 0 : pasoActualIndex;
+
+      const timelineHTML = ESTADOS.map((est, index) => {
+        const completado = index <= pasoAUsar;
+        const actual = index === pasoAUsar;
+        return `
+          <div class="flex items-start space-x-4 relative">
+            <div class="flex flex-col items-center z-10">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all ${
+                completado ? 'bg-gray-900 text-white shadow-md' : 'bg-gray-200 text-gray-400'
+              } ${actual ? 'ring-4 ring-gray-300 scale-110' : ''}">
+                ${completado ? '✓' : index + 1}
+              </div>
+              ${index < ESTADOS.length - 1 ? `<div class="w-1 h-10 -my-1 ${index < pasoAUsar ? 'bg-gray-900' : 'bg-gray-200'}"></div>` : ''}
+            </div>
+            <div class="pt-1.5 pb-6">
+              <p class="text-sm font-black ${completado ? 'text-gray-900' : 'text-gray-400'}">${est.text}</p>
+              ${actual ? `<p class="text-[10px] text-gray-500 font-bold bg-gray-100 inline-block px-2 py-0.5 rounded mt-1">Estado actual</p>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      cont.innerHTML = `
+        ${orden.alertaLlegada && orden.estado !== 'Entregado' ? `
+          <div class="bg-amber-400 text-gray-900 p-4 rounded-2xl shadow-sm flex items-center justify-between animate-pulse border border-amber-500">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">🏃</span>
+              <div>
+                <p class="font-black text-sm leading-tight">¡Tu repartidor te espera!</p>
+                <p class="text-[10px] font-bold">En: ${orden.ubicacion.bloque}</p>
+              </div>
+            </div>
+            <button onclick="abrirModalLlegada()" class="px-3 py-2 bg-gray-900 text-white font-bold text-xs rounded-xl shadow-sm">Ver PIN</button>
+          </div>
+        ` : ''}
+
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-gray-200">
+          <!-- Timeline UI -->
+          <div class="mt-2 ml-2">
+            ${timelineHTML}
+          </div>
+        </section>
+
+        <!-- Botones de Developer (Simuladores) -->
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+          <p class="text-[10px] font-black uppercase text-gray-400 mb-2 text-center">Simulador de Estados (Developer)</p>
+          <div class="flex flex-wrap gap-1.5 justify-center">
+            ${ESTADOS.map(e => `
+              <button onclick="actualizarEstadoManual('${e.id}')" class="px-2.5 py-1 text-[10px] font-bold rounded-lg border ${orden.estado === e.id ? 'bg-eafit-oscuro text-white' : 'bg-white text-gray-600 border-gray-300'}">
+                ${e.text}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    window.addEventListener('storage', renderizarSeguimiento);
+    renderizarSeguimiento();
+  </script>
+</body>
+</html>
