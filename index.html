@@ -3,122 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EAFIT Pedidos - Ingreso Institucional</title>
+  <title>EAFIT Pedidos - Onboarding e Ingreso</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            eafit: {
+              oscuro: 'var(--eafit-azul-oscuro)',
+              claro: 'var(--eafit-azul-claro)',
+              amarillo: 'var(--eafit-amarillo)',
+              arena: 'var(--eafit-arena)'
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#002855] to-[#004B87]">
+<body class="bg-[#EFEFEF] text-[#222222] font-sans">
 
-  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+  <!-- Contenedor Wrapper Móvil Original -->
+  <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl border-x border-gray-200 flex flex-col justify-between">
+    
     <!-- Header Institucional -->
-    <div class="bg-eafit-oscuro p-6 text-center text-white relative">
-      <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-white/20">
-        <i class="fa-solid fa-utensils text-2xl text-yellow-400"></i>
+    <div class="bg-eafit-oscuro p-7 text-center text-white rounded-b-3xl shadow-md">
+      <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3 text-3xl shadow-inner border border-white/20">
+        🍽️
       </div>
-      <h1 class="text-2xl font-bold tracking-tight">EAFIT Pedidos</h1>
-      <p class="text-xs text-blue-200 mt-1">Ecosistema Gastronómico y Colaborativo del Campus</p>
+      <h1 class="text-3xl font-black tracking-tight">EAFIT Pedidos</h1>
+      <p class="text-xs font-semibold text-eafit-amarillo mt-1">Sin filas · Pide anticipado o recibe en tu bloque</p>
     </div>
 
-    <div class="p-6 space-y-5">
+    <!-- Cuerpo de Onboarding y Login -->
+    <div class="p-6 space-y-5 flex-1">
+      
       <!-- Correo Institucional -->
       <div>
-        <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Correo Institucional</label>
-        <div class="relative">
-          <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400"></i>
-          <input id="emailInput" type="email" value="usuario@eafit.edu.co" 
-            class="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900" 
-            placeholder="usuario@eafit.edu.co" />
-        </div>
+        <label class="block text-xs font-black uppercase text-gray-500 mb-1.5 tracking-wider">Correo Institucional</label>
+        <input id="emailInput" type="email" value="estudiante@eafit.edu.co" 
+          class="w-full px-4 py-3 text-sm font-semibold border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:border-gray-900" 
+          placeholder="usuario@eafit.edu.co" />
       </div>
 
-      <!-- Paso 1: Activar Permisos (Geolocalización) -->
-      <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+      <!-- Onboarding Permiso de Ubicación y Mapa -->
+      <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-3">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div id="geoIcon" class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
-              <i class="fa-solid fa-location-dot text-lg"></i>
-            </div>
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">📍</span>
             <div>
-              <p class="text-sm font-semibold text-slate-800">Permisos del Campus</p>
-              <p id="geoStatusText" class="text-xs text-slate-500">Geolocalización y notificaciones requeridas</p>
+              <h2 class="font-black text-sm text-gray-900">Permiso de Geolocalización</h2>
+              <p id="geoStatusText" class="text-xs text-gray-500 font-medium">Actívalo para ver saturación del campus</p>
             </div>
           </div>
           <button id="btnGeo" onclick="activarPermisos()" 
-            class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition shadow-sm">
-            Activar
+            class="bg-gray-900 text-white font-bold px-3.5 py-2 rounded-xl text-xs active:scale-95 transition-transform">
+            Activar GPS
           </button>
         </div>
       </div>
 
-      <!-- Paso 2: Selección de los 4 Roles -->
-      <div>
-        <p class="text-xs font-semibold uppercase text-slate-500 mb-2.5">Selecciona tu Rol para Ingresar</p>
-        <div class="grid grid-cols-1 gap-2.5">
-          
-          <button onclick="ingresarRol('comprador', 'catalogo.html')" 
-            class="role-btn flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-blue-900 hover:bg-blue-50/50 transition text-left group">
-            <div class="flex items-center space-x-3">
-              <span class="w-10 h-10 rounded-lg bg-blue-100 text-blue-900 flex items-center justify-center font-bold">
-                <i class="fa-solid fa-user-graduate"></i>
-              </span>
-              <div>
-                <p class="text-sm font-bold text-slate-800 group-hover:text-blue-900">Estudiante (Comprador)</p>
-                <p class="text-xs text-slate-500">Pide ahora, reserva horario o apoya emprendimientos</p>
-              </div>
-            </div>
-            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-blue-900"></i>
-          </button>
+      <!-- Selección de los 4 Roles -->
+      <div class="space-y-2.5">
+        <label class="block text-xs font-black uppercase text-gray-500 tracking-wider">Ingresa según tu Rol</label>
 
-          <button onclick="ingresarRol('emprendedor', 'emprendedor.html')" 
-            class="role-btn flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-emerald-700 hover:bg-emerald-50/50 transition text-left group">
-            <div class="flex items-center space-x-3">
-              <span class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                <i class="fa-solid fa-store"></i>
-              </span>
-              <div>
-                <p class="text-sm font-bold text-slate-800 group-hover:text-emerald-800">Emprendedor Estudiantil</p>
-                <p class="text-xs text-slate-500">Actualiza stock diario y gestiona entregas en el campus</p>
-              </div>
+        <button onclick="ingresarRol('comprador', 'catalogo.html')" 
+          class="w-full p-4 rounded-xl border border-gray-200 hover:border-gray-900 bg-white flex items-center justify-between shadow-sm active:scale-95 transition-transform text-left">
+          <div class="flex items-center gap-3.5">
+            <span class="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center text-xl">🎒</span>
+            <div>
+              <h3 class="font-black text-gray-900 text-sm">Estudiante (Comprador)</h3>
+              <p class="text-xs text-gray-500 font-medium">Explorar catálogo, restaurantes y emprendimientos</p>
             </div>
-            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-emerald-800"></i>
-          </button>
+          </div>
+          <span class="font-black text-gray-400">→</span>
+        </button>
 
-          <button onclick="ingresarRol('delivery', 'delivery.html')" 
-            class="role-btn flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-amber-600 hover:bg-amber-50/50 transition text-left group">
-            <div class="flex items-center space-x-3">
-              <span class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
-                <i class="fa-solid fa-person-walking-luggage"></i>
-              </span>
-              <div>
-                <p class="text-sm font-bold text-slate-800 group-hover:text-amber-700">Delivery Colaborativo</p>
-                <p class="text-xs text-slate-500">Activa tu disponibilidad y lleva pedidos entre bloques</p>
-              </div>
+        <button onclick="ingresarRol('emprendedor', 'emprendedor.html')" 
+          class="w-full p-4 rounded-xl border border-gray-200 hover:border-gray-900 bg-white flex items-center justify-between shadow-sm active:scale-95 transition-transform text-left">
+          <div class="flex items-center gap-3.5">
+            <span class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center text-xl">🌱</span>
+            <div>
+              <h3 class="font-black text-gray-900 text-sm">Emprendedor Estudiantil</h3>
+              <p class="text-xs text-gray-500 font-medium">Publicar stock diario y despachar pedidos</p>
             </div>
-            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-amber-700"></i>
-          </button>
+          </div>
+          <span class="font-black text-gray-400">→</span>
+        </button>
 
-          <button onclick="ingresarRol('restaurante', 'dashboard.html')" 
-            class="role-btn flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-purple-700 hover:bg-purple-50/50 transition text-left group">
-            <div class="flex items-center space-x-3">
-              <span class="w-10 h-10 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                <i class="fa-solid fa-kitchen-set"></i>
-              </span>
-              <div>
-                <p class="text-sm font-bold text-slate-800 group-hover:text-purple-800">Restaurante</p>
-                <p class="text-xs text-slate-500">Panel de cocina y despacho de órdenes</p>
-              </div>
+        <button onclick="ingresarRol('delivery', 'delivery.html')" 
+          class="w-full p-4 rounded-xl border border-gray-200 hover:border-gray-900 bg-white flex items-center justify-between shadow-sm active:scale-95 transition-transform text-left">
+          <div class="flex items-center gap-3.5">
+            <span class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center text-xl">🏃</span>
+            <div>
+              <h3 class="font-black text-gray-900 text-sm">Delivery Colaborativo</h3>
+              <p class="text-xs text-gray-500 font-medium">Lleva pedidos a bloques y valida con PIN / QR</p>
             </div>
-            <i class="fa-solid fa-chevron-right text-slate-400 group-hover:text-purple-800"></i>
-          </button>
+          </div>
+          <span class="font-black text-gray-400">→</span>
+        </button>
 
-        </div>
+        <button onclick="ingresarRol('restaurante', 'dashboard.html')" 
+          class="w-full p-4 rounded-xl border border-gray-200 hover:border-gray-900 bg-white flex items-center justify-between shadow-sm active:scale-95 transition-transform text-left">
+          <div class="flex items-center gap-3.5">
+            <span class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-xl">👨‍🍳</span>
+            <div>
+              <h3 class="font-black text-gray-900 text-sm">Restaurante</h3>
+              <p class="text-xs text-gray-500 font-medium">Comandas en cocina y entrega a repartidores</p>
+            </div>
+          </div>
+          <span class="font-black text-gray-400">→</span>
+        </button>
       </div>
 
-      <p id="alertMsg" class="hidden text-xs text-center text-red-600 font-medium bg-red-50 py-2 rounded-lg border border-red-200">
-        Por favor activa los permisos de geolocalización antes de ingresar.
+      <p id="alertMsg" class="hidden text-xs text-center text-red-600 font-bold bg-red-50 p-3 rounded-xl border border-red-200">
+        Activa primero el permiso de Geolocalización para continuar.
       </p>
     </div>
+
+    <footer class="p-4 text-center text-[11px] text-gray-400 border-t border-gray-100">
+      Universidad EAFIT · Experiencia de Usuario 2026-2
+    </footer>
   </div>
 
   <script>
@@ -127,13 +135,11 @@
     function actualizarUIPermisos() {
       const btn = document.getElementById('btnGeo');
       const status = document.getElementById('geoStatusText');
-      const icon = document.getElementById('geoIcon');
       if (permisosActivos) {
-        btn.textContent = 'Activo ✓';
-        btn.className = 'px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg cursor-default';
-        status.textContent = 'GPS del campus activo (Bloque 26 detectado)';
-        status.className = 'text-xs text-emerald-700 font-medium';
-        icon.className = 'w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center';
+        btn.textContent = 'GPS Activo ✓';
+        btn.className = 'bg-emerald-600 text-white font-bold px-3.5 py-2 rounded-xl text-xs';
+        status.textContent = 'Ubicación detectada en el Campus EAFIT';
+        status.className = 'text-xs text-emerald-700 font-bold';
         document.getElementById('alertMsg').classList.add('hidden');
       }
     }
@@ -148,7 +154,7 @@
       const email = document.getElementById('emailInput').value.trim();
       if (!email.endsWith('@eafit.edu.co')) {
         const alertMsg = document.getElementById('alertMsg');
-        alertMsg.textContent = 'Usa tu correo institucional (@eafit.edu.co)';
+        alertMsg.textContent = 'Ingresa con tu correo institucional (@eafit.edu.co)';
         alertMsg.classList.remove('hidden');
         return;
       }
