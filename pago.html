@@ -68,7 +68,7 @@
         </div>
       </section>
 
-      <!-- 2. Ubicación Estructurada (Bloque + Piso + Aula / Casillero) -->
+      <!-- 2. Ubicación Libre (Campos de Texto con Guía) -->
       <section class="space-y-2.5">
         <h2 class="text-xs font-black uppercase text-gray-500">2. Ubicación Exacta o Casillero</h2>
         <div class="grid grid-cols-3 gap-2">
@@ -86,32 +86,48 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-2 gap-2.5 pt-2">
+          <!-- Campo Bloque con Datalist (Texto libre + Sugerencias de todos los lugares de EAFIT) -->
           <div>
-            <label class="block text-[11px] font-bold text-gray-600 mb-1">Bloque</label>
-            <select id="inputBloque" class="w-full p-2.5 text-xs font-bold border border-gray-300 rounded-xl bg-white">
-              <option value="Bloque 38">Bloque 38</option>
-              <option value="Bloque 26">Bloque 26</option>
-              <option value="Bloque 19">Bloque 19</option>
-              <option value="Bloque 32 (Biblioteca)">Bloque 32</option>
-              <option value="Casilleros Bloque 29">Casilleros B29</option>
-            </select>
+            <label class="block text-[11px] font-bold text-gray-600 mb-1">Lugar / Bloque</label>
+            <input id="inputBloque" type="text" list="listaLugares" placeholder="Ej. Bloque 19" 
+              class="w-full p-2.5 text-xs font-bold border border-gray-300 rounded-xl bg-white focus:outline-none focus:border-gray-900" />
+            <datalist id="listaLugares">
+              <option value="Bloque 1 (Idiomas)"></option>
+              <option value="Bloque 3"></option>
+              <option value="Bloque 13"></option>
+              <option value="Bloque 14"></option>
+              <option value="Bloque 15"></option>
+              <option value="Bloque 18 (Biblioteca Sur)"></option>
+              <option value="Bloque 19"></option>
+              <option value="Bloque 26"></option>
+              <option value="Bloque 27"></option>
+              <option value="Bloque 28 (Fundadores)"></option>
+              <option value="Bloque 29 (Registro)"></option>
+              <option value="Bloque 30 (Música)"></option>
+              <option value="Bloque 32 (Biblioteca Central)"></option>
+              <option value="Bloque 33"></option>
+              <option value="Bloque 38"></option>
+              <option value="Cafetería Central"></option>
+              <option value="Plazoleta del Estudiante"></option>
+              <option value="Parque de la Ceiba"></option>
+              <option value="Parque Los Guayabos"></option>
+            </datalist>
           </div>
+
+          <!-- Campo Piso de Texto Libre -->
           <div>
-            <label class="block text-[11px] font-bold text-gray-600 mb-1">Piso</label>
-            <select id="inputPiso" class="w-full p-2.5 text-xs font-bold border border-gray-300 rounded-xl bg-white">
-              <option value="Piso 1">Piso 1</option>
-              <option value="Piso 2">Piso 2</option>
-              <option value="Piso 3">Piso 3</option>
-              <option value="Piso 4">Piso 4</option>
-              <option value="Casillero #14">Casillero #14</option>
-            </select>
+            <label class="block text-[11px] font-bold text-gray-600 mb-1">Piso / Nivel</label>
+            <input id="inputPiso" type="text" placeholder="Ej. Piso 1" 
+              class="w-full p-2.5 text-xs font-bold border border-gray-300 rounded-xl bg-white focus:outline-none focus:border-gray-900" />
           </div>
         </div>
+        
+        <!-- Campo Aula de Texto Libre -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-600 mb-1">Aula o Punto de Encuentro</label>
-          <input id="inputAula" type="text" value="Aula 304 / Entrada" 
-            class="w-full p-2.5 text-xs font-semibold border border-gray-300 rounded-xl" />
+          <label class="block text-[11px] font-bold text-gray-600 mb-1">Aula, Oficina o Punto de Encuentro</label>
+          <input id="inputAula" type="text" placeholder="Ej. Aula 304, Casillero #12, Mesas de ajedrez..." 
+            class="w-full p-2.5 text-xs font-semibold border border-gray-300 rounded-xl focus:outline-none focus:border-gray-900" />
         </div>
       </section>
 
@@ -245,10 +261,12 @@
       const cart = obtenerCarritoUnificado();
       if (cart.length === 0) return alert('Tu carrito está vacío.');
 
+      // Validamos que si el usuario escribe algo manual o selecciona, lo guarde. Si lo deja vacío, usamos un default.
+      const valBloque = document.getElementById('inputBloque').value.trim() || 'Bloque a convenir';
+      const valPiso = document.getElementById('inputPiso').value.trim() || 'Piso a convenir';
+      const valAula = document.getElementById('inputAula').value.trim() || 'Punto de encuentro a convenir';
+
       const pinAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
-      const bloque = document.getElementById('inputBloque').value;
-      const piso = document.getElementById('inputPiso').value;
-      const aula = document.getElementById('inputAula').value;
       const horario = modalidadTiempo === 'anticipado'
         ? document.getElementById('horarioSelect').value
         : 'Inmediato (Consumir ya)';
@@ -266,10 +284,10 @@
         horario,
         modoEntrega,
         ubicacion: {
-          bloque,
-          piso,
-          aula,
-          direccionCompleta: `${bloque} · ${piso} · ${aula}`
+          bloque: valBloque,
+          piso: valPiso,
+          aula: valAula,
+          direccionCompleta: `${valBloque} · ${valPiso} · ${valAula}`
         },
         metodoPago,
         estado: 'Recibido',
