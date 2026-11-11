@@ -63,13 +63,10 @@
         </div>
 
         <div id="horarioContainer" class="hidden pt-1 transition-all">
-          <label class="block text-xs font-bold text-gray-700 mb-1">Horario programado:</label>
-          <select id="horarioSelect" class="w-full p-3 text-sm font-semibold border border-gray-300 rounded-xl bg-white focus:outline-none focus:border-gray-900">
-            <option value="12:00 PM - 12:15 PM">12:00 PM - 12:15 PM</option>
-            <option value="12:30 PM - 12:45 PM">12:30 PM - 12:45 PM</option>
-            <option value="01:00 PM - 01:15 PM">01:00 PM - 01:15 PM</option>
-            <option value="02:00 PM - 02:15 PM">02:00 PM - 02:15 PM</option>
-          </select>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Elige la hora exacta (8:00 AM - 8:00 PM):</label>
+          <input type="time" id="horarioSelect" min="08:00" max="20:00" 
+            class="w-full p-3 text-sm font-bold border border-gray-300 rounded-xl bg-white focus:outline-none focus:border-gray-900" />
+          <p class="text-[10px] text-gray-400 mt-1 font-semibold">* Fuera de este horario, los locales del campus estarán cerrados.</p>
         </div>
       </section>
 
@@ -225,7 +222,6 @@
 
     function eliminarItemCarrito(prodId) {
       let cart = obtenerCarritoUnificado();
-      // Filtramos para sacar el producto seleccionado
       cart = cart.filter(item => item.prodId !== prodId);
       localStorage.setItem('eafit_cart', JSON.stringify(cart));
       renderizarResumen();
@@ -281,19 +277,39 @@
       document.getElementById('pay-' + metodo).className = 'pay-btn p-3 rounded-xl border-2 border-gray-900 bg-gray-50 text-left font-black text-xs transition-all';
     }
 
+    // Formatear hora de 24h a 12h AM/PM
+    function formatearHora(timeVal) {
+      const [hours, minutes] = timeVal.split(':');
+      const h = parseInt(hours, 10);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 || 12;
+      return `${h12}:${minutes} ${ampm}`;
+    }
+
     function generarOrdenPedido() {
       const cart = obtenerCarritoUnificado();
       if (cart.length === 0) return alert('No hay productos en tu carrito para pagar.');
 
+      // Validar horario si es anticipado
+      let horario = 'Inmediato (Consumir ya)';
+      if (modalidadTiempo === 'anticipado') {
+        const timeInput = document.getElementById('horarioSelect').value;
+        if (!timeInput) return alert('Por favor, selecciona a qué hora deseas tu pedido.');
+        
+        // Validar rango de 8 AM a 8 PM
+        const [h, m] = timeInput.split(':').map(Number);
+        if (h < 8 || h >= 20) {
+          return alert('El horario de atención es de 8:00 AM a 8:00 PM. Por favor selecciona una hora válida.');
+        }
+        horario = formatearHora(timeInput) + ' (Programado)';
+      }
+
+      // Validar ubicación
       const valBloque = document.getElementById('inputBloque').value.trim() || 'Bloque a convenir';
       const valPiso = document.getElementById('inputPiso').value.trim() || 'Piso a convenir';
       const valAula = document.getElementById('inputAula').value.trim() || 'A convenir';
 
       const pinAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
-      const horario = modalidadTiempo === 'anticipado'
-        ? document.getElementById('horarioSelect').value
-        : 'Inmediato (Consumir ya)';
-
       const total = cart.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
       const tieneEmprendimiento = cart.some(i => i.storeType === 'emprendimiento');
 
