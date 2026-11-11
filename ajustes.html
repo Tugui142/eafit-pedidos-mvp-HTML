@@ -4,91 +4,163 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ajustes de Cuenta - EAFIT Pedidos</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            eafit: { oscuro: 'var(--eafit-azul-oscuro)', claro: 'var(--eafit-azul-claro)', amarillo: 'var(--eafit-amarillo)', arena: 'var(--eafit-arena)' }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="pb-16 bg-slate-50">
+<body class="bg-[#EFEFEF] text-[#222222] font-sans">
 
-  <!-- Navbar -->
-  <header class="bg-eafit-oscuro text-white sticky top-0 z-30 shadow-md">
-    <div class="max-w-md mx-auto px-4 py-3 flex items-center space-x-3">
-      <button onclick="window.history.back()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20">
-        <i class="fa-solid fa-arrow-left text-sm"></i>
-      </button>
-      <h1 class="font-bold text-base">Ajustes y Perfil</h1>
-    </div>
-  </header>
+  <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl border-x border-gray-200 flex flex-col pb-10">
 
-  <main class="max-w-md mx-auto px-4 pt-6 space-y-6">
-    
-    <!-- Perfil de Usuario -->
-    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 text-center">
-      <div class="w-20 h-20 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl border-4 border-white shadow-sm">
-        <i class="fa-solid fa-user-graduate"></i>
+    <!-- Navbar -->
+    <nav class="bg-white p-4 shadow-sm flex items-center justify-between sticky top-0 z-40 border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <button onclick="window.history.back()" class="bg-gray-100 w-10 h-10 rounded-xl shadow-sm font-black text-lg flex items-center justify-center active:scale-95 transition-transform" title="Volver">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </button>
+        <h1 class="font-black text-base">Mi Perfil y Ajustes</h1>
       </div>
-      <h2 class="text-lg font-extrabold text-slate-800">Perfil Activo</h2>
-      <p class="text-sm font-semibold text-blue-900 mt-1" id="lblEmail">Cargando...</p>
-      <p class="text-xs text-slate-500 uppercase tracking-widest mt-1">Rol: <span id="lblRol" class="font-bold">...</span></p>
-    </div>
+    </nav>
 
-    <!-- Permisos de la App -->
-    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-      <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider">Permisos del Sistema</h3>
+    <div class="p-5 space-y-6">
       
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-            <i class="fa-solid fa-location-crosshairs"></i>
+      <!-- Tarjeta de Perfil Activo -->
+      <div class="bg-gray-50 p-6 rounded-3xl shadow-inner border border-gray-200 text-center relative overflow-hidden">
+        <!-- Decoración de fondo -->
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-eafit-amarillo rounded-full opacity-10"></div>
+        <div class="absolute -bottom-10 -left-10 w-24 h-24 bg-eafit-oscuro rounded-full opacity-5"></div>
+
+        <div class="relative">
+          <div class="w-20 h-20 bg-white text-gray-900 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl shadow-sm border-2 border-gray-100">
+            <i class="fa-solid fa-user-astronaut"></i>
           </div>
-          <div>
-            <p class="text-sm font-bold text-slate-800">Geolocalización (Campus)</p>
-            <p class="text-[10px] text-slate-500" id="lblGeoText">Permiso concedido</p>
+          <h2 class="text-xl font-black text-gray-900 tracking-tight">Estudiante EAFIT</h2>
+          <p class="text-xs font-bold text-gray-500 mt-1" id="lblEmail">Cargando...</p>
+          <div class="mt-3 inline-block bg-gray-900 text-white px-3 py-1 rounded-full shadow-sm">
+            <p class="text-[10px] uppercase tracking-widest font-black">Rol: <span id="lblRol">...</span></p>
           </div>
         </div>
-        <div class="w-10 h-6 bg-emerald-500 rounded-full flex items-center justify-end p-1 shadow-inner">
-          <div class="w-4 h-4 bg-white rounded-full"></div>
-        </div>
       </div>
-    </div>
 
-    <!-- Zona de Peligro / Pruebas -->
-    <div class="bg-red-50 p-4 rounded-2xl shadow-sm border border-red-100 space-y-4">
-      <h3 class="text-xs font-bold uppercase text-red-400 tracking-wider">Zona de Pruebas (Developer)</h3>
-      
-      <button onclick="limpiarDatos()" class="w-full py-3 bg-white border border-red-200 text-red-600 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition">
-        <i class="fa-solid fa-broom"></i> Borrar Base de Datos Local (Reset)
+      <!-- Configuración General -->
+      <section class="space-y-3">
+        <h3 class="text-xs font-black uppercase text-gray-400 tracking-wider">Configuración General</h3>
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 divide-y divide-gray-100">
+          
+          <!-- Permiso GPS -->
+          <div class="p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-location-crosshairs"></i>
+              </div>
+              <div>
+                <p class="text-sm font-black text-gray-900">Geolocalización GPS</p>
+                <p class="text-[10px] font-semibold text-emerald-600" id="lblGeoText">Permiso activo en campus</p>
+              </div>
+            </div>
+            <!-- Toggle Estático -->
+            <div class="w-10 h-6 bg-emerald-500 rounded-full flex items-center justify-end p-1 shadow-inner">
+              <div class="w-4 h-4 bg-white rounded-full shadow-sm"></div>
+            </div>
+          </div>
+
+          <!-- Notificaciones (Simulado) -->
+          <div class="p-4 flex items-center justify-between opacity-60">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-bell"></i>
+              </div>
+              <div>
+                <p class="text-sm font-black text-gray-900">Notificaciones Push</p>
+                <p class="text-[10px] font-semibold text-gray-500">Alertas de llegada del repartidor</p>
+              </div>
+            </div>
+            <div class="w-10 h-6 bg-gray-300 rounded-full flex items-center justify-start p-1 shadow-inner">
+              <div class="w-4 h-4 bg-white rounded-full shadow-sm"></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Métodos de Pago (Simulado) -->
+      <section class="space-y-3">
+        <h3 class="text-xs font-black uppercase text-gray-400 tracking-wider">Billetera Digital</h3>
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex items-center justify-between group cursor-pointer hover:bg-gray-50 transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-900 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-id-card"></i>
+            </div>
+            <div>
+              <p class="text-sm font-black text-gray-900">Saldo Carné Institucional</p>
+              <p class="text-xs font-bold text-gray-500">$ 45.000 COP disponibles</p>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-gray-900 transition-colors"></i>
+        </div>
+      </section>
+
+      <!-- Zona de Desarrollador / Peligro -->
+      <section class="space-y-3 pt-4">
+        <h3 class="text-xs font-black uppercase text-red-400 tracking-wider">Opciones de Desarrollador</h3>
+        
+        <div class="bg-red-50 p-4 rounded-2xl shadow-sm border border-red-200 space-y-3 text-center">
+          <p class="text-[11px] text-red-500 font-semibold leading-tight px-4">
+            Esto eliminará todos tus pedidos, carritos, productos emprendedores y restablecerá la app para nuevas pruebas Lean UX.
+          </p>
+          <button onclick="limpiarDatos()" class="w-full py-3 bg-white border-2 border-red-200 text-red-600 rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:bg-red-100 hover:border-red-300 active:scale-95 transition-all">
+            <i class="fa-solid fa-triangle-exclamation"></i> Borrar Base de Datos (Reset)
+          </button>
+        </div>
+      </section>
+
+      <!-- Botón de Cerrar Sesión -->
+      <button onclick="cerrarSesion()" class="w-full py-4 bg-gray-900 text-white rounded-xl text-sm font-black flex items-center justify-center gap-2 shadow-md hover:bg-gray-800 active:scale-95 transition-transform mt-6">
+        Cerrar Sesión Segura <i class="fa-solid fa-right-from-bracket ml-1"></i>
       </button>
-      <p class="text-[10px] text-red-400 text-center leading-tight">Esto eliminará todos los pedidos, carritos y catálogos de prueba guardados en este navegador.</p>
+
+      <div class="text-center pt-4">
+        <p class="text-[10px] font-bold text-gray-400">EAFIT Pedidos v1.0.0 (MVP)</p>
+      </div>
+
     </div>
-
-    <button onclick="cerrarSesion()" class="w-full py-3.5 bg-slate-800 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-slate-900 transition">
-      <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión y Volver al Inicio
-    </button>
-
-  </main>
+  </div>
 
   <script>
-    // Cargar datos actuales
+    // Cargar datos actuales desde localStorage
     document.getElementById('lblEmail').textContent = localStorage.getItem('eafit_user_email') || 'Sin sesión activa';
     document.getElementById('lblRol').textContent = localStorage.getItem('eafit_rol_activo') || 'Desconocido';
     
     const geo = localStorage.getItem('eafit_geo_permiso') === 'true';
     if (!geo) {
       document.getElementById('lblGeoText').textContent = 'Permiso denegado o pendiente';
+      document.getElementById('lblGeoText').className = 'text-[10px] font-semibold text-gray-500';
     }
 
     function cerrarSesion() {
-      // Borrar solo la sesión, mantener los pedidos
+      // Solo elimina la sesión, mantiene los pedidos y carritos intactos para no romper flujos en pruebas
       localStorage.removeItem('eafit_user_email');
       localStorage.removeItem('eafit_rol_activo');
       window.location.href = 'index.html';
     }
 
     function limpiarDatos() {
-      if(confirm('¿Estás seguro de querer borrar todos los pedidos, carritos y datos guardados? La app quedará como nueva.')) {
+      if(confirm('¿Seguro que quieres borrar TODOS los pedidos, carritos y datos de la aplicación? Esto no se puede deshacer.')) {
         localStorage.clear();
-        alert('Datos locales borrados con éxito.');
+        alert('App reiniciada. Se han borrado todos los datos locales.');
         window.location.href = 'index.html';
       }
     }
