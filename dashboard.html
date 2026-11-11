@@ -8,57 +8,167 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="pb-16">
-  <header class="bg-eafit-oscuro text-white sticky top-0 z-30 shadow-md">
-    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <a href="index.html" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20">
-          <i class="fa-solid fa-arrow-left text-sm"></i>
-        </a>
-        <h1 class="font-bold text-base">Panel de Cocina (Restaurantes Campus)</h1>
-      </div>
-      <a href="seguimiento.html" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg">Ir a Seguimiento</a>
-    </div>
-  </header>
+<body class="bg-gray-100 min-h-screen flex flex-col md:flex-row font-sans">
 
-  <main class="max-w-4xl mx-auto px-4 pt-5 space-y-4">
-    <div id="restOrders" class="space-y-3"></div>
+  <!-- Sidebar Lateral -->
+  <aside class="w-full md:w-64 bg-gray-900 text-white flex flex-col shadow-xl z-20 md:sticky top-0 md:h-screen">
+    <div class="p-5 border-b border-white/10">
+      <h1 class="font-black text-lg tracking-tight flex items-center gap-2">
+        <i class="fa-solid fa-utensils text-yellow-400"></i> EAFIT Pedidos
+      </h1>
+      <p class="text-xs text-gray-400 mt-1">Panel de Cocina / KDS</p>
+    </div>
+
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+      <a href="#" class="flex items-center gap-3 bg-white/10 text-white px-4 py-3 rounded-xl font-bold text-sm">
+        <i class="fa-solid fa-fire-burner w-5"></i> <span class="hidden md:inline">Monitor Activo</span>
+      </a>
+    </nav>
+
+    <div class="p-4 border-t border-white/10 hidden md:block">
+      <p class="text-sm font-bold text-white mb-2">Restaurante Campus</p>
+      <a href="index.html" class="block w-full py-2.5 text-center bg-gray-800 text-xs font-bold text-gray-300 rounded-lg hover:bg-gray-700">
+        Salir al Inicio
+      </a>
+    </div>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main class="flex-1 p-4 md:p-8 space-y-6 max-w-7xl mx-auto w-full">
+    
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+      <div>
+        <h2 class="text-2xl font-black text-gray-900">Monitor de Preparación</h2>
+        <p class="text-sm text-gray-500 font-medium mt-1">Mueve los pedidos por los estados para notificar al estudiante o al repartidor.</p>
+      </div>
+      <div class="flex gap-4">
+        <div class="text-center">
+          <p class="text-[10px] uppercase font-black text-gray-400">Nuevos</p>
+          <p class="text-2xl font-black text-gray-900" id="stat-nuevos">0</p>
+        </div>
+        <div class="w-px bg-gray-200 h-10 my-auto"></div>
+        <div class="text-center">
+          <p class="text-[10px] uppercase font-black text-amber-500">En Cocina</p>
+          <p class="text-2xl font-black text-amber-600" id="stat-cocina">0</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tablero Kanban de Órdenes -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6" id="kanbanBoard">
+      <!-- Las columnas se renderizan vía JS -->
+    </section>
+
   </main>
 
   <script>
-    function cambiarEstado(id, estado) {
+    const KANBAN_COLS = [
+      { key: 'Recibido', title: 'Nuevos Pedidos', icon: 'fa-bell text-gray-500', color: 'bg-gray-900' },
+      { key: 'En cocina', title: 'En Preparación (Cocina)', icon: 'fa-fire-burner text-amber-500', color: 'bg-amber-500' },
+      { key: 'Listos', title: 'Listos para Despachar', icon: 'fa-box text-emerald-600', color: 'bg-emerald-600' }
+    ];
+
+    function avanzarEstadoRestaurante(id, nuevoEstado) {
       const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
       const idx = ordenes.findIndex(o => o.id === id);
       if (idx > -1) {
-        ordenes[idx].estado = estado;
+        ordenes[idx].estado = nuevoEstado;
         localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
-        render();
+        renderizarDashboard();
       }
     }
 
-    function render() {
-      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
-      const cont = document.getElementById('restOrders');
-      if (ordenes.length === 0) {
-        cont.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-sm text-slate-500">Sin órdenes activas en cocina.</div>`;
-        return;
-      }
-      cont.innerHTML = ordenes.map(o => `
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between gap-3">
-          <div>
-            <span class="text-xs font-bold bg-blue-100 text-blue-900 px-2.5 py-0.5 rounded-full">${o.estado}</span>
-            <h3 class="font-bold text-base mt-1">${o.id} · ${o.horario}</h3>
-            <p class="text-xs text-slate-600">${o.items.map(i => `${i.cantidad}x ${i.prodName}`).join(', ')}</p>
-            <p class="text-xs text-slate-400 mt-1">Destino: ${o.ubicacion.direccionCompleta}</p>
+    function renderizarDashboard() {
+      const board = document.getElementById('kanbanBoard');
+      const todasLasOrdenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+      
+      // Filtra solo restaurante. Excluye emprendimientos y los que ya salieron de manos del restaurante
+      const ordenesActivas = todasLasOrdenes.filter(o => 
+        !o.esEmprendimiento && 
+        !['En camino', 'Depositado', 'Listo para recoger', 'Entregado'].includes(o.estado)
+      );
+
+      document.getElementById('stat-nuevos').textContent = ordenesActivas.filter(o => o.estado === 'Recibido').length;
+      document.getElementById('stat-cocina').textContent = ordenesActivas.filter(o => o.estado === 'En cocina').length;
+
+      board.innerHTML = KANBAN_COLS.map(col => {
+        // La columna "Listos" es un comodín en este tablero, ya que las órdenes listas ya pasaron a un estado de entrega.
+        // Las mostramos solo si se quedaron colgadas como "Buscando repartidor".
+        const ordenesEnColumna = ordenesActivas.filter(o => {
+          if (col.key === 'Listos') return o.estado === 'Buscando repartidor';
+          return o.estado === col.key;
+        });
+
+        const tarjetasHTML = ordenesEnColumna.length === 0
+          ? `<div class="p-6 text-center text-gray-400 text-sm font-semibold border-2 border-dashed border-gray-200 rounded-xl">Vacío</div>`
+          : ordenesEnColumna.map(o => {
+            
+            // Lógica de botones inteligentes
+            let btnAction = '';
+            if (col.key === 'Recibido') {
+              btnAction = `<button onclick="avanzarEstadoRestaurante('${o.id}', 'En cocina')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow-sm transition-colors mt-3">Comenzar a Preparar →</button>`;
+            } else if (col.key === 'En cocina') {
+              // Dependiendo del tipo de pedido, despacha a un estado u otro
+              if (o.modoEntrega.includes('Repartidor')) {
+                btnAction = `<button onclick="avanzarEstadoRestaurante('${o.id}', 'Buscando repartidor')" class="w-full py-2.5 bg-gray-900 text-white text-xs font-black rounded-xl shadow-sm mt-3">Solicitar Repartidor</button>`;
+              } else if (o.modoEntrega.includes('Casillero')) {
+                btnAction = `<button onclick="avanzarEstadoRestaurante('${o.id}', 'En camino')" class="w-full py-2.5 bg-blue-900 text-white text-xs font-black rounded-xl shadow-sm mt-3">Enviar a Zona Casilleros</button>`;
+              } else {
+                btnAction = `<button onclick="avanzarEstadoRestaurante('${o.id}', 'Listo para recoger')" class="w-full py-2.5 bg-emerald-600 text-white text-xs font-black rounded-xl shadow-sm mt-3">Avisar: ¡Listo en Mostrador!</button>`;
+              }
+            } else {
+              btnAction = `<p class="text-xs font-bold text-gray-500 text-center mt-3 animate-pulse">Esperando asignación en App Delivery...</p>`;
+            }
+
+            const badgeIcon = o.modoEntrega.includes('Repartidor') ? '🏃 Repartidor' : o.modoEntrega.includes('Casillero') ? '📦 Casillero' : '📍 Recoger Barra';
+
+            return `
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group">
+              <div class="absolute top-0 inset-x-0 h-1.5 ${col.color}"></div>
+              
+              <div class="flex justify-between items-start pt-2">
+                <div>
+                  <h4 class="font-black text-gray-900 text-lg">${o.id}</h4>
+                  <p class="text-[10px] font-black text-gray-500 uppercase">${o.horario}</p>
+                </div>
+                <span class="text-[10px] font-black bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                  ${badgeIcon}
+                </span>
+              </div>
+
+              <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 mt-3 mb-2">
+                <ul class="text-sm font-bold text-gray-800 space-y-1">
+                  ${o.items.map(i => `<li><span class="text-gray-400 mr-1">${i.cantidad}x</span> ${i.prodName}</li>`).join('')}
+                </ul>
+              </div>
+
+              <p class="text-[11px] font-semibold text-gray-500 leading-tight">
+                <i class="fa-solid fa-location-dot"></i> <strong>Destino:</strong> ${o.ubicacion.bloque} · ${o.ubicacion.piso} · ${o.ubicacion.aula}
+              </p>
+
+              ${btnAction}
+            </div>
+          `;
+          }).join('');
+
+        return `
+          <div class="flex flex-col h-full">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-black text-gray-800 text-sm flex items-center gap-2">
+                <i class="fa-solid ${col.icon}"></i> ${col.title}
+              </h3>
+              <span class="bg-gray-200 text-gray-600 text-xs font-black px-2 py-0.5 rounded-full">${ordenesEnColumna.length}</span>
+            </div>
+            <div class="flex-1 bg-gray-200/50 rounded-2xl p-3 space-y-3 min-h-[500px] border border-gray-200">
+              ${tarjetasHTML}
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="cambiarEstado('${o.id}', 'En cocina')" class="px-3 py-2 bg-amber-500 text-white text-xs font-bold rounded-xl">Pasar a En Cocina</button>
-            <button onclick="cambiarEstado('${o.id}', 'Buscando repartidor')" class="px-3 py-2 bg-eafit-oscuro text-white text-xs font-bold rounded-xl">Solicitar Repartidor</button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
-    render();
+
+    window.addEventListener('storage', renderizarDashboard);
+    renderizarDashboard();
   </script>
 </body>
 </html>
