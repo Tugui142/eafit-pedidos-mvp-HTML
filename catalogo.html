@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Librerías de Mapas (Leaflet) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
   <script>
     tailwind.config = {
       theme: {
@@ -90,62 +94,43 @@
         <div>
           <span class="text-[10px] font-bold uppercase tracking-wider text-eafit-amarillo">Directorio Completo</span>
           <h2 class="font-black text-base">22 Locales en el Campus</h2>
-          <p class="text-xs text-gray-200">Bigo's, Chipstation, Frisby, Corral, Juan Valdez...</p>
+          <p class="text-xs text-gray-200">Bigo's, Chipstation, Frisby, Corral...</p>
         </div>
         <button onclick="window.location.href='restaurantes.html'" class="bg-eafit-amarillo text-gray-900 font-black px-4 py-2.5 rounded-xl text-xs shrink-0 active:scale-95 transition-transform">
           Ver Todos →
         </button>
       </div>
 
-      <!-- Gráfico de Demanda Actual + Mapa Interactivo del Campus -->
-      <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-3">
-        <div class="flex items-center justify-between">
+      <!-- Mapa Real con Leaflet y GeoJSON -->
+      <div class="bg-gray-50 p-2 rounded-2xl border border-gray-200 space-y-2">
+        <div class="flex items-center justify-between px-2 pt-1">
           <div>
-            <h3 class="font-black text-gray-900 text-sm">📊 Demanda y Mapa en Tiempo Real</h3>
-            <p class="text-[11px] text-gray-500 font-medium">Toca una barra o nodo para ver fila y stock</p>
+            <h3 class="font-black text-gray-900 text-sm">📍 Mapa EAFIT en Vivo</h3>
+            <p class="text-[11px] text-gray-500 font-medium">Demanda en restaurantes (Bloques)</p>
           </div>
-          <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">En vivo</span>
+          <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Actualizado</span>
         </div>
-
-        <!-- Barras de Demanda -->
-        <div id="demandChart" class="space-y-2"></div>
-
-        <!-- Mapa del Campus Simulado -->
-        <div class="relative bg-gradient-to-br from-emerald-50 via-gray-100 to-blue-50 h-40 rounded-xl border border-gray-300 overflow-hidden p-2.5 flex flex-col justify-between">
-          <div class="flex justify-between items-center text-[10px] font-bold text-gray-500">
-            <span>🗺️ MAPA SATURACIÓN CAMPUS</span>
-            <span class="flex gap-2">
-              <span class="text-emerald-600">● Baja</span>
-              <span class="text-amber-600">● Media</span>
-              <span class="text-red-600">● Alta</span>
-            </span>
-          </div>
-          <div id="campusMapNodes" class="relative w-full h-24"></div>
-          <div id="mapZoneDetail" class="bg-white/95 px-2.5 py-1.5 rounded-lg border border-gray-200 text-[11px] flex justify-between items-center font-bold"></div>
+        
+        <!-- Contenedor del Mapa Real (z-index bajo para que no monte los modales) -->
+        <div id="realMap" class="w-full h-56 rounded-xl border border-gray-300 z-10"></div>
+        
+        <!-- Leyenda -->
+        <div class="flex justify-between items-center px-2 pb-1 text-[10px] font-bold text-gray-500">
+          <span class="text-emerald-600">● Libre (&lt; 10m)</span>
+          <span class="text-amber-600">● Medio (~20m)</span>
+          <span class="text-red-600">● Lleno (&gt; 30m)</span>
         </div>
       </div>
 
-      <!-- Filtros: Todos | Emprendimientos Estudiantiles | Mejor Disponibilidad -->
+      <!-- Filtros -->
       <div class="flex gap-2 overflow-x-auto pb-1">
-        <button onclick="filtrarCatalogo('todos')" id="filter-todos"
-          class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-900 text-white">
-          Todos
-        </button>
-        <button onclick="filtrarCatalogo('emprendimiento')" id="filter-emprendimiento"
-          class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-sm">
-          🌱 Emprendimientos Estudiantiles
-        </button>
-        <button onclick="filtrarCatalogo('disponibilidad')" id="filter-disponibilidad"
-          class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-100 text-gray-800 border border-gray-200">
-          ⚡ Mejor Disponibilidad (&lt;10m)
-        </button>
-        <button onclick="filtrarCatalogo('restaurante')" id="filter-restaurante"
-          class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-100 text-gray-800 border border-gray-200">
-          🍕 Restaurantes
-        </button>
+        <button onclick="filtrarCatalogo('todos')" id="filter-todos" class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-900 text-white">Todos</button>
+        <button onclick="filtrarCatalogo('emprendimiento')" id="filter-emprendimiento" class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-sm">🌱 Emprendimientos</button>
+        <button onclick="filtrarCatalogo('disponibilidad')" id="filter-disponibilidad" class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-100 text-gray-800 border border-gray-200">⚡ Más Rápido</button>
+        <button onclick="filtrarCatalogo('restaurante')" id="filter-restaurante" class="filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black bg-gray-100 text-gray-800 border border-gray-200">🍕 Restaurantes</button>
       </div>
 
-      <!-- Lista de Platos, Combos y Tiendas de Emprendedores -->
+      <!-- Lista de Tiendas -->
       <div id="storesContainer" class="space-y-4"></div>
 
     </div>
@@ -169,13 +154,13 @@
   </div>
 
   <script>
+    // ======== 1. DATOS Y LÓGICA ========
     document.getElementById('menuUserEmail').textContent = localStorage.getItem('eafit_user_email') || 'estudiante@eafit.edu.co';
 
     function toggleSidebar() {
       const menu = document.getElementById('sidebarMenu');
       const overlay = document.getElementById('sidebarOverlay');
-      const isHidden = menu.classList.contains('-translate-x-full');
-      if (isHidden) {
+      if (menu.classList.contains('-translate-x-full')) {
         menu.classList.remove('-translate-x-full');
         overlay.classList.remove('hidden');
       } else {
@@ -184,11 +169,9 @@
       }
     }
 
-    // Catálogo sincronizado con el Panel de Emprendedores
     const defaultEmprendedorItems = [
       { id: 'emp-1', nombre: 'Brownie Melcochudo Artesanal', precio: 6500, stock: 18, img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80' },
-      { id: 'emp-2', nombre: 'Galleta Red Velvet ChocoBites', precio: 5000, stock: 12, img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&q=80' },
-      { id: 'emp-3', nombre: 'Cold Brew Café de Origen (250ml)', precio: 7500, stock: 9, img: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=500&q=80' }
+      { id: 'emp-2', nombre: 'Galleta Red Velvet ChocoBites', precio: 5000, stock: 12, img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500&q=80' }
     ];
 
     function obtenerCatalogoEmprendedor() {
@@ -204,10 +187,9 @@
         nombre: 'Dulce Bloque 38 (Emprendimiento)',
         tipo: 'emprendimiento',
         linkLocal: null,
-        bloque: 'Bloque 38 · Piso 1',
+        bloque: 'Bloque 38',
         saturacion: 22,
         tiempoEspera: 4,
-        coords: { top: '28%', left: '62%' },
         productos: obtenerCatalogoEmprendedor()
       },
       {
@@ -215,13 +197,11 @@
         nombre: 'Wraps & Sánduches El Inge',
         tipo: 'emprendimiento',
         linkLocal: null,
-        bloque: 'Bloque 19 · Zona Verde',
+        bloque: 'Bloque 19',
         saturacion: 35,
         tiempoEspera: 6,
-        coords: { top: '65%', left: '28%' },
         productos: [
-          { id: 'emp-4', nombre: 'Wrap de Pollo Pesto Casero', precio: 13500, stock: 10, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&q=80' },
-          { id: 'emp-5', nombre: 'Té Helado Artesanal Durazno', precio: 5500, stock: 15, img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&q=80' }
+          { id: 'emp-4', nombre: 'Wrap de Pollo Pesto', precio: 13500, stock: 10, img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&q=80' }
         ]
       },
       {
@@ -229,13 +209,11 @@
         nombre: "Bigo's",
         tipo: 'restaurante',
         linkLocal: 'restaurantes/bigos.html',
-        bloque: 'Plazoleta Estudiante · Bloque 26',
+        bloque: 'Plazoleta del Estudiante',
         saturacion: 85,
         tiempoEspera: 20,
-        coords: { top: '45%', left: '48%' },
         productos: [
-          { id: 'rest-1', nombre: 'Pizza Personal Margarita / Pepperoni', precio: 16900, stock: 25, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80' },
-          { id: 'rest-2', nombre: 'Burrito Mixto Gratinado', precio: 17500, stock: 14, img: 'https://images.unsplash.com/photo-1566740933430-b5e70b06d2d5?w=500&q=80' }
+          { id: 'rest-1', nombre: 'Pizza Personal', precio: 16900, stock: 25, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80' }
         ]
       },
       {
@@ -243,78 +221,29 @@
         nombre: 'Chipstation',
         tipo: 'restaurante',
         linkLocal: 'restaurantes/chipstation.html',
-        bloque: 'Cafetería Sur · Bloque 18',
+        bloque: 'Bloque 14',
         saturacion: 38,
         tiempoEspera: 8,
-        coords: { top: '75%', left: '72%' },
         productos: [
-          { id: 'rest-3', nombre: 'Cono de Papas Belgas con Pollo', precio: 14900, stock: 30, img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80' },
-          { id: 'rest-4', nombre: 'Combo Papas + Limonada', precio: 17900, stock: 22, img: 'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=500&q=80' }
+          { id: 'rest-3', nombre: 'Papas Belgas', precio: 14900, stock: 30, img: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80' }
         ]
       }
     ];
 
     let filtroActual = 'todos';
-    let comercioSeleccionadoMapa = comercios[0].id;
-
-    function colorSaturacion(sat) {
-      if (sat < 45) return { bg: 'bg-emerald-500', text: 'text-emerald-700' };
-      if (sat < 75) return { bg: 'bg-amber-500', text: 'text-amber-700' };
-      return { bg: 'bg-red-500', text: 'text-red-700' };
-    }
-
-    function renderizarDemandaYMapa() {
-      const chart = document.getElementById('demandChart');
-      const mapNodes = document.getElementById('campusMapNodes');
-      chart.innerHTML = '';
-      mapNodes.innerHTML = '';
-
-      comercios.forEach(c => {
-        const col = colorSaturacion(c.saturacion);
-        const activo = c.id === comercioSeleccionadoMapa;
-
-        chart.innerHTML += `
-          <div onclick="seleccionarNodoMapa('${c.id}')" class="cursor-pointer p-2 rounded-xl transition ${activo ? 'bg-white shadow-sm ring-2 ring-gray-900' : 'hover:bg-white'}">
-            <div class="flex justify-between text-xs font-bold mb-1">
-              <span class="truncate pr-2">${c.nombre}</span>
-              <span class="${col.text}">${c.saturacion}% · ~${c.tiempoEspera}m</span>
-            </div>
-            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div class="${col.bg} h-full rounded-full" style="width: ${c.saturacion}%"></div>
-            </div>
-          </div>
-        `;
-
-        mapNodes.innerHTML += `
-          <button onclick="seleccionarNodoMapa('${c.id}')" 
-            style="top: ${c.coords.top}; left: ${c.coords.left};"
-            class="absolute -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full ${col.bg} text-white text-[10px] font-black flex items-center justify-center shadow-md hotspot-pulse ${activo ? 'ring-4 ring-gray-900 scale-110 z-10' : ''}">
-            ${c.tiempoEspera}'
-          </button>
-        `;
-      });
-
-      const sel = comercios.find(x => x.id === comercioSeleccionadoMapa);
-      if (sel) {
-        const stockTotal = sel.productos.reduce((acc, p) => acc + Number(p.stock), 0);
-        document.getElementById('mapZoneDetail').innerHTML = `
-          <span class="truncate pr-2">${sel.nombre} (Stock: ${stockTotal})</span>
-          <span class="text-eafit-oscuro shrink-0">Espera: ~${sel.tiempoEspera} min</span>
-        `;
-      }
-    }
-
-    function seleccionarNodoMapa(id) {
-      comercioSeleccionadoMapa = id;
-      renderizarDemandaYMapa();
-    }
 
     function filtrarCatalogo(filtro) {
       filtroActual = filtro;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('bg-gray-900', 'text-white');
+        b.classList.add('bg-gray-100', 'text-gray-800');
+        if(b.id === 'filter-emprendimiento') b.classList.add('bg-emerald-600', 'text-white');
+      });
+      const act = document.getElementById('filter-' + filtro);
+      act.className = `filter-btn shrink-0 px-3.5 py-2 rounded-xl text-xs font-black ${filtro==='emprendimiento' ? 'bg-emerald-600' : 'bg-gray-900'} text-white shadow-sm`;
       renderizarTiendas();
     }
 
-    // Conecta con tu producto.html original guardando 'selectedProduct'
     function irADetalleProducto(restaurante, plato, precio, img, storeType) {
       const prodObj = {
         restaurante,
@@ -330,7 +259,6 @@
     function renderizarTiendas() {
       const container = document.getElementById('storesContainer');
       container.innerHTML = '';
-
       let lista = comercios;
       if (filtroActual === 'emprendimiento') lista = comercios.filter(c => c.tipo === 'emprendimiento');
       if (filtroActual === 'restaurante') lista = comercios.filter(c => c.tipo === 'restaurante');
@@ -338,27 +266,25 @@
 
       lista.forEach(c => {
         const esEmp = c.tipo === 'emprendimiento';
-        const productosHTML = c.productos.map(p => `
+        const prod = c.productos.map(p => `
           <div class="py-3 flex items-center justify-between gap-3 border-t border-gray-100">
-            <div onclick="irADetalleProducto('${c.nombre.replace(/'/g, "")}', '${p.nombre.replace(/'/g, "")}', ${p.precio}, '${p.img || ""}', '${c.tipo}')" class="flex-1 cursor-pointer">
+            <div onclick="irADetalleProducto('${c.nombre.replace(/'/g, "")}', '${p.nombre.replace(/'/g, "")}', ${p.precio}, '${p.img}', '${c.tipo}')" class="flex-1 cursor-pointer">
               <p class="font-bold text-sm text-gray-900 hover:underline">${p.nombre}</p>
-              <p class="text-xs text-gray-500 font-semibold">
-                $${Number(p.precio).toLocaleString('es-CO')} · <span class="text-emerald-700">${p.stock} disp.</span>
-              </p>
+              <p class="text-xs text-gray-500 font-semibold">$${Number(p.precio).toLocaleString('es-CO')} · <span class="text-emerald-700">${p.stock} disp.</span></p>
               <span class="text-[10px] font-bold text-blue-800 underline">Personalizar plato →</span>
             </div>
             <button onclick="agregarDirecto('${c.id}', '${c.nombre.replace(/'/g, "")}', '${c.tipo}', '${p.id}', '${p.nombre.replace(/'/g, "")}', ${p.precio})"
-              class="bg-gray-900 text-white font-bold px-3.5 py-2 rounded-xl text-xs active:scale-95 transition-transform shrink-0">
+              class="bg-gray-900 text-white font-bold px-3.5 py-2 rounded-xl text-xs active:scale-95 shrink-0">
               + Carrito
             </button>
           </div>
         `).join('');
 
         container.innerHTML += `
-          <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200" id="card-${c.id}">
             <div class="flex items-center justify-between mb-1">
               <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${esEmp ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-800'}">
-                ${esEmp ? '🌱 Emprendimiento Estudiantil' : '🏪 Restaurante Campus'}
+                ${esEmp ? '🌱 Emprendimiento' : '🏪 Restaurante Campus'}
               </span>
               <span class="text-xs font-bold text-gray-600">⏱️ ~${c.tiempoEspera} min</span>
             </div>
@@ -369,13 +295,12 @@
               </div>
               ${c.linkLocal ? `<a href="${c.linkLocal}" class="text-xs font-bold bg-gray-100 px-2.5 py-1 rounded-lg">Ver local</a>` : ''}
             </div>
-            <div>${productosHTML}</div>
+            <div>${prod}</div>
           </div>
         `;
       });
     }
 
-    // Unifica el carrito ('cart' de producto.html y 'eafit_cart')
     function obtenerCarritoUnificado() {
       const cNuevo = JSON.parse(localStorage.getItem('eafit_cart') || '[]');
       const cViejo = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -427,9 +352,66 @@
       document.getElementById('cartTotal').textContent = '$' + totalPrecio.toLocaleString('es-CO');
     }
 
-    renderizarDemandaYMapa();
-    renderizarTiendas();
-    actualizarBarraCarrito();
+    // ======== 2. INYECCIÓN DEL MAPA REAL (LEAFLET + GEOJSON) ========
+    
+    // El GeoJSON que me pasaste comprimido en una variable
+    const eafitGeoJSON = {"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"coordinates":[[[-75.578492,6.197323],[-75.578709,6.197408],[-75.578948,6.197459],[-75.579012,6.19719],[-75.579296,6.197251],[-75.579275,6.19744],[-75.579709,6.197504],[-75.579734,6.197278],[-75.58009,6.19736],[-75.57975,6.198347],[-75.579452,6.199568],[-75.579205,6.201035],[-75.579114,6.201771],[-75.579023,6.202752],[-75.578966,6.202819],[-75.578682,6.202963],[-75.578331,6.203107],[-75.578245,6.203123],[-75.578135,6.203115],[-75.577958,6.203045],[-75.577639,6.202907],[-75.577531,6.202805],[-75.577456,6.202712],[-75.577408,6.202581],[-75.577419,6.202443],[-75.577625,6.200552],[-75.577714,6.199822],[-75.577886,6.199],[-75.577977,6.198755],[-75.578119,6.198779],[-75.578213,6.198232],[-75.578151,6.198155],[-75.578492,6.197323]]],"type":"Polygon"},"properties":{"name":"Perímetro del campus"}},{"type":"Feature","geometry":{"coordinates":[[[-75.578891,6.201723],[-75.57906,6.20172],[-75.579055,6.20144],[-75.578886,6.201437],[-75.578891,6.201723]]],"type":"Polygon"},"properties":{"name":"Bloque 36 (Cafetería norte)"}},{"type":"Feature","geometry":{"coordinates":[[[-75.578679,6.199512],[-75.578374,6.19951],[-75.578368,6.198883],[-75.578658,6.198878],[-75.578679,6.199512]]],"type":"Polygon"},"properties":{"name":"Cafetería Central (Bigos, Frisby, Corral)"}},{"type":"Feature","geometry":{"coordinates":[[[-75.578561,6.200877],[-75.578559,6.200254],[-75.578256,6.200248],[-75.57828,6.200877],[-75.578561,6.200877]]],"type":"Polygon"},"properties":{"name":"Plazoleta del Estudiante"}},{"type":"Feature","geometry":{"coordinates":[[[-75.578746,6.201795],[-75.578746,6.201472],[-75.578548,6.201472],[-75.578548,6.201592],[-75.578288,6.201592],[-75.578288,6.201477],[-75.57814,6.201477],[-75.578146,6.201592],[-75.578105,6.201595],[-75.578105,6.201795],[-75.578746,6.201795]]],"type":"Polygon"},"properties":{"name":"Bloque 38"}},{"type":"Feature","geometry":{"coordinates":[[[-75.579782,6.198171],[-75.57979,6.197944],[-75.579878,6.197774],[-75.579599,6.197688],[-75.579457,6.197611],[-75.579479,6.198158],[-75.579782,6.198171]]],"type":"Polygon"},"properties":{"name":"Bloque 19"}},{"type":"Feature","geometry":{"coordinates":[[[-75.57895,6.198608],[-75.578953,6.198494],[-75.578771,6.198491],[-75.578771,6.198606],[-75.57895,6.198608]]],"type":"Polygon"},"properties":{"name":"Bloque 14 (Chipstation)"}},{"type":"Feature","geometry":{"coordinates":[[[-75.579025,6.200038],[-75.579243,6.20003],[-75.57924,6.199912],[-75.579168,6.199912],[-75.579162,6.199854],[-75.579248,6.199851],[-75.579243,6.199731],[-75.579025,6.199734],[-75.579025,6.200038]]],"type":"Polygon"},"properties":{"name":"Bloque 26"}}]}
+
+    function inicializarMapa() {
+      // Centrar el mapa en la Cafetería Central de EAFIT
+      const map = L.map('realMap', { zoomControl: false }).setView([6.2005, -75.5785], 16);
+      
+      // Cargar capa base clara (tipo Google Maps limpio)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 19
+      }).addTo(map);
+
+      // Función para asignar colores según el bloque / restaurante
+      function styleMapFeature(feature) {
+        const nombre = feature.properties.name || "";
+        
+        // Colores de Saturación
+        let colorSaturacion = '#94a3b8'; // Gris por defecto (bloques sin restaurante)
+        
+        if (nombre.includes("Cafetería Central")) colorSaturacion = '#ef4444'; // Rojo (Bigos, 85%)
+        if (nombre.includes("Bloque 14")) colorSaturacion = '#10b981'; // Verde (Chipstation, 38%)
+        if (nombre.includes("Bloque 19")) colorSaturacion = '#10b981'; // Verde (El Inge, 35%)
+        if (nombre.includes("Bloque 38")) colorSaturacion = '#10b981'; // Verde (Dulce, 22%)
+        if (nombre.includes("Perímetro")) return { color: '#002855', weight: 1, fillOpacity: 0, dashArray: '4' };
+
+        return {
+          color: colorSaturacion,
+          weight: 2,
+          fillColor: colorSaturacion,
+          fillOpacity: 0.6
+        };
+      }
+
+      // Añadir el GeoJSON interactivo al mapa
+      L.geoJSON(eafitGeoJSON, {
+        style: styleMapFeature,
+        onEachFeature: function (feature, layer) {
+          if(feature.properties.name && !feature.properties.name.includes("Perímetro")) {
+            layer.bindPopup(`<strong class="text-xs font-black text-gray-900">${feature.properties.name}</strong>`);
+            layer.on('click', function() {
+              if (feature.properties.name.includes("Cafetería Central")) document.getElementById('card-store-rest-1').scrollIntoView({behavior: "smooth"});
+              if (feature.properties.name.includes("Bloque 14")) document.getElementById('card-store-rest-2').scrollIntoView({behavior: "smooth"});
+              if (feature.properties.name.includes("Bloque 38")) document.getElementById('card-store-emp-1').scrollIntoView({behavior: "smooth"});
+              if (feature.properties.name.includes("Bloque 19")) document.getElementById('card-store-emp-2').scrollIntoView({behavior: "smooth"});
+            });
+          }
+        }
+      }).addTo(map);
+    }
+
+    // Inicializar mapa y cargar productos al final
+    window.onload = () => {
+      renderizarTiendas();
+      actualizarBarraCarrito();
+      setTimeout(inicializarMapa, 100);
+    };
+
   </script>
 </body>
 </html>
