@@ -26,3 +26,13 @@
 - **Evidencia que lo sustenta:** Requisitos de la guía de entrega y directrices de medición UX.
 - **Archivos modificados:** Todos los archivos `.html` y `.md` del repositorio.
 - **Verificación:** Tráfico detectado en consola de Google Analytics y estructura de repositorio completa.
+
+## 2026-11-11 Equipo de Desarrollo
+- **Objetivo del cambio:** Separar el seguimiento por rol (comprador, repartidor, emprendedor), quitar al comprador el acceso a las vistas de delivery y emprendimiento, y agregar Hotjar.
+- **Prompt clave:** Revisar el flujo y la lógica del seguimiento; `seguimiento1` para el cliente, `seguimiento2` para el delivery y `seguimiento3` para el emprendedor; agregar el código de Hotjar.
+- **Qué produjo la IA:** Revisión del flujo con la lista de problemas encontrados; reescritura de `seguimientos/seguimiento1.html`, `seguimiento2.html` y `seguimiento3.html`; ajustes de estados en los paneles; inserción del código de Hotjar y actualización de los documentos.
+- **Decisión del equipo:** Aceptado. `seguimiento1` es del comprador y adapta su línea de tiempo a la modalidad de entrega; `seguimiento2` es del repartidor; `seguimiento3` es del emprendedor. Se eliminó `seguimiento.html` y los botones de rol del menú del comprador. Se quitaron los simuladores de estado de la vista del cliente. El carrito con restaurante y emprendimiento se divide en dos pedidos.
+- **Evidencia que lo sustenta:** Revisión del flujo: el comprador veía botones hacia delivery y emprendedor, y varios estados (casillero depositado, listo en mostrador, entrega en punto fijo) no tenían quién los avanzara sin los simuladores.
+- **Archivos modificados:** `seguimientos/seguimiento1.html`, `seguimientos/seguimiento2.html`, `seguimientos/seguimiento3.html`, `dashboard.html`, `delivery.html`, `emprendedor.html`, `pago.html`, `historial.html`, `catalogo.html`, todos los `.html` (Hotjar), `README.md`, `CONTEXTO.md`, `BITACORA.md`. Eliminado: `seguimiento.html`.
+- **Verificación:** Pendiente la prueba manual del flujo completo en celular (375px) y la confirmación de datos en el panel de Hotjar.
+

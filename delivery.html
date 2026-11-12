@@ -7,6 +7,17 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
+  <!-- Hotjar Tracking Code for Restaurantes EAFIT 2026-2 -->
+  <script>
+      (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:6847286,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
 </head>
 <body class="pb-16">
 
@@ -87,11 +98,16 @@
       }
     }
 
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const leerOrdenes = () => JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+
     function crearDomicilioDemo() {
-      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
-      const pinDemo = Math.floor(1000 + Math.random() * 9000).toString();
+      const ordenes = leerOrdenes();
+      const idsUsados = new Set(ordenes.map(o => o.id));
+      let id;
+      do { id = 'ORD-' + Math.floor(100 + Math.random() * 900); } while (idsUsados.has(id));
       const demo = {
-        id: 'ORD-' + Math.floor(100 + Math.random() * 900),
+        id,
         fecha: 'Ahora',
         comprador: 's0lid@eafit.edu.co',
         items: [{ prodName: 'Bowl Mexicano + Cold Brew', storeName: 'Bigos / Dulce Bloque 38', cantidad: 1, precio: 24500 }],
@@ -106,55 +122,32 @@
         },
         estado: 'Buscando repartidor',
         alertaLlegada: false,
-        pin: pinDemo
+        pin: Math.floor(1000 + Math.random() * 9000).toString()
       };
       ordenes.unshift(demo);
       localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
-      localStorage.setItem('eafit_active_order_id', demo.id);
       renderizarDomicilios();
     }
 
+    // Solo se puede aceptar un domicilio que el local ya despachó ("Buscando repartidor").
+    // Al aceptarlo, el repartidor pasa a su pantalla de entrega (seguimiento2).
     function aceptarDomicilio(id) {
-      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+      const ordenes = leerOrdenes();
       const idx = ordenes.findIndex(o => o.id === id);
-      if (idx > -1) {
-        ordenes[idx].estado = 'En camino';
-        localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
-        renderizarDomicilios();
-      }
-    }
-
-    function notificarLlegada(id) {
-      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
-      const idx = ordenes.findIndex(o => o.id === id);
-      if (idx > -1) {
-        ordenes[idx].alertaLlegada = true;
-        localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
-        alert('Alerta enviada al comprador. Solicítale el código PIN o escanea su QR.');
-        renderizarDomicilios();
-      }
-    }
-
-    function validarEntregaPin(id, simularQR = false) {
-      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
-      const idx = ordenes.findIndex(o => o.id === id);
-      if (idx === -1) return;
-
-      const inputVal = document.getElementById('pin-input-' + id)?.value.trim();
-      if (simularQR || inputVal === ordenes[idx].pin) {
-        ordenes[idx].estado = 'Entregado';
-        ordenes[idx].estadoEmprendedor = 'Entregado';
-        localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
-        alert('¡Entrega validada con éxito! Se acreditaron $3.000 a tu cuenta colaborativa.');
-        renderizarDomicilios();
-      } else {
-        alert('Código PIN incorrecto. Verifica el PIN en la pantalla de Seguimiento del comprador (PIN correcto: ' + ordenes[idx].pin + ').');
-      }
+      if (idx === -1 || ordenes[idx].estado !== 'Buscando repartidor') return;
+      ordenes[idx].estado = 'En camino';
+      ordenes[idx].alertaLlegada = false;
+      localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
+      window.location.href = 'seguimientos/seguimiento2.html?id=' + encodeURIComponent(id);
     }
 
     function renderizarDomicilios() {
       const list = document.getElementById('deliveryOrdersList');
-      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+      // Solo pedidos con modalidad "Repartidor" que ya salieron del local (o que ya se entregaron)
+      const ordenes = leerOrdenes().filter(o =>
+        (o.modoEntrega || '').includes('Repartidor') &&
+        ['Buscando repartidor', 'En camino', 'Entregado'].includes(o.estado)
+      );
 
       if (ordenes.length === 0) {
         list.innerHTML = `
@@ -167,7 +160,23 @@
 
       list.innerHTML = ordenes.map(o => {
         const origen = o.items[0]?.storeName || 'Comercio Campus';
-        const aceptado = o.estado === 'En camino' || o.estado === 'Entregado';
+
+        let acciones = '';
+        if (o.estado === 'Buscando repartidor') {
+          acciones = `
+            <button onclick="aceptarDomicilio('${esc(o.id)}')"
+              class="w-full py-2.5 bg-eafit-oscuro hover:bg-blue-900 text-white text-xs font-bold rounded-xl">
+              Aceptar Domicilio Disponible
+            </button>`;
+        } else if (o.estado === 'En camino') {
+          acciones = `
+            <a href="seguimientos/seguimiento2.html?id=${encodeURIComponent(o.id)}"
+              class="block w-full py-2.5 text-center bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl">
+              Continuar mi entrega →
+            </a>`;
+        } else {
+          acciones = `<p class="text-xs font-bold text-emerald-700"><i class="fa-solid fa-circle-check"></i> Domicilio entregado y validado con PIN</p>`;
+        }
 
         return `
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
@@ -175,11 +184,11 @@
               <div>
                 <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
                   o.estado === 'Entregado' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                }">${o.estado}</span>
-                <h3 class="text-base font-extrabold text-slate-900 mt-1">${o.id} · Comisión: $3.000</h3>
-                <p class="text-xs text-slate-500">Recoger en: <strong>${origen}</strong></p>
+                }">${esc(o.estado)}</span>
+                <h3 class="text-base font-extrabold text-slate-900 mt-1">${esc(o.id)} · Comisión: $3.000</h3>
+                <p class="text-xs text-slate-500">Recoger en: <strong>${esc(origen)}</strong></p>
               </div>
-              <span class="text-xs font-bold text-slate-600">${o.horario}</span>
+              <span class="text-xs font-bold text-slate-600">${esc(o.horario)}</span>
             </div>
 
             <!-- Ruta Estructurada: Bloque + Piso + Aula -->
@@ -188,54 +197,26 @@
               <div class="grid grid-cols-3 gap-2 text-xs">
                 <div class="bg-white p-2 rounded-lg border border-slate-200">
                   <span class="text-slate-400 block text-[10px]">BLOQUE</span>
-                  <strong class="text-slate-800">${o.ubicacion.bloque}</strong>
+                  <strong class="text-slate-800">${esc(o.ubicacion.bloque)}</strong>
                 </div>
                 <div class="bg-white p-2 rounded-lg border border-slate-200">
                   <span class="text-slate-400 block text-[10px]">PISO</span>
-                  <strong class="text-slate-800">${o.ubicacion.piso}</strong>
+                  <strong class="text-slate-800">${esc(o.ubicacion.piso)}</strong>
                 </div>
                 <div class="bg-white p-2 rounded-lg border border-slate-200">
                   <span class="text-slate-400 block text-[10px]">AULA / PUNTO</span>
-                  <strong class="text-slate-800">${o.ubicacion.aula}</strong>
+                  <strong class="text-slate-800">${esc(o.ubicacion.aula)}</strong>
                 </div>
               </div>
             </div>
 
-            <!-- Controles según estado -->
-            ${o.estado !== 'Entregado' ? `
-              <div class="pt-2 flex flex-col sm:flex-row gap-2">
-                ${!aceptado ? `
-                  <button onclick="aceptarDomicilio('${o.id}')" 
-                    class="w-full py-2.5 bg-eafit-oscuro hover:bg-blue-900 text-white text-xs font-bold rounded-xl">
-                    Aceptar Domicilio Disponible
-                  </button>
-                ` : `
-                  <button onclick="notificarLlegada('${o.id}')" 
-                    class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-bell"></i> 1. Notificar Llegada
-                  </button>
-                  <div class="flex flex-1 gap-2">
-                    <input id="pin-input-${o.id}" type="text" maxlength="4" placeholder="PIN comprador (ej. ${o.pin})"
-                      class="flex-1 px-3 py-2 text-xs border border-slate-300 rounded-xl font-bold tracking-widest" />
-                    <button onclick="validarEntregaPin('${o.id}', false)" 
-                      class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl">
-                      Validar PIN
-                    </button>
-                    <button onclick="validarEntregaPin('${o.id}', true)" title="Escanear QR"
-                      class="px-3 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl">
-                      <i class="fa-solid fa-qrcode"></i> QR
-                    </button>
-                  </div>
-                `}
-              </div>
-            ` : `
-              <p class="text-xs font-bold text-emerald-700"><i class="fa-solid fa-circle-check"></i> Domicilio entregado y validado con PIN ${o.pin}</p>
-            `}
+            <div class="pt-1">${acciones}</div>
           </div>
         `;
       }).join('');
     }
 
+    window.addEventListener('storage', renderizarDomicilios);
     actualizarSwitchUI();
     renderizarDomicilios();
   </script>

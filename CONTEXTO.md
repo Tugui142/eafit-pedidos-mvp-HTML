@@ -21,14 +21,19 @@ Reducir la congestión y los tiempos de espera en los restaurantes del campus de
 ## 5. Tecnología y restricciones
 - **Tipo de sitio:** Frontend estático (HTML, CSS) con maquetación móvil.
 - **Dónde se publica:** GitHub Pages (para el HTML).
-- **Analítica:** Google Analytics 4.
+- **Analítica:** Google Analytics 4 y Hotjar.
 - **Referente Visual (Benchmark):** Rappi (visualización de categorías, carrito flexible, pasarela integrada).
 
 ## 6. Estructura del sitio
 - **restaurantes/nombrederestaurante.html**
+- **seguimientos/seguimiento1.html** (vista del comprador; la línea de tiempo cambia según la modalidad: Repartidor, Casillero o Punto Fijo)
+- **seguimientos/seguimiento2.html** (vista del repartidor)
+- **seguimientos/seguimiento3.html** (vista del emprendedor)
 - **ajustes.html**
 - **catalogo.html**
-- **dashboard.html**
+- **dashboard.html** (panel del restaurante)
+- **delivery.html** (panel del repartidor)
+- **emprendedor.html** (panel del emprendedor)
 - **historial.html**
 - **index.html**
 - **main.py**
@@ -36,8 +41,14 @@ Reducir la congestión y los tiempos de espera en los restaurantes del campus de
 - **producto.html**
 - **requirements.txt**
 - **restaurantes.html**
-- **seguimiento.html**
 - **style.css**
+
+Regla de roles: el comprador solo ve su propio seguimiento (`seguimiento1`) y no tiene enlaces a los paneles de restaurante, delivery o emprendedor; a esos paneles se entra desde el login (`index.html`).
+
+Flujo de estados de un pedido (`estado`):
+- **Repartidor:** Recibido > En cocina > Buscando repartidor > En camino > Entregado (el repartidor valida el PIN).
+- **Casillero:** Recibido > En cocina > En camino > Depositado > Entregado (el comprador confirma el retiro).
+- **Punto Fijo:** Recibido > En cocina > Listo para recoger > Entregado (el local valida el PIN o QR).
 
 ## 7. Sistema visual
 - **Hoja de estilos:** `style.css` (Manejo centralizado de UI y colores).
@@ -54,4 +65,4 @@ Reducir la congestión y los tiempos de espera en los restaurantes del campus de
 - **Terminado:** Investigación Lean UX (6 entrevistas), validación mediante Paseo Cognitivo y Escala Likert, Prototipado Colaborativo, análisis benchmark (Rappi) y diseño del MVP funcional.
 - **En curso:** Preparación de la entrega final y sustentación.
 - **Siguiente paso:** Evaluación Heurística profunda de la interfaz.
-- **Última actualización:** 2026-10-27 por Verónica Mejía, Alejandra Fonseca y Juan Pablo Gutiérrez.
+- **Última actualización:** 2026-11-11 (seguimiento separado por rol y Hotjar). Anterior: 2026-10-27 por Verónica Mejía, Alejandra Fonseca y Juan Pablo Gutiérrez.

@@ -7,6 +7,17 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Hotjar Tracking Code for Restaurantes EAFIT 2026-2 -->
+  <script>
+      (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:6847286,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
 </head>
 <body class="bg-[#EFEFEF] text-[#222222] font-sans">
 
@@ -309,50 +320,56 @@
       const valPiso = document.getElementById('inputPiso').value.trim() || 'Piso a convenir';
       const valAula = document.getElementById('inputAula').value.trim() || 'A convenir';
 
-      const pinAleatorio = Math.floor(1000 + Math.random() * 9000).toString();
-      const total = cart.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
-      const tieneEmprendimiento = cart.some(i => i.storeType === 'emprendimiento');
+      const comprador = localStorage.getItem('eafit_user_email') || 'estudiante@eafit.edu.co';
+      const fecha = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      const nuevaOrden = {
-        id: 'ORD-' + Math.floor(100 + Math.random() * 900),
-        fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        comprador: localStorage.getItem('eafit_user_email') || 'estudiante@eafit.edu.co',
-        items: cart,
-        total,
-        modalidadTiempo,
-        horario,
-        modoEntrega, // Aquí guardamos: 'Compañero Repartidor', 'Casillero Campus' o 'Punto Fijo'
-        ubicacion: {
-          bloque: valBloque,
-          piso: valPiso,
-          aula: valAula,
-          direccionCompleta: `${valBloque} · ${valPiso} · ${valAula}`
-        },
-        metodoPago,
-        estado: 'Recibido',
-        estadoEmprendedor: 'Alerta de nuevo pedido pagado',
-        esEmprendimiento: tieneEmprendimiento,
-        alertaLlegada: false,
-        pin: pinAleatorio
-      };
+      // Un carrito con restaurante + emprendimiento se divide en dos pedidos,
+      // para que cada vendedor vea solo lo suyo en su panel.
+      const grupos = [
+        { items: cart.filter(i => i.storeType !== 'emprendimiento'), esEmp: false },
+        { items: cart.filter(i => i.storeType === 'emprendimiento'), esEmp: true }
+      ].filter(g => g.items.length > 0);
 
       const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
-      ordenes.unshift(nuevaOrden);
+      const idsUsados = new Set(ordenes.map(o => o.id));
+
+      const nuevasOrdenes = grupos.map(g => {
+        let id;
+        do { id = 'ORD-' + Math.floor(100 + Math.random() * 900); } while (idsUsados.has(id));
+        idsUsados.add(id);
+        return {
+          id,
+          fecha,
+          comprador,
+          items: g.items,
+          total: g.items.reduce((acc, i) => acc + (i.precio * i.cantidad), 0),
+          modalidadTiempo,
+          horario,
+          modoEntrega, // 'Compañero Repartidor', 'Casillero Campus' o 'Punto Fijo'
+          ubicacion: {
+            bloque: valBloque,
+            piso: valPiso,
+            aula: valAula,
+            direccionCompleta: `${valBloque} · ${valPiso} · ${valAula}`
+          },
+          metodoPago,
+          estado: 'Recibido',
+          esEmprendimiento: g.esEmp,
+          alertaLlegada: false,
+          pin: Math.floor(1000 + Math.random() * 9000).toString()
+        };
+      });
+
+      ordenes.unshift(...nuevasOrdenes);
       localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
-      localStorage.setItem('eafit_active_order_id', nuevaOrden.id);
-      
+      localStorage.setItem('eafit_active_order_id', nuevasOrdenes[0].id);
+
       // Limpiar carritos
       localStorage.removeItem('eafit_cart');
       localStorage.removeItem('cart');
 
-      // ENRUTAMIENTO INTELIGENTE A LA CARPETA 'seguimientos'
-      if (modoEntrega.includes('Repartidor')) {
-        window.location.href = 'seguimientos/seguimiento1.html';
-      } else if (modoEntrega.includes('Casillero')) {
-        window.location.href = 'seguimientos/seguimiento2.html';
-      } else {
-        window.location.href = 'seguimientos/seguimiento3.html';
-      }
+      // El comprador siempre va a seguimiento1 (la página adapta la línea de tiempo a su modalidad)
+      window.location.href = 'seguimientos/seguimiento1.html?id=' + encodeURIComponent(nuevasOrdenes[0].id);
     }
 
     renderizarResumen();

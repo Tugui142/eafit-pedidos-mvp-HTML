@@ -20,10 +20,11 @@ EAFIT Pedidos soluciona el problema de las largas filas y el colapso logístico 
 **Administra la cuenta:** Juan Pablo Gutiérrez Quintero
 
 ## Analítica y privacidad
-**Herramienta:** Google Analytics 4
+**Herramientas:** Google Analytics 4 y Hotjar
 **Eventos medidos:** Páginas vistas, clics (especialmente en botones de "Seguir comprando") y desplazamientos.
 **Dónde ver los datos:** Panel de Google Analytics de la cuenta (Propiedad EAFIT Pedidos).
-**Fecha de activación:** 2026-10-20
+**Fecha de activación:** 2026-10-20 (Google Analytics 4)
+**Hotjar:** Código "Restaurantes EAFIT 2026-2" (ID 6847286) insertado en el `<head>` de todos los archivos `.html`. Activado el 2026-11-11.
 **Aviso de privacidad y consentimiento:** Incluido como banner/texto en la plataforma web y solicitud de permisos de ubicación en el Onboarding.
 
 ## Estructura de la carpeta
@@ -36,12 +37,17 @@ eafit-pedidos-mvp-HTML/
 ├── ajustes.html            (Ajustes de usuario)
 ├── catalogo.html           (Exploración de platos y combos)
 ├── dashboard.html          (Panel de gestión para restaurantes)
+├── delivery.html           (Panel del repartidor: domicilios disponibles)
+├── emprendedor.html        (Panel del emprendedor: stock y pedidos)
 ├── historial.html          (Compras anteriores)
 ├── pago.html               (Carrito acumulativo, checkout y turnos)
 ├── producto.html           (Personalización del plato)
 ├── restaurantes.html       (Lista de restaurantes)
-├── seguimiento.html        (Status tracker / Estado del pedido)
 ├── restaurantes/           (Páginas específicas de locales)
+├── seguimientos/           (Status tracker, una página por rol)
+│   ├── seguimiento1.html   (Comprador: se adapta a Repartidor, Casillero o Punto Fijo)
+│   ├── seguimiento2.html   (Repartidor: su entrega en curso, llegada y validación de PIN)
+│   └── seguimiento3.html   (Emprendedor: estado de sus pedidos)
 ├── style.css               (Hoja de estilos principal)
 ├── main.py                 (Backend API FastAPI)
 └── requirements.txt        (Dependencias backend)

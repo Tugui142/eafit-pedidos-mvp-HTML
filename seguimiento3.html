@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seguimiento de mis Pedidos - EAFIT Pedidos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="../style.css" />
+  <!-- Hotjar Tracking Code for Restaurantes EAFIT 2026-2 -->
+  <script>
+      (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:6847286,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
+</head>
+<body class="bg-[#EFEFEF] text-[#222222] font-sans pb-16">
+
+  <!-- SEGUIMIENTO 3 · Vista del EMPRENDEDOR (estado de sus pedidos de principio a fin) -->
+  <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl border-x border-gray-200 flex flex-col">
+    <header class="bg-emerald-800 text-white sticky top-0 z-30 shadow-md">
+      <div class="px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <a href="../emprendedor.html" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20">
+            <i class="fa-solid fa-arrow-left text-sm"></i>
+          </a>
+          <div>
+            <h1 class="font-bold text-base">Seguimiento de mis Pedidos</h1>
+            <p class="text-[11px] text-emerald-200" id="headerSub">Pedidos de tu emprendimiento</p>
+          </div>
+        </div>
+        <a href="../emprendedor.html" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-md text-[10px] font-bold">Mi Panel</a>
+      </div>
+    </header>
+
+    <main class="px-4 pt-5 space-y-5 flex-1" id="mainTracking">
+      <!-- Renderizado por JS -->
+    </main>
+  </div>
+
+  <script>
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const leerOrdenes = () => JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+    const esEmprendimiento = o => o.esEmprendimiento === true || (o.items || []).some(i => i.storeType === 'emprendimiento');
+
+    function tipoEntrega(o) {
+      const m = o.modoEntrega || '';
+      if (m.includes('Repartidor')) return 'repartidor';
+      if (m.includes('Casillero')) return 'casillero';
+      return 'punto';
+    }
+
+    // Etapas desde la perspectiva del emprendedor, según la modalidad que eligió el comprador.
+    const ETAPAS = {
+      repartidor: [
+        { id: 'Recibido', texto: 'Pedido pagado' },
+        { id: 'En cocina', texto: 'Empacando el producto' },
+        { id: 'Buscando repartidor', texto: 'Esperando repartidor' },
+        { id: 'En camino', texto: 'Repartidor en camino al comprador' },
+        { id: 'Entregado', texto: 'Entregado' }
+      ],
+      casillero: [
+        { id: 'Recibido', texto: 'Pedido pagado' },
+        { id: 'En cocina', texto: 'Empacando el producto' },
+        { id: 'En camino', texto: 'Llevando a zona de casilleros' },
+        { id: 'Depositado', texto: 'Depositado en casillero' },
+        { id: 'Entregado', texto: 'Retirado por el comprador' }
+      ],
+      punto: [
+        { id: 'Recibido', texto: 'Pedido pagado' },
+        { id: 'En cocina', texto: 'Empacando el producto' },
+        { id: 'Listo para recoger', texto: 'Listo en el punto: esperando al comprador' },
+        { id: 'Entregado', texto: 'Entregado' }
+      ]
+    };
+
+    const ICONO = { repartidor: '🏃 Repartidor', casillero: '📦 Casillero', punto: '📍 Punto fijo' };
+
+    function tarjeta(o) {
+      const etapas = ETAPAS[tipoEntrega(o)];
+      let paso = etapas.findIndex(e => e.id === o.estado);
+      if (paso === -1) paso = 0;
+      const entregado = o.estado === 'Entregado';
+
+      const pasosHTML = etapas.map((e, index) => {
+        const completado = index <= paso;
+        const actual = index === paso && !entregado;
+        return `
+          <div class="flex items-center gap-3">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${completado ? 'bg-emerald-700 text-white' : 'bg-gray-200 text-gray-400'} ${actual ? 'ring-4 ring-emerald-200' : ''}">
+              ${completado ? '✓' : index + 1}
+            </div>
+            <p class="text-xs font-bold ${completado ? 'text-gray-900' : 'text-gray-400'}">${e.texto}</p>
+          </div>`;
+      }).join('');
+
+      const productos = (o.items || []).map(i => `<li>${esc(i.prodName)}</li>`).join('');
+
+      return `
+        <section class="bg-white rounded-3xl p-4 shadow-sm border border-gray-200 space-y-3">
+          <div class="flex justify-between items-start gap-2">
+            <div>
+              <h2 class="text-base font-black text-gray-900">${esc(o.id)}</h2>
+              <p class="text-[11px] text-gray-500"><i class="fa-regular fa-clock"></i> ${esc(o.horario)}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-black bg-gray-100 text-gray-600 px-2 py-1 rounded-md">${ICONO[tipoEntrega(o)]}</span>
+              <p class="text-sm font-black text-emerald-800 mt-1">$${Number(o.total || 0).toLocaleString('es-CO')}</p>
+            </div>
+          </div>
+          <ul class="text-xs font-semibold text-gray-700 space-y-0.5">${productos}</ul>
+          <p class="text-[11px] text-gray-500"><i class="fa-solid fa-location-dot"></i> ${esc(o.ubicacion.direccionCompleta)}</p>
+          <div class="space-y-2 pt-2 border-t border-gray-100">${pasosHTML}</div>
+        </section>`;
+    }
+
+    function renderizar() {
+      const cont = document.getElementById('mainTracking');
+      const idURL = new URLSearchParams(location.search).get('id');
+      let ordenes = leerOrdenes().filter(esEmprendimiento);
+
+      if (idURL) {
+        ordenes = ordenes.filter(o => o.id === idURL);
+        document.getElementById('headerSub').textContent = idURL;
+      }
+
+      if (ordenes.length === 0) {
+        cont.innerHTML = `
+          <div class="bg-gray-50 p-6 rounded-2xl text-center border border-gray-200">
+            <p class="text-sm font-semibold text-gray-600 mb-3">No hay pedidos de tu emprendimiento por ahora.</p>
+            <a href="../emprendedor.html" class="inline-block px-4 py-2 bg-emerald-800 text-white rounded-xl text-xs font-bold">Ir a Mi Panel</a>
+          </div>`;
+        return;
+      }
+
+      const enCurso = ordenes.filter(o => o.estado !== 'Entregado');
+      const entregados = ordenes.filter(o => o.estado === 'Entregado');
+
+      cont.innerHTML = `
+        ${idURL ? `<a href="seguimiento3.html" class="text-xs font-bold text-emerald-800 underline">Ver todos mis pedidos</a>` : ''}
+        ${enCurso.length ? `<h3 class="text-xs font-black uppercase text-gray-500">En curso (${enCurso.length})</h3>${enCurso.map(tarjeta).join('')}` : ''}
+        ${entregados.length ? `<h3 class="text-xs font-black uppercase text-gray-500">Entregados (${entregados.length})</h3>${entregados.map(tarjeta).join('')}` : ''}
+      `;
+    }
+
+    window.addEventListener('storage', renderizar);
+    renderizar();
+  </script>
+</body>
+</html>

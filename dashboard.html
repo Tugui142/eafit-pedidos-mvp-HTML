@@ -7,6 +7,17 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
+  <!-- Hotjar Tracking Code for Restaurantes EAFIT 2026-2 -->
+  <script>
+      (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:6847286,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col md:flex-row font-sans">
 
@@ -62,88 +73,131 @@
   </main>
 
   <script>
+    // ---------- Utilidades ----------
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const leerOrdenes = () => JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+    const esEmprendimiento = o => o.esEmprendimiento === true || (o.items || []).some(i => i.storeType === 'emprendimiento');
+
+    function tipoEntrega(o) {
+      const m = o.modoEntrega || '';
+      if (m.includes('Repartidor')) return 'repartidor';
+      if (m.includes('Casillero')) return 'casillero';
+      return 'punto';
+    }
+
+    // ---------- Flujo de estados ----------
+    // Repartidor: Recibido > En cocina > Buscando repartidor > En camino (lo mueve el repartidor) > Entregado (PIN)
+    // Casillero:  Recibido > En cocina > En camino > Depositado > Entregado (lo confirma el comprador)
+    // Punto fijo: Recibido > En cocina > Listo para recoger > Entregado (PIN / QR en caja)
     const KANBAN_COLS = [
       { key: 'Recibido', title: 'Nuevos Pedidos', icon: 'fa-bell text-gray-500', color: 'bg-gray-900' },
       { key: 'En cocina', title: 'En Preparación (Cocina)', icon: 'fa-fire-burner text-amber-500', color: 'bg-amber-500' },
-      { key: 'Listos', title: 'Listos para Despachar', icon: 'fa-box text-emerald-600', color: 'bg-emerald-600' }
+      { key: 'Entrega', title: 'Entrega en Curso', icon: 'fa-box text-emerald-600', color: 'bg-emerald-600' }
     ];
+    const ESTADOS_ENTREGA = ['Buscando repartidor', 'En camino', 'Depositado', 'Listo para recoger'];
 
-    function avanzarEstadoRestaurante(id, nuevoEstado) {
-      const ordenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+    function cambiarEstado(id, estado, alerta) {
+      const ordenes = leerOrdenes();
       const idx = ordenes.findIndex(o => o.id === id);
-      if (idx > -1) {
-        ordenes[idx].estado = nuevoEstado;
-        localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
-        renderizarDashboard();
+      if (idx === -1) return;
+      ordenes[idx].estado = estado;
+      if (alerta !== undefined) ordenes[idx].alertaLlegada = alerta;
+      localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
+      renderizarDashboard();
+    }
+
+    function validarPinEntrega(id, simularQR) {
+      const orden = leerOrdenes().find(o => o.id === id);
+      if (!orden) return;
+      const valor = (document.getElementById('pin-' + id)?.value || '').trim();
+      if (simularQR || valor === orden.pin) {
+        cambiarEstado(id, 'Entregado');
+      } else {
+        alert('Código PIN incorrecto. Pídele al estudiante el PIN que ve en su seguimiento.');
       }
+    }
+
+    // Botón que despacha el pedido al salir de cocina, según la modalidad
+    function accionDespacho(o) {
+      const t = tipoEntrega(o);
+      if (t === 'repartidor') return { label: 'Solicitar Repartidor', estado: 'Buscando repartidor', alerta: false, cls: 'bg-gray-900' };
+      if (t === 'casillero') return { label: 'Enviar a Zona Casilleros', estado: 'En camino', alerta: false, cls: 'bg-blue-900' };
+      return { label: 'Avisar: ¡Listo en Mostrador!', estado: 'Listo para recoger', alerta: true, cls: 'bg-emerald-600' };
+    }
+
+    const infoHTML = (texto, pulso) => `<p class="text-xs font-bold text-gray-500 text-center mt-3 ${pulso ? 'animate-pulse' : ''}">${texto}</p>`;
+
+    // Contenido de la tarjeta según el estado de entrega
+    function bloqueEntrega(o) {
+      const t = tipoEntrega(o);
+      if (o.estado === 'Buscando repartidor') return infoHTML('Esperando asignación en App Delivery...', true);
+      if (o.estado === 'En camino' && t === 'repartidor') return infoHTML('Repartidor en camino al bloque del estudiante', false);
+      if (o.estado === 'En camino' && t === 'casillero') {
+        return `<button onclick="cambiarEstado('${esc(o.id)}', 'Depositado', true)" class="w-full py-2.5 bg-blue-900 text-white text-xs font-black rounded-xl shadow-sm mt-3">Marcar: Depositado en casillero</button>`;
+      }
+      if (o.estado === 'Depositado') return infoHTML('Depositado. Esperando que el estudiante lo retire', true);
+      if (o.estado === 'Listo para recoger') {
+        return `
+          <div class="mt-3 space-y-2">
+            <p class="text-[11px] font-bold text-gray-500">Pídele al estudiante su PIN (o escanea su QR) para entregar:</p>
+            <div class="flex gap-2">
+              <input id="pin-${esc(o.id)}" type="text" inputmode="numeric" maxlength="4" placeholder="PIN" class="flex-1 px-3 py-2 text-xs border border-gray-300 rounded-xl font-black tracking-widest" />
+              <button onclick="validarPinEntrega('${esc(o.id)}', false)" class="px-3 py-2 bg-emerald-600 text-white text-xs font-black rounded-xl">Validar PIN</button>
+              <button onclick="validarPinEntrega('${esc(o.id)}', true)" title="Escanear QR" class="px-3 py-2 bg-gray-900 text-white text-xs font-black rounded-xl"><i class="fa-solid fa-qrcode"></i></button>
+            </div>
+          </div>`;
+      }
+      return '';
     }
 
     function renderizarDashboard() {
       const board = document.getElementById('kanbanBoard');
-      const todasLasOrdenes = JSON.parse(localStorage.getItem('eafit_orders') || '[]');
-      
-      // Filtra solo restaurante. Excluye emprendimientos y los que ya salieron de manos del restaurante
-      const ordenesActivas = todasLasOrdenes.filter(o => 
-        !o.esEmprendimiento && 
-        !['En camino', 'Depositado', 'Listo para recoger', 'Entregado'].includes(o.estado)
-      );
+
+      // Solo restaurante: los pedidos de emprendimientos se gestionan en el Panel Emprendedor.
+      const ordenesActivas = leerOrdenes().filter(o => !esEmprendimiento(o) && o.estado !== 'Entregado');
 
       document.getElementById('stat-nuevos').textContent = ordenesActivas.filter(o => o.estado === 'Recibido').length;
       document.getElementById('stat-cocina').textContent = ordenesActivas.filter(o => o.estado === 'En cocina').length;
 
       board.innerHTML = KANBAN_COLS.map(col => {
-        // La columna "Listos" es un comodín en este tablero, ya que las órdenes listas ya pasaron a un estado de entrega.
-        // Las mostramos solo si se quedaron colgadas como "Buscando repartidor".
-        const ordenesEnColumna = ordenesActivas.filter(o => {
-          if (col.key === 'Listos') return o.estado === 'Buscando repartidor';
-          return o.estado === col.key;
-        });
+        const ordenesEnColumna = ordenesActivas.filter(o => col.key === 'Entrega' ? ESTADOS_ENTREGA.includes(o.estado) : o.estado === col.key);
 
         const tarjetasHTML = ordenesEnColumna.length === 0
           ? `<div class="p-6 text-center text-gray-400 text-sm font-semibold border-2 border-dashed border-gray-200 rounded-xl">Vacío</div>`
           : ordenesEnColumna.map(o => {
-            
-            // Lógica de botones inteligentes
             let btnAction = '';
             if (col.key === 'Recibido') {
-              btnAction = `<button onclick="avanzarEstadoRestaurante('${o.id}', 'En cocina')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow-sm transition-colors mt-3">Comenzar a Preparar →</button>`;
+              btnAction = `<button onclick="cambiarEstado('${esc(o.id)}', 'En cocina')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow-sm transition-colors mt-3">Comenzar a Preparar →</button>`;
             } else if (col.key === 'En cocina') {
-              // Dependiendo del tipo de pedido, despacha a un estado u otro
-              if (o.modoEntrega.includes('Repartidor')) {
-                btnAction = `<button onclick="avanzarEstadoRestaurante('${o.id}', 'Buscando repartidor')" class="w-full py-2.5 bg-gray-900 text-white text-xs font-black rounded-xl shadow-sm mt-3">Solicitar Repartidor</button>`;
-              } else if (o.modoEntrega.includes('Casillero')) {
-                btnAction = `<button onclick="avanzarEstadoRestaurante('${o.id}', 'En camino')" class="w-full py-2.5 bg-blue-900 text-white text-xs font-black rounded-xl shadow-sm mt-3">Enviar a Zona Casilleros</button>`;
-              } else {
-                btnAction = `<button onclick="avanzarEstadoRestaurante('${o.id}', 'Listo para recoger')" class="w-full py-2.5 bg-emerald-600 text-white text-xs font-black rounded-xl shadow-sm mt-3">Avisar: ¡Listo en Mostrador!</button>`;
-              }
+              const a = accionDespacho(o);
+              btnAction = `<button onclick="cambiarEstado('${esc(o.id)}', '${a.estado}', ${a.alerta})" class="w-full py-2.5 ${a.cls} text-white text-xs font-black rounded-xl shadow-sm mt-3">${a.label}</button>`;
             } else {
-              btnAction = `<p class="text-xs font-bold text-gray-500 text-center mt-3 animate-pulse">Esperando asignación en App Delivery...</p>`;
+              btnAction = bloqueEntrega(o);
             }
 
-            const badgeIcon = o.modoEntrega.includes('Repartidor') ? '🏃 Repartidor' : o.modoEntrega.includes('Casillero') ? '📦 Casillero' : '📍 Recoger Barra';
+            const t = tipoEntrega(o);
+            const badgeIcon = t === 'repartidor' ? '🏃 Repartidor' : t === 'casillero' ? '📦 Casillero' : '📍 Recoger Barra';
 
             return `
             <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden group">
               <div class="absolute top-0 inset-x-0 h-1.5 ${col.color}"></div>
-              
+
               <div class="flex justify-between items-start pt-2">
                 <div>
-                  <h4 class="font-black text-gray-900 text-lg">${o.id}</h4>
-                  <p class="text-[10px] font-black text-gray-500 uppercase">${o.horario}</p>
+                  <h4 class="font-black text-gray-900 text-lg">${esc(o.id)}</h4>
+                  <p class="text-[10px] font-black text-gray-500 uppercase">${esc(o.horario)}</p>
                 </div>
-                <span class="text-[10px] font-black bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
-                  ${badgeIcon}
-                </span>
+                <span class="text-[10px] font-black bg-gray-100 text-gray-600 px-2 py-1 rounded-md">${badgeIcon}</span>
               </div>
 
               <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 mt-3 mb-2">
                 <ul class="text-sm font-bold text-gray-800 space-y-1">
-                  ${o.items.map(i => `<li><span class="text-gray-400 mr-1">${i.cantidad}x</span> ${i.prodName}</li>`).join('')}
+                  ${o.items.map(i => `<li><span class="text-gray-400 mr-1">${esc(i.cantidad)}x</span> ${esc(i.prodName)}</li>`).join('')}
                 </ul>
               </div>
 
               <p class="text-[11px] font-semibold text-gray-500 leading-tight">
-                <i class="fa-solid fa-location-dot"></i> <strong>Destino:</strong> ${o.ubicacion.bloque} · ${o.ubicacion.piso} · ${o.ubicacion.aula}
+                <i class="fa-solid fa-location-dot"></i> <strong>Destino:</strong> ${esc(o.ubicacion.bloque)} · ${esc(o.ubicacion.piso)} · ${esc(o.ubicacion.aula)}
               </p>
 
               ${btnAction}

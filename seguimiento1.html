@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seguimiento de tu Pedido - EAFIT Pedidos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="../style.css" />
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { eafit: { oscuro: 'var(--eafit-azul-oscuro)', amarillo: 'var(--eafit-amarillo)' } } } }
+    }
+  </script>
+  <!-- Hotjar Tracking Code for Restaurantes EAFIT 2026-2 -->
+  <script>
+      (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:6847286,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
+</head>
+<body class="bg-[#EFEFEF] text-[#222222] font-sans pb-16">
+
+  <!-- SEGUIMIENTO 1 · Vista del COMPRADOR (cliente). Se adapta a la modalidad de entrega del pedido. -->
+  <div class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl border-x border-gray-200 flex flex-col">
+    <header class="bg-eafit-oscuro text-white sticky top-0 z-30 shadow-md">
+      <div class="px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <a href="../catalogo.html" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20">
+            <i class="fa-solid fa-arrow-left text-sm"></i>
+          </a>
+          <div>
+            <h1 class="font-bold text-base" id="headerTitle">Seguimiento de tu Pedido</h1>
+            <p class="text-[11px] text-eafit-amarillo" id="orderHeaderSub">Sincronizado en tiempo real</p>
+          </div>
+        </div>
+        <a href="../historial.html" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-md text-[10px] font-bold">Historial</a>
+      </div>
+    </header>
+
+    <main class="px-4 pt-5 space-y-5 flex-1" id="mainTracking">
+      <!-- Renderizado por JS -->
+    </main>
+  </div>
+
+  <!-- Modal de PIN / QR / Casillero (su contenido cambia según la modalidad) -->
+  <div id="modal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div id="modalContent" class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4"></div>
+  </div>
+
+  <script>
+    // ---------- Utilidades ----------
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const leerOrdenes = () => JSON.parse(localStorage.getItem('eafit_orders') || '[]');
+    const emailComprador = () => localStorage.getItem('eafit_user_email') || 'estudiante@eafit.edu.co';
+
+    function tipoEntrega(o) {
+      const m = o.modoEntrega || '';
+      if (m.includes('Repartidor')) return 'repartidor';
+      if (m.includes('Casillero')) return 'casillero';
+      return 'punto';
+    }
+
+    // ---------- Configuración por modalidad ----------
+    const MODALIDADES = {
+      repartidor: {
+        titulo: 'Delivery en Curso',
+        done: 'bg-gray-900', ring: 'ring-gray-300', line: 'bg-gray-900', pin: 'text-eafit-oscuro', btn: 'bg-gray-900',
+        pasos: [
+          { id: 'Recibido', texto: 'Pedido Recibido' },
+          { id: 'En cocina', texto: 'Preparando' },
+          { id: 'Buscando repartidor', texto: 'Asignando Repartidor' },
+          { id: 'En camino', texto: 'En Camino a tu bloque' },
+          { id: 'Entregado', texto: 'Entregado con Éxito' }
+        ],
+        aviso: o => o.estado === 'En camino' && o.alertaLlegada === true,
+        banner: { emoji: '🏃', caja: 'bg-amber-400 text-gray-900 border border-amber-500 animate-pulse', titulo: '¡Tu repartidor te espera!', sub: o => 'En: ' + o.ubicacion.bloque, boton: 'Ver PIN', btn: 'bg-gray-900 text-white' },
+        modal: { emoji: '🏃', circulo: 'bg-amber-100 text-amber-600', etiqueta: '¡Tu Repartidor llegó!', titulo: 'Dicta el PIN para recibir', texto: null, direccion: true, qr: false, confirmar: null, cerrar: 'Entendido' }
+      },
+      casillero: {
+        titulo: 'Entrega en Casillero',
+        done: 'bg-blue-900', ring: 'ring-blue-200', line: 'bg-blue-900', pin: 'text-blue-900', btn: 'bg-blue-900',
+        pasos: [
+          { id: 'Recibido', texto: 'Pedido Recibido' },
+          { id: 'En cocina', texto: 'Preparando' },
+          { id: 'En camino', texto: 'Enviando a zona de casilleros' },
+          { id: 'Depositado', texto: 'Depositado en Casillero' },
+          { id: 'Entregado', texto: 'Retirado por estudiante' }
+        ],
+        aviso: o => o.estado === 'Depositado',
+        banner: { emoji: '📦', caja: 'bg-blue-100 text-blue-900 border border-blue-200', titulo: '¡Pedido en Casillero!', sub: o => 'Ubicado en: ' + o.ubicacion.bloque, boton: 'ABRIR', btn: 'bg-blue-900 text-white' },
+        modal: { emoji: '📦', circulo: 'bg-blue-100 text-blue-900', etiqueta: null, titulo: 'Abre tu Casillero', texto: 'Digita este código en la pantalla del casillero para retirar tu comida.', direccion: false, qr: false, confirmar: 'Confirmar que ya lo retiré', cerrar: 'Cerrar ventana' }
+      },
+      punto: {
+        titulo: 'Recoger en el Local',
+        done: 'bg-emerald-700', ring: 'ring-emerald-200', line: 'bg-emerald-700', pin: 'text-emerald-800', btn: 'bg-emerald-800',
+        pasos: [
+          { id: 'Recibido', texto: 'Pedido Confirmado' },
+          { id: 'En cocina', texto: 'En Preparación' },
+          { id: 'Listo para recoger', texto: '¡Listo en mostrador!' },
+          { id: 'Entregado', texto: 'Entregado (¡Disfruta!)' }
+        ],
+        aviso: o => o.estado === 'Listo para recoger',
+        banner: { emoji: '🍽️', caja: 'bg-emerald-100 text-emerald-900 border border-emerald-300', titulo: '¡Tu comida está lista!', sub: o => 'Reclama en la barra de ' + ((o.items && o.items[0] && o.items[0].storeName) || 'tu restaurante'), boton: 'Ver QR', btn: 'bg-emerald-800 text-white' },
+        modal: { emoji: '🍽️', circulo: 'bg-emerald-100 text-emerald-800', etiqueta: null, titulo: 'Muestra este código en la caja', texto: 'Evita la fila y reclama directo.', direccion: false, qr: true, confirmar: null, cerrar: 'Entendido' }
+      }
+    };
+
+    // ---------- Pedido activo (solo pedidos del comprador) ----------
+    function ordenesDelComprador() {
+      const email = emailComprador();
+      return leerOrdenes().filter(o => o.comprador === email);
+    }
+
+    function obtenerOrdenActiva() {
+      const lista = ordenesDelComprador();
+      const idURL = new URLSearchParams(location.search).get('id');
+      const idGuardado = localStorage.getItem('eafit_active_order_id');
+      return lista.find(o => o.id === idURL)
+        || lista.find(o => o.id === idGuardado)
+        || lista.find(o => o.estado !== 'Entregado')
+        || lista[0]
+        || null;
+    }
+
+    // ---------- Acciones del comprador ----------
+    function confirmarRetiro() {
+      // Solo aplica a Casillero: el estudiante confirma que ya retiró su pedido.
+      const orden = obtenerOrdenActiva();
+      if (!orden || tipoEntrega(orden) !== 'casillero') return;
+      const ordenes = leerOrdenes();
+      const idx = ordenes.findIndex(o => o.id === orden.id);
+      if (idx > -1) {
+        ordenes[idx].estado = 'Entregado';
+        localStorage.setItem('eafit_orders', JSON.stringify(ordenes));
+      }
+      cerrarModal();
+      renderizarSeguimiento();
+    }
+
+    function abrirModal() {
+      const orden = obtenerOrdenActiva();
+      if (!orden) return;
+      const cfg = MODALIDADES[tipoEntrega(orden)];
+      const m = cfg.modal;
+      document.getElementById('modalContent').innerHTML = `
+        <div class="w-16 h-16 ${m.circulo} rounded-full flex items-center justify-center mx-auto text-3xl">${m.emoji}</div>
+        <div>
+          ${m.etiqueta ? `<span class="text-[10px] font-black uppercase tracking-wider bg-gray-100 text-gray-500 px-3 py-1 rounded-full border border-gray-200">${m.etiqueta}</span>` : ''}
+          <h3 class="text-xl font-black text-gray-900 mt-3">${m.titulo}</h3>
+          ${m.texto ? `<p class="text-xs text-gray-500 mt-1 font-semibold">${m.texto}</p>` : ''}
+          ${m.direccion ? `<p class="text-xs text-gray-500 mt-1">${esc(orden.ubicacion.direccionCompleta)}</p>` : ''}
+        </div>
+        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 flex flex-col items-center">
+          ${m.qr ? `<i class="fa-solid fa-qrcode text-6xl text-gray-900 mb-2"></i><p class="text-[10px] font-bold text-gray-500 uppercase">O dicta el PIN</p>` : `<p class="text-[10px] uppercase font-black text-gray-400">PIN de seguridad</p>`}
+          <p class="text-4xl font-black tracking-widest ${cfg.pin} mt-1">${esc(orden.pin)}</p>
+        </div>
+        ${m.confirmar ? `<button onclick="confirmarRetiro()" class="w-full py-3 ${cfg.btn} text-white font-bold rounded-xl text-sm active:scale-95 transition-transform">${m.confirmar}</button>` : ''}
+        <button onclick="cerrarModal()" class="${m.confirmar ? 'w-full py-2 bg-transparent text-gray-500 font-bold text-xs underline' : 'w-full py-3 ' + cfg.btn + ' text-white font-bold rounded-xl text-sm active:scale-95 transition-transform'}">${m.cerrar}</button>
+      `;
+      const modal = document.getElementById('modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function cerrarModal() {
+      const modal = document.getElementById('modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // ---------- Render ----------
+    function renderizarSeguimiento() {
+      const orden = obtenerOrdenActiva();
+      const cont = document.getElementById('mainTracking');
+
+      if (!orden) {
+        document.getElementById('orderHeaderSub').textContent = 'Sin pedidos activos';
+        cont.innerHTML = `
+          <div class="bg-gray-50 p-6 rounded-2xl text-center border border-gray-200">
+            <p class="text-sm font-semibold text-gray-600 mb-3">No tienes pedidos activos en este momento.</p>
+            <a href="../catalogo.html" class="inline-block px-4 py-2 bg-eafit-oscuro text-white rounded-xl text-xs font-bold">Ir al Catálogo</a>
+          </div>`;
+        return;
+      }
+
+      const tipo = tipoEntrega(orden);
+      const cfg = MODALIDADES[tipo];
+      document.getElementById('headerTitle').textContent = cfg.titulo;
+      document.getElementById('orderHeaderSub').textContent = `${orden.id} · ${orden.horario}`;
+
+      let paso = cfg.pasos.findIndex(p => p.id === orden.estado);
+      if (paso === -1) paso = 0;
+
+      const timelineHTML = cfg.pasos.map((p, index) => {
+        const completado = index <= paso;
+        const actual = index === paso;
+        return `
+          <div class="flex items-start space-x-4 relative">
+            <div class="flex flex-col items-center z-10">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all ${completado ? cfg.done + ' text-white shadow-md' : 'bg-gray-200 text-gray-400'} ${actual ? 'ring-4 ' + cfg.ring + ' scale-110' : ''}">
+                ${completado ? '✓' : index + 1}
+              </div>
+              ${index < cfg.pasos.length - 1 ? `<div class="w-1 h-10 -my-1 ${index < paso ? cfg.line : 'bg-gray-200'}"></div>` : ''}
+            </div>
+            <div class="pt-1.5 pb-6">
+              <p class="text-sm font-black ${completado ? 'text-gray-900' : 'text-gray-400'}">${p.texto}</p>
+              ${actual && orden.estado !== 'Entregado' ? `<p class="text-[10px] text-gray-500 font-bold bg-gray-100 inline-block px-2 py-0.5 rounded mt-1">Estado actual</p>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
+      // Chips cuando el comprador tiene más de un pedido en curso
+      const activos = ordenesDelComprador().filter(o => o.estado !== 'Entregado');
+      const chipsHTML = activos.length > 1 ? `
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="text-[10px] font-black uppercase text-gray-400">Tus pedidos:</span>
+          ${activos.map(o => `<a href="?id=${esc(o.id)}" class="px-2.5 py-1 rounded-full text-[11px] font-black border ${o.id === orden.id ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-300'}">${esc(o.id)}</a>`).join('')}
+        </div>` : '';
+
+      const b = cfg.banner;
+      const bannerHTML = cfg.aviso(orden) && orden.estado !== 'Entregado' ? `
+        <div class="${b.caja} p-4 rounded-2xl shadow-sm flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">${b.emoji}</span>
+            <div>
+              <p class="font-black text-sm leading-tight">${b.titulo}</p>
+              <p class="text-[10px] font-bold">${esc(b.sub(orden))}</p>
+            </div>
+          </div>
+          <button onclick="abrirModal()" class="px-3 py-2 ${b.btn} font-bold text-xs rounded-xl shadow-sm">${b.boton}</button>
+        </div>` : '';
+
+      const items = (orden.items || []).map(i => `<li>${esc(i.cantidad)}x ${esc(i.prodName)} <span class="text-gray-400">· ${esc(i.storeName)}</span></li>`).join('');
+      const entregadoHTML = orden.estado === 'Entregado' ? `
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-2xl text-center">
+          <p class="font-black text-sm">¡Pedido entregado! Que lo disfrutes 🎉</p>
+          <a href="../catalogo.html" class="inline-block mt-2 text-xs font-bold underline">Seguir comprando</a>
+        </div>` : '';
+
+      cont.innerHTML = `
+        ${chipsHTML}
+        ${bannerHTML}
+        ${entregadoHTML}
+
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-gray-200 space-y-3">
+          <div class="flex flex-wrap justify-between items-start gap-2 border-b border-gray-100 pb-3">
+            <div>
+              <span class="text-[10px] font-black text-blue-900 bg-blue-50 px-2.5 py-1 rounded-full">${esc(orden.modoEntrega)}</span>
+              <h2 class="text-lg font-black text-gray-900 mt-1">Orden ${esc(orden.id)}</h2>
+              <p class="text-xs text-gray-500"><i class="fa-solid fa-location-dot"></i> ${esc(orden.ubicacion.direccionCompleta)}</p>
+            </div>
+            <p class="font-black text-eafit-oscuro text-lg">$${Number(orden.total || 0).toLocaleString('es-CO')}</p>
+          </div>
+          <ul class="text-xs font-semibold text-gray-700 space-y-0.5">${items}</ul>
+        </section>
+
+        <section class="bg-white rounded-3xl p-5 shadow-sm border border-gray-200">
+          <div class="mt-2 ml-2">${timelineHTML}</div>
+        </section>
+      `;
+    }
+
+    window.addEventListener('storage', renderizarSeguimiento);
+    renderizarSeguimiento();
+  </script>
+</body>
+</html>
